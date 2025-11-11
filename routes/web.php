@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WargaController;
+use App\Http\Controllers\ProgramBantuanController;
+use App\Http\Controllers\PendaftarBantuanController;
 //dashboard
 Route::get('/', function () {
     return view('dashboard');
@@ -17,5 +20,11 @@ Route::get('/login', function () {
 Route::get('/layout-without-navbar', function () {
     return view('layout-without-navbar');
 })->name('layout.without.navbar');
+//Route Warga
+Route::resource('warga', WargaController::class);
+//Route Program Bantuan
+Route::resource('program_bantuan', ProgramBantuanController::class);
+//Route Pendaftar Bantuan
+Route::resource('pendaftar_bantuan', PendaftarBantuanController::class);
 
 
