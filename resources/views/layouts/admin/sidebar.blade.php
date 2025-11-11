@@ -98,6 +98,12 @@
             <div data-i18n=" Warga">Pendaftar Bantuan</div>
         </a>
     </li>
+
+    <li class="menu-item">
+        <a href="{{ route('users.index') }}" class="menu-link">
+            <div data-i18n=" Warga">Users</div>
+        </a>
+    </li>
 </ul>
     </li>
 

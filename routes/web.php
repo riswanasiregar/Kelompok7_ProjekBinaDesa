@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WargaController;
 use App\Http\Controllers\ProgramBantuanController;
 use App\Http\Controllers\PendaftarBantuanController;
+use App\Http\Controllers\UsersController;
+
 //dashboard
 Route::get('/', function () {
     return view('dashboard');
@@ -26,5 +28,8 @@ Route::resource('warga', WargaController::class);
 Route::resource('program_bantuan', ProgramBantuanController::class);
 //Route Pendaftar Bantuan
 Route::resource('pendaftar_bantuan', PendaftarBantuanController::class);
+//Route Users
+Route::resource('users', UsersController::class);
+
 
 
