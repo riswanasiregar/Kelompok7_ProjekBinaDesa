@@ -1,18 +1,27 @@
+
 @extends('layouts.app')
 
 @section('content')
 @php use Illuminate\Support\Str; @endphp
 
 <div class="container">
-    <h2 class="mb-4">Daftar Program Bantuan</h2>
-
+    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
+    <div>
+        <p class="text-muted mb-1 text-uppercase fw-semibold small">Pendaftaran</p>
+        <h4 class="mb-0 fw-semibold">Data Program Bantuan</h4>
+        <span class="text-muted small">Kelola program bantuan desa</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ route('program_bantuan.create') }}" class="btn btn-primary">
+            <i class="ti ti-plus me-1"></i> Tambah program
+        </a>
+    </div>
+    </div>
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="mb-3">
-        <a href="{{ route('program_bantuan.create') }}" class="btn btn-primary">+ Tambah Program</a>
-    </div>
+  
 
     @if($data->count() > 0)
         <div class="row g-4">
@@ -78,6 +87,10 @@
 
 <!-- efek hover  -->
 <style>
+
+.container-fluid {
+    margin-top: 70px; /* sesuaikan 65–80px jika perlu */
+    }
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('template/libs/simplebar/dist/simplebar.min.css') }}">
     <link rel="stylesheet" href="{{ asset('template/libs/apexcharts/dist/apexcharts.css') }}">
     <link rel="stylesheet" href="{{ asset('template/css/styles.min.css') }}">
+    @stack('styles')
 </head>
 <body>
     <div id="main-wrapper" data-simplebar>
@@ -36,6 +37,18 @@
                             <span>Program Bantuan</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('pendaftar-bantuan.*') ? 'active' : '' }}" href="{{ route('pendaftar-bantuan.index') }}">
+                            <i class="ti ti-user-plus me-2"></i>
+                            <span>Pendaftaran Bantuan</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('warga.*') ? 'active' : '' }}" href="{{ route('warga.index') }}">
+                            <i class="ti ti-users me-2"></i>
+                            <span>Data Warga</span>
+                        </a>
+                    </li>
                     <!-- Tambahkan menu lain di sini -->
                 </ul>
             </nav>
@@ -55,20 +68,7 @@
                                 <span class="fw-semibold">Projek Bina Desa</span>
                             </a>
                         </div>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarMain">
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('program_bantuan.index') }}">
-                                        <i class="ti ti-list-details me-1"></i> Program Bantuan
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
+                
             </header>
 
             <!-- Page content -->
@@ -93,6 +93,7 @@
     <script src="{{ asset('template/libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ asset('template/js/sidebarmenu.js') }}"></script>
     <script src="{{ asset('template/js/app.min.js') }}"></script>
+    @stack('scripts')
 
     <style>
         .left-sidebar {background-color:#fff; box-shadow:0 0 1px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.06); transition:transform .25s ease;}
