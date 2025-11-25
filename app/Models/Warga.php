@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Warga extends Model
 {
@@ -11,9 +11,8 @@ class Warga extends Model
 
     protected $table = 'warga';
     protected $primaryKey = 'warga_id';
-    public $incrementing = true;
     protected $keyType = 'int';
-    public $timestamps = true;
+    public $incrementing = true;
 
     protected $fillable = [
         'no_ktp',
@@ -25,8 +24,63 @@ class Warga extends Model
         'email'
     ];
 
-    public function pendaftarBantuan()
+    /**
+     * Relationship dengan pendaftaran bantuan
+     */
+    public function pendaftaranBantuan()
     {
-        return $this->hasMany(PendaftarBantuan::class, 'warga_id', 'warga_id');
+        return $this->hasMany(PendaftarBantuan::class, 'warga_id');
+    }
+
+    /**
+     * Relationship dengan penerima bantuan
+     */
+    public function penerimaBantuan()
+    {
+        return $this->hasMany(PenerimaBantuan::class, 'warga_id');
+    }
+
+    /**
+     * Accessor untuk jenis kelamin singkat
+     */
+    public function getJenisKelaminSingkatAttribute()
+    {
+        return $this->jenis_kelamin === 'Laki-laki' ? 'L' : 'P';
+    }
+
+    /**
+     * Scope untuk filter berdasarkan nama
+     */
+    public function scopeCariNama($query, $nama)
+    {
+        return $query->where('nama', 'like', "%{$nama}%");
+    }
+
+    /**
+     * Scope untuk filter berdasarkan no KTP
+     */
+    public function scopeCariKtp($query, $no_ktp)
+    {
+        return $query->where('no_ktp', 'like', "%{$no_ktp}%");
+    }
+
+    /**
+     * Cek apakah warga sudah mendaftar di program tertentu
+     */
+    public function sudahDaftarProgram($programId)
+    {
+        return $this->pendaftaranBantuan()
+                    ->where('program_id', $programId)
+                    ->exists();
+    }
+
+    /**
+     * Cek apakah warga adalah penerima di program tertentu
+     */
+    public function adalahPenerimaProgram($programId)
+    {
+        return $this->penerimaBantuan()
+                    ->where('program_id', $programId)
+                    ->exists();
     }
 }

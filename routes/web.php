@@ -30,6 +30,13 @@ Route::resource('program_bantuan', ProgramBantuanController::class);
 Route::resource('pendaftar_bantuan', PendaftarBantuanController::class);
 //Route Users
 Route::resource('users', UsersController::class);
-
+//Route Media
+Route::resource('media', MediaController::class);
+//Route Verifikasi lapangan
+Route::resource('verifikasi_lapangan', VerifikasiLapanganController::class);
+//Route penerima bantuan
+Route::resource('penerima_bantuan', PenerimaBantuanController::class);
+//Route Riwayat penyaluran bantuan
+Route::resource('riwayat_penyaluran_bantuan', RiwayatPenyaluranBantuan::class);
 
 

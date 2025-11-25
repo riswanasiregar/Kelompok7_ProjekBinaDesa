@@ -8,13 +8,38 @@ use App\Models\Warga;
 class WargaController extends Controller
 {
     /**
-     * Menampilkan daftar warga.
+     * Menampilkan daftar warga dengan pagination, filter dan search.
      */
-    public function index()
-    {
-        $data['dataWarga'] = Warga::all();
-        return view('admin.warga.index', $data);
+public function index(Request $request)
+{
+    // Kolom yang bisa dicari
+    $searchableColumns = ['nama', 'no_ktp', 'jenis_kelamin', 'agama', 'pekerjaan', 'telp','email'];
+    $query = Warga::query();
+
+    // Filter jenis kelamin jika ada
+    if ($request->filled('jenis_kelamin')) {
+        $query->where('jenis_kelamin', $request->jenis_kelamin);
     }
+
+    // Search
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search, $searchableColumns) {
+            foreach ($searchableColumns as $column) {
+                $q->orWhere($column, 'like', "%{$search}%");
+            }
+        });
+    }
+
+    // Pagination 5 per halaman & dengan query string supaya search tetap ada di page berikutnya
+    $data['dataWarga'] = $query->orderBy('nama', 'asc')->paginate(5)->withQueryString();
+
+    // Ambil list jenis kelamin untuk filter dropdown
+    $data['jenis_kelamin_list'] = ['Laki-laki', 'Perempuan'];
+
+    return view('admin.warga.index', $data);
+
+}
 
     /**
      * Menampilkan form tambah warga.
@@ -29,7 +54,6 @@ class WargaController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
         $validatedData = $request->validate([
             'no_ktp' => 'required|digits:16|unique:warga,no_ktp',
             'nama' => 'required|string|max:100',
@@ -38,19 +62,8 @@ class WargaController extends Controller
             'pekerjaan' => 'required|string|max:50',
             'telp' => 'required|digits_between:10,20',
             'email' => 'required|email|max:100|unique:warga,email',
-        ], [
-            'no_ktp.required' => 'Nomor KTP wajib diisi.',
-            'no_ktp.digits' => 'Nomor KTP harus terdiri dari 16 digit.',
-            'no_ktp.unique' => 'Nomor KTP sudah terdaftar.',
-            'nama.required' => 'Nama wajib diisi.',
-            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
-            'agama.required' => 'Agama wajib diisi.',
-            'pekerjaan.required' => 'Pekerjaan wajib diisi.',
-            'telp.required' => 'Nomor telepon wajib diisi.',
-            'email.required' => 'Email wajib diisi.',
         ]);
 
-        // Simpan ke database
         Warga::create($validatedData);
 
         return redirect()->route('warga.index')
@@ -60,7 +73,7 @@ class WargaController extends Controller
     /**
      * Menampilkan form edit data warga.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
         $data['dataWarga'] = Warga::findOrFail($id);
         return view('admin.warga.edit', $data);
@@ -69,22 +82,20 @@ class WargaController extends Controller
     /**
      * Update data warga.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $warga = Warga::findOrFail($id);
 
-        // Validasi saat update (agar unique bisa dikecualikan untuk data sendiri)
         $validatedData = $request->validate([
-            'no_ktp' => 'required|digits:16|unique:warga,no_ktp,' . $id,
+            'no_ktp' => 'required|digits:16|unique:warga,no_ktp,' . $id . ',warga_id',
             'nama' => 'required|string|max:100',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'agama' => 'required|string|max:30',
             'pekerjaan' => 'required|string|max:50',
             'telp' => 'required|digits_between:10,20',
-            'email' => 'required|email|max:100|unique:warga,email,' . $id,
+            'email' => 'required|email|max:100|unique:warga,email,' . $id . ',warga_id',
         ]);
 
-        // Update data
         $warga->update($validatedData);
 
         return redirect()->route('warga.index')
@@ -94,7 +105,7 @@ class WargaController extends Controller
     /**
      * Hapus data warga.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $warga = Warga::findOrFail($id);
         $warga->delete();
