@@ -23,7 +23,7 @@
 
   
 
-    @if($data->count() > 0)
+    @if(isset($data) && $data->count() > 0)
         <div class="row g-4">
             @foreach($data as $item)
                 <div class="col-md-4 col-lg-4 col-sm-6">
@@ -76,6 +76,10 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+        <!-- pagination  -->
+        <div class="mt-3">
+            {{ $data->links('pagination::bootstrap-5') }}
         </div>
     @else
         <div class="alert alert-info text-center mt-4">

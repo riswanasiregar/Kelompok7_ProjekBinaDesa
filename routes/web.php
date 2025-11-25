@@ -12,9 +12,5 @@ Route::resource('program_bantuan', ProgramBantuanController::class);
 
 Route::resource('warga', WargaController::class);
 
-Route::resource('pendaftaran-bantuan', PendaftarBantuanController::class)->names('pendaftar-bantuan');
-Route::get('pendaftar-bantuan/{any?}', function ($any = null) {
-    $suffix = $any ? '/' . ltrim($any, '/') : '';
-    return redirect('pendaftaran-bantuan' . $suffix);
-})->where('any', '.*');
+Route::resource('pendaftar-bantuan', PendaftarBantuanController::class);
 

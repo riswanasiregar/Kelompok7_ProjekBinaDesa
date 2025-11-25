@@ -8,12 +8,41 @@
         <h4 class="mb-0 fw-semibold">Data warga</h4>
         <span class="text-muted small">Kelola data warga desa</span>
     </div>
+    <!-- search -->
+    <form method="GET" action="{{ route('warga.index') }}" class="d-flex flex-wrap gap-2 align-items-center">
+        <input type="hidden" name="jenis_kelamin" value="{{ request('jenis_kelamin') }}">
+        <div class="col-md-3" style="min-width: 280px;">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" id="exampleInputIconRight" value="{{ request('search') }}" placeholder="Search" aria-label="Search" style="min-width: 240px;">
+                <button type="submit" class="input-group-text" id="basic-addon2">
+                    <svg class="icon icon-xxs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+        </div>
+        @if(request('search') || request('jenis_kelamin'))
+            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary" id="clear-search">Clear</a>
+        @endif
+    </form>
     <div class="d-flex gap-2">
         <a href="{{ route('warga.create') }}" class="btn btn-primary">
             <i class="ti ti-plus me-1"></i> Tambah data
         </a>
     </div>
-    </div>
+</div>
+    <!-- filter -->
+    <div class="table-responsive">
+        <form method="GET" action="{{ route('warga.index') }}" class="mb-3">
+            <input type="hidden" name="search" value="{{ request('search') }}">
+            <div class="row">
+                <div class="col-md-2">
+                    <select name="jenis_kelamin" class="form-select" onchange="this.form.submit()">
+                        <option value="">Semua</option>
+                        <option value="Laki-laki" {{ request('jenis_kelamin')=='Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="Perempuan" {{ request('jenis_kelamin')=='Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                </div>
+            </div>
+        </form>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -57,12 +86,17 @@
                 </div>
             @endforeach
         </div>
+        <!-- pagination  -->
+        <div class="mt-3">
+            {{ $wargas->links('pagination::bootstrap-5') }}
+        </div>
     @else
         <div class="alert alert-info text-center mt-4">
             Belum ada data warga. <br>
             <a href="{{ route('warga.create') }}" class="btn btn-primary mt-2">Tambah Sekarang</a>
         </div>
     @endif
+</div>
 </div>
 
 <!-- Efek hover -->

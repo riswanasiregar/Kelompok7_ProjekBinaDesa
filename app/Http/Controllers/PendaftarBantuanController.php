@@ -9,17 +9,18 @@ use Illuminate\Http\Request;
 
 class PendaftarBantuanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = PendaftarBantuan::with(['warga', 'program'])
-            ->latest('tanggal_daftar')
-            ->get();
+        $dataQuery = PendaftarBantuan::with(['warga', 'program'])
+            ->latest('tanggal_daftar');
+
+        $data = $dataQuery->paginate(9)->appends($request->query());
 
         $stats = [
-            'total' => $data->count(),
-            'diproses' => $data->where('status', 'Diproses')->count(),
-            'diterima' => $data->where('status', 'Diterima')->count(),
-            'ditolak' => $data->where('status', 'Ditolak')->count(),
+            'total' => PendaftarBantuan::count(),
+            'diproses' => PendaftarBantuan::where('status', 'Diproses')->count(),
+            'diterima' => PendaftarBantuan::where('status', 'Diterima')->count(),
+            'ditolak' => PendaftarBantuan::where('status', 'Ditolak')->count(),
         ];
 
         return view('pendaftaran_bantuan.index', compact('data', 'stats'));

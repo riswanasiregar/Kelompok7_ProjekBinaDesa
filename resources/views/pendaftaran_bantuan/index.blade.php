@@ -94,6 +94,7 @@
                     </div>
                 @endforeach
             </div>
+            </div>
         @endif
     </div>
 </div>

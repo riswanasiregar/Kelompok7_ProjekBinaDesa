@@ -9,7 +9,7 @@ class ProgramBantuanController extends Controller
 {
     public function index()
     {
-        $data = ProgramBantuan::all();
+        $data = ProgramBantuan::orderByDesc('created_at')->paginate(2);
         return view('program_bantuan.index', compact('data'));
     }
 

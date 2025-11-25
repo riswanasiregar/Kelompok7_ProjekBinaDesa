@@ -7,9 +7,25 @@ use Illuminate\Http\Request;
 
 class WargaController extends Controller
 {
-    public function index()
-    {
-        $wargas = Warga::all();
+    public function index(Request $request){
+        $filterableColumns = ['jenis_kelamin'];
+        $searchableColumns = ['nama', 'no_ktp', 'pekerjaan', 'telp', 'email'];
+
+        $wargas = Warga::query()
+            ->filter($request, $filterableColumns)
+            ->when($request->filled('search'), function ($query) use ($request, $searchableColumns) {
+                $search = $request->input('search');
+
+                $query->where(function ($q) use ($search, $searchableColumns) {
+                    foreach ($searchableColumns as $column) {
+                        $q->orWhere($column, 'like', '%' . $search . '%');
+                    }
+                });
+            })
+            ->orderByDesc('created_at')
+            ->paginate(2)
+            ->appends($request->query());
+
         return view('warga.index', compact('wargas'));
     }
 
