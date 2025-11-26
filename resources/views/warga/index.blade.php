@@ -54,6 +54,9 @@
             @foreach($wargas as $warga)
                 <div class="col-md-4 col-lg-4 col-sm-6">
                     <div class="card shadow-sm h-100" style="transition: 0.3s;">
+                        <div class="text-center pt-4">
+                            <img src="{{ $warga->profile_picture ? asset('storage/'.$warga->profile_picture) : asset('template/images/profile/user-1.jpg') }}" alt="Foto {{ $warga->nama }}" class="rounded-circle" style="width: 96px; height: 96px; object-fit: cover;">
+                        </div>
 
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title mb-2 fw-semibold text-dark">

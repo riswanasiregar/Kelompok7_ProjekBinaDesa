@@ -13,7 +13,14 @@ class Warga extends Model
     protected $table = 'warga';
     protected $primaryKey = 'warga_id';
     protected $fillable = [
-        'no_ktp', 'nama', 'jenis_kelamin', 'agama', 'pekerjaan', 'telp', 'email'
+        'no_ktp',
+        'nama',
+        'jenis_kelamin',
+        'agama',
+        'pekerjaan',
+        'telp',
+        'email',
+        'profile_picture',
     ];
 
 public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder

@@ -1,55 +1,60 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Warga</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 20px; }
-        .container { background: #fff; padding: 20px; border-radius: 8px; width: 400px; margin: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        h1 { text-align: center; }
-        input, select { width: 100%; padding: 8px; margin: 6px 0 12px 0; border: 1px solid #ccc; border-radius: 4px; }
-        button, a { background: #28a745; color: white; padding: 10px 14px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
-        button:hover, a:hover { background: #1e7e34; }
-        label { font-weight: bold; }
-    </style>
-</head>
-<body>
+@extends('layouts.app')
 
+@section('content')
 <div class="container">
-    <h1>Edit Warga</h1>
-    <form action="{{ route('warga.update', $warga->warga_id) }}" method="POST">
+    <h4 class="fw-semibold mb-4">Edit Data Warga</h4>
+
+    <form action="{{ route('warga.update', $warga->warga_id) }}" method="POST" class="card p-4 shadow-sm border-0" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-        <label>No KTP</label>
-        <input type="text" name="no_ktp" value="{{ $warga->no_ktp }}" required>
+        <div class="mb-3">
+            <label>No KTP</label>
+            <input type="text" name="no_ktp" class="form-control" value="{{ old('no_ktp', $warga->no_ktp) }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Nama</label>
+            <input type="text" name="nama" class="form-control" value="{{ old('nama', $warga->nama) }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Jenis Kelamin</label>
+            <select name="jenis_kelamin" class="form-select">
+                <option value="">Pilih</option>
+                <option value="Laki-laki" {{ old('jenis_kelamin', $warga->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                <option value="Perempuan" {{ old('jenis_kelamin', $warga->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Agama</label>
+            <input type="text" name="agama" class="form-control" value="{{ old('agama', $warga->agama) }}">
+        </div>
+        <div class="mb-3">
+            <label>Pekerjaan</label>
+            <input type="text" name="pekerjaan" class="form-control" value="{{ old('pekerjaan', $warga->pekerjaan) }}">
+        </div>
+        <div class="mb-3">
+            <label>No Telepon</label>
+            <input type="text" name="telp" class="form-control" value="{{ old('telp', $warga->telp) }}">
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="{{ old('email', $warga->email) }}">
+        </div>
+        <div class="mb-3">
+            <label>Foto Profil</label>
+            @if($warga->profile_picture)
+                <div class="mb-2">
+                    <img src="{{ asset('storage/'.$warga->profile_picture) }}" alt="Foto {{ $warga->nama }}" class="rounded" style="max-width: 120px;">
+                </div>
+            @endif
+            <input type="file" name="profile_picture" class="form-control">
+            <small class="text-muted">Format: jpg, jpeg, png (maks 2MB)</small>
+        </div>
 
-        <label>Nama</label>
-        <input type="text" name="nama" value="{{ $warga->nama }}" required>
-
-        <label>Jenis Kelamin</label>
-        <select name="jenis_kelamin">
-            <option value="">-- Pilih --</option>
-            <option value="Laki-laki" {{ $warga->jenis_kelamin == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-            <option value="Perempuan" {{ $warga->jenis_kelamin == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-        </select>
-
-        <label>Agama</label>
-        <input type="text" name="agama" value="{{ $warga->agama }}">
-
-        <label>Pekerjaan</label>
-        <input type="text" name="pekerjaan" value="{{ $warga->pekerjaan }}">
-
-        <label>Telp</label>
-        <input type="text" name="telp" value="{{ $warga->telp }}">
-
-        <label>Email</label>
-        <input type="email" name="email" value="{{ $warga->email }}">
-
-        <button type="submit">Update</button>
-        <a href="{{ route('warga.index') }}">Kembali</a>
+        <div class="d-flex justify-content-between">
+            <a href="{{ route('warga.index') }}" class="btn btn-secondary">Kembali</a>
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        </div>
     </form>
 </div>
-
-</body>
-</html>
+@endsection

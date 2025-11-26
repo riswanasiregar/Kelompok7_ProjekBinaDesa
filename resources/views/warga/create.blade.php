@@ -4,7 +4,7 @@
 <div class="container">
     <h4 class="fw-semibold mb-4">Tambah Data Warga</h4>
 
-    <form action="{{ route('warga.store') }}" method="POST" class="card p-4 shadow-sm border-0">
+    <form action="{{ route('warga.store') }}" method="POST" class="card p-4 shadow-sm border-0" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label>No KTP</label>
@@ -37,6 +37,11 @@
         <div class="mb-3">
             <label>Email</label>
             <input type="email" name="email" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Foto Profil</label>
+            <input type="file" name="profile_picture" class="form-control">
+            <small class="text-muted">Format: jpg, jpeg, png (maks 2MB)</small>
         </div>
 
         <div class="d-flex justify-content-between">
