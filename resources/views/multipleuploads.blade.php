@@ -18,6 +18,21 @@
 
                             <div class="col-md-6">
                                 <input type="file" class="form-control" name="filename[]" required multiple>
+                                {{-- Tambahkan class is-invalid jika ada error --}}
+                                <input type="file" class="form-control @error('filename') is-invalid @enderror @error('filename.*') is-invalid @enderror" name="filename[]" required multiple>
+
+                                {{-- Tampilkan pesan error untuk validasi array secara umum --}}
+                                @error('filename')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                                {{-- Tampilkan pesan error untuk setiap file dalam array --}}
+                                @error('filename.*')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                         </div>
 

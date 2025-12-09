@@ -21,3 +21,6 @@
     <textarea name="notes" class="form-control" rows="3">{{ old('notes', $customer->notes ?? '') }}</textarea>
 </div>
 
+
+
+

@@ -6,6 +6,7 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\PendaftarBantuanController;
 use App\Http\Controllers\MultipleuploadsController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\VerifikasiLapanganController;
 
 Route::get('/', function () {
     return redirect()->route('program_bantuan.index');
@@ -20,3 +21,8 @@ Route::resource('customers', CustomerController::class);
 Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
 Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
 Route::delete('/uploads/{multipleupload}', [MultipleuploadsController::class, 'destroy'])->name('uploads.destroy');
+
+//Route Verifikasi lapangan
+
+Route::resource('verifikasi', VerifikasiLapanganController::class);
+
