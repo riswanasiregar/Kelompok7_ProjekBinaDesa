@@ -15,12 +15,13 @@ class VerifikasiLapangan extends Model
     public $incrementing = true;
 
     protected $fillable = [
-        'pendaftar_id',
+        'pendaftar_bantuan_id',
         'petugas',
         'tanggal',
         'catatan',
         'skor',
-        'status_verifikasi'
+        'status_verifikasi',
+        'user_id',
     ];
 
     protected $casts = [
@@ -32,7 +33,7 @@ class VerifikasiLapangan extends Model
      */
     public function pendaftar()
     {
-        return $this->belongsTo(PendaftarBantuan::class, 'pendaftar_id', 'pendaftar_bantuan_id');
+        return $this->belongsTo(PendaftarBantuan::class, 'pendaftar_bantuan_id', 'pendaftar_bantuan_id');
     }
 
     /**

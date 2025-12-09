@@ -10,10 +10,10 @@
 
         <div class="mb-3">
             <label>Pendaftar</label>
-            <select name="pendaftar_id" class="form-control" required>
+            <select name="pendaftar_bantuan_id" class="form-control" required>
                 @foreach ($pendaftar as $p)
-                    <option value="{{ $p->pendaftar_id }}" 
-                        {{ $data->pendaftar_id == $p->pendaftar_id ? 'selected' : '' }}>
+                    <option value="{{ $p->pendaftar_bantuan_id }}" 
+                        {{ $data->pendaftar_bantuan_id == $p->pendaftar_bantuan_id ? 'selected' : '' }}>
                         {{ $p->warga->nama ?? 'Nama tidak ditemukan' }}
                     </option>
                 @endforeach

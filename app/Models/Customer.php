@@ -16,6 +16,7 @@ class Customer extends Model
         'phone',
         'address',
         'notes',
+        'user_id',
     ];
 
     public function supportingFiles()

@@ -6,10 +6,13 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Upload File or Images') }}</div>
+                <div class="card-header">{{ __('Upload File atau Gambar') }}</div>
 
                 <div class="card-body">
-                    
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
                     <form method="POST" action="{{ route('uploads.store') }}" enctype="multipart/form-data">
                         @csrf
 
@@ -17,17 +20,12 @@
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('File') }}</label>
 
                             <div class="col-md-6">
-                                <input type="file" class="form-control" name="filename[]" required multiple>
-                                {{-- Tambahkan class is-invalid jika ada error --}}
                                 <input type="file" class="form-control @error('filename') is-invalid @enderror @error('filename.*') is-invalid @enderror" name="filename[]" required multiple>
-
-                                {{-- Tampilkan pesan error untuk validasi array secara umum --}}
                                 @error('filename')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                                {{-- Tampilkan pesan error untuk setiap file dalam array --}}
                                 @error('filename.*')
                                     <span class="invalid-feedback d-block" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -77,6 +75,11 @@
                                                 <a href="{{ asset('storage/'.$upload->filename) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                     {{ __('Lihat') }}
                                                 </a>
+                                                <form class="d-inline" method="POST" action="{{ route('uploads.destroy', $upload) }}" onsubmit="return confirm('Hapus file ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-sm btn-outline-danger">Hapus</button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @endforeach

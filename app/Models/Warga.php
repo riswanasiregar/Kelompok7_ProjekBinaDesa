@@ -21,6 +21,7 @@ class Warga extends Model
         'telp',
         'email',
         'profile_picture',
+        'user_id',
     ];
 
 public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder

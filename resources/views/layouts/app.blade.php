@@ -31,6 +31,7 @@
             </div>
             <nav class="sidebar-nav" data-simplebar>
                 <ul id="sidebarnav" class="list-unstyled mb-0">
+                    @auth
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('program_bantuan.*') ? 'active' : '' }}" href="{{ route('program_bantuan.index') }}">
                             <i class=""></i>
@@ -61,6 +62,15 @@
                             <span>Multi Upload</span>
                         </a>
                     </li>
+                    @if(auth()->user()->isAdmin())
+                    <li class="sidebar-item">
+                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                            <i class=""></i>
+                            <span>Manajemen Akun</span>
+                        </a>
+                    </li>
+                    @endif
+                    @endauth
                     <!-- Tambahkan menu lain di sini -->
                 </ul>
             </nav>
@@ -80,7 +90,20 @@
                                 <span class="fw-semibold">Projek Bina Desa</span>
                             </a>
                         </div>
-                
+                        <div class="d-flex align-items-center ms-auto">
+                            @auth
+                                <div class="text-end me-3">
+                                    <div class="fw-semibold">{{ auth()->user()->name }}</div>
+                                    <div class="badge bg-primary-subtle text-primary text-capitalize">{{ auth()->user()->role }}</div>
+                                </div>
+                                <form method="POST" action="{{ route('auth.logout') }}">
+                                    @csrf
+                                    <button class="btn btn-outline-danger btn-sm">Keluar</button>
+                                </form>
+                            @endauth
+                        </div>
+                    </div>
+                </nav>
             </header>
 
             <!-- Page content -->

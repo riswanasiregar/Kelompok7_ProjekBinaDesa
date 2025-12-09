@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProgramBantuan extends Model
+class Media extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'program_id';
+    protected $table = 'media';
 
     protected $fillable = [
-        'kode',
-        'nama_program',
-        'tahun',
-        'deskripsi',
-        'anggaran',
-        'media',
+        'ref_table',
+        'ref_id',
+        'file_path',
+        'file_name',
         'user_id',
     ];
 }

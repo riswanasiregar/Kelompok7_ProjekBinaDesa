@@ -19,6 +19,7 @@ class PendaftarBantuan extends Model
         'tanggal_daftar',
         'status',
         'keterangan',
+        'user_id',
     ];
 
     public function warga()

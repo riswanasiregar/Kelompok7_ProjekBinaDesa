@@ -29,7 +29,7 @@
             @foreach ($verifikasi as $item)
                 <tr>
                     <td>{{ $item->verifikasi_id }}</td>
-                    <td>{{ $item->pendaftar->nama ?? '-' }}</td>
+                    <td>{{ $item->pendaftar->warga->nama ?? '-' }}</td>
                     <td>{{ $item->petugas }}</td>
                     <td>{{ $item->tanggal->format('d-m-Y') }}</td>
                     <td>

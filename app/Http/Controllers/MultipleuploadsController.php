@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Multipleuploads;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class MultipleuploadsController extends Controller
 {
@@ -13,7 +14,9 @@ class MultipleuploadsController extends Controller
      */
     public function index()
     {
-        $uploads = Multipleuploads::latest()->get();
+        $uploads = Multipleuploads::when(!Auth::user()->isAdmin(), function ($query) {
+            $query->where('user_id', Auth::id());
+        })->latest()->get();
 
         return view('multipleuploads', compact('uploads'));
     }
@@ -45,6 +48,7 @@ class MultipleuploadsController extends Controller
 
             Multipleuploads::create([
                 'filename' => $storedPath,
+                'user_id' => Auth::id(),
             ]);
         }
 
@@ -78,8 +82,18 @@ class MultipleuploadsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Multipleuploads $multipleuploads)
+    public function destroy(Multipleuploads $multipleupload)
     {
-        //
+        if (!Auth::user()->isAdmin() && $multipleupload->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($multipleupload->filename && Storage::disk('public')->exists($multipleupload->filename)) {
+            Storage::disk('public')->delete($multipleupload->filename);
+        }
+
+        $multipleupload->delete();
+
+        return redirect()->route('uploads')->with('success', 'File berhasil dihapus.');
     }
 }

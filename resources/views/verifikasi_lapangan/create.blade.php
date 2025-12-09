@@ -8,10 +8,16 @@
         @csrf
 
         <div class="mb-3">
-            <label>Pendaftar</label>
-            <input name="pendaftar_id" class="form-control" required>
-           
-        </input>
+            <label class="form-label">Pendaftar</label>
+            <select name="pendaftar_bantuan_id" class="form-control" required>
+                <option value="">Pilih pendaftar</option>
+                @foreach ($pendaftar as $p)
+                    <option value="{{ $p->pendaftar_bantuan_id }}" {{ old('pendaftar_bantuan_id') == $p->pendaftar_bantuan_id ? 'selected' : '' }}>
+                        {{ $p->warga->nama ?? 'Nama tidak ditemukan' }} - {{ $p->program->nama_program ?? '-' }}
+                    </option>
+                @endforeach
+            </select>
+            @error('pendaftar_bantuan_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
         </div>
 
         <div class="mb-3">

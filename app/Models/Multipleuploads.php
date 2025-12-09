@@ -12,5 +12,8 @@ class Multipleuploads extends Model
    
     protected $fillable = [
         'filename',
+        'ref_table',
+        'ref_id',
+        'user_id',
     ];
 }

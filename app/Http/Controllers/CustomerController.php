@@ -6,12 +6,17 @@ use App\Models\Customer;
 use App\Models\Multipleuploads;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::orderByDesc('created_at')->paginate(10);
+        $customers = Customer::when(!Auth::user()->isAdmin(), function ($query) {
+            $query->where('user_id', Auth::id());
+        })
+            ->orderByDesc('created_at')
+            ->paginate(10);
 
         return view('customers.index', compact('customers'));
     }
@@ -31,6 +36,8 @@ class CustomerController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $data['user_id'] = Auth::id();
+
         Customer::create($data);
 
         return redirect()->route('customers.index')->with('success', 'Customer berhasil ditambahkan.');
@@ -38,6 +45,10 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
+        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $files = Multipleuploads::where('ref_table', 'pelanggan')
             ->where('ref_id', $customer->id)
             ->latest()
@@ -48,11 +59,19 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
+        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         return view('customers.edit', compact('customer'));
     }
 
     public function update(Request $request, Customer $customer)
     {
+        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -68,6 +87,10 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $customer->supportingFiles()->each(function ($file) {
             if ($file->filename && Storage::disk('public')->exists($file->filename)) {
                 Storage::disk('public')->delete($file->filename);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Warga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class WargaController extends Controller
 {
@@ -13,6 +14,9 @@ class WargaController extends Controller
         $searchableColumns = ['nama', 'no_ktp', 'pekerjaan', 'telp', 'email'];
 
         $wargas = Warga::query()
+            ->when(!Auth::user()->isAdmin(), function ($query) {
+                $query->where('user_id', Auth::id());
+            })
             ->filter($request, $filterableColumns)
             ->when($request->filled('search'), function ($query) use ($request, $searchableColumns) {
                 $search = $request->input('search');
@@ -52,17 +56,27 @@ class WargaController extends Controller
             $data['profile_picture'] = $request->file('profile_picture')->store('profile-pictures', 'public');
         }
 
+        $data['user_id'] = Auth::id();
+
         Warga::create($data);
         return redirect()->route('warga.index')->with('success', 'Data warga berhasil ditambahkan.');
     }
 
     public function edit(Warga $warga)
     {
+        if (!Auth::user()->isAdmin() && $warga->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         return view('warga.edit', compact('warga'));
     }
 
     public function update(Request $request, Warga $warga)
     {
+        if (!Auth::user()->isAdmin() && $warga->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $data = $request->validate([
             'no_ktp' => 'required|unique:warga,no_ktp,' . $warga->warga_id . ',warga_id',
             'nama' => 'required',
@@ -87,6 +101,10 @@ class WargaController extends Controller
 
     public function destroy(Warga $warga)
     {
+        if (!Auth::user()->isAdmin() && $warga->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $warga->delete();
         return redirect()->route('warga.index')->with('success', 'Data warga berhasil dihapus.');
     }
