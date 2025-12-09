@@ -104,6 +104,22 @@
                                 @enderror
                             </div>
 
+                                    {{-- Role --}}
+                            <div class="form-floating form-floating-outline mb-4">
+                                <select
+                                    id="role"
+                                    name="role"
+                                    class="form-select @error('role') is-invalid @enderror">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="Warga" {{ old('role') == 'Warga' ? 'selected' : '' }}>Warga</option>
+                                </select>
+                                <label for="role">Role</label>
+                                @error('role')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                         </div>
 
                         <!-- Kolom 2 - Keamanan -->
@@ -176,116 +192,15 @@
         </div>
     </div>
 </div>
-
 <style>
 .form-floating.form-floating-outline .form-control {
     border: 1px solid #d9dee3;
     border-radius: 0.375rem;
-    transition: all 0.2s ease-in-out;
 }
-
 .form-floating.form-floating-outline .form-control:focus {
     border-color: #696cff;
     box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2);
 }
-
-.form-floating.form-floating-outline label {
-    color: #6c757d;
-    transition: all 0.2s ease-in-out;
-}
-
-.form-floating.form-floating-outline .form-control:focus ~ label,
-.form-floating.form-floating-outline .form-control:not(:placeholder-shown) ~ label {
-    color: #696cff;
-    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-    background: white;
-    padding: 0 0.25rem;
-    margin-left: -0.25rem;
-}
-
-/* Loading state untuk button */
-.btn-loading {
-    position: relative;
-    color: transparent !important;
-}
-
-.btn-loading::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    left: 50%;
-    margin-left: -8px;
-    margin-top: -8px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-right-color: transparent;
-    animation: spinner .75s linear infinite;
-}
-
-@keyframes spinner {
-    to { transform: rotate(360deg); }
-}
 </style>
-@endsection
 
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('editUserForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('password_confirmation');
-
-    // Validasi real-time password confirmation
-    if (password && confirmPassword) {
-        confirmPassword.addEventListener('input', function() {
-            if (password.value !== confirmPassword.value) {
-                this.setCustomValidity('Password tidak cocok');
-                this.classList.add('is-invalid');
-            } else {
-                this.setCustomValidity('');
-                this.classList.remove('is-invalid');
-            }
-        });
-
-        password.addEventListener('input', function() {
-            confirmPassword.dispatchEvent(new Event('input'));
-        });
-    }
-
-    // Loading state pada form submission
-    form.addEventListener('submit', function() {
-        submitBtn.disabled = true;
-        submitBtn.classList.add('btn-loading');
-        submitBtn.innerHTML = '<i class="fas fa-spinner me-2"></i> Menyimpan...';
-    });
-
-    // Auto-format nama (kapitalisasi setiap kata)
-    const nameInput = document.getElementById('name');
-    if (nameInput) {
-        nameInput.addEventListener('blur', function() {
-            this.value = this.value.replace(/\w\S*/g, function(txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
-        });
-    }
-
-    // Validasi email format
-    const emailInput = document.getElementById('email');
-    if (emailInput) {
-        emailInput.addEventListener('blur', function() {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(this.value)) {
-                this.setCustomValidity('Format email tidak valid');
-                this.classList.add('is-invalid');
-            } else {
-                this.setCustomValidity('');
-                this.classList.remove('is-invalid');
-            }
-        });
-    }
-});
-</script>
 @endsection

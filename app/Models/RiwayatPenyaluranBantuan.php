@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class RiwayatPenyaluranBantuan extends Model
 {
@@ -19,11 +20,7 @@ class RiwayatPenyaluranBantuan extends Model
         'penerima_id',
         'tahap_ke',
         'tanggal',
-        'nilai',
-        'keterangan',
-        'status_penyaluran',
-        'metode_penyaluran',
-        'bukti_penyaluran'
+        'nilai'
     ];
 
     protected $casts = [
@@ -56,41 +53,38 @@ class RiwayatPenyaluranBantuan extends Model
     }
 
     /**
+     * Scope untuk filter berdasarkan request dan kolom yang bisa difilter
+     */
+    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
+    {
+        foreach ($filterableColumns as $column) {
+            if ($request->filled($column)) {
+                $query->where($column, 'like', '%' . trim($request->input($column)) . '%');
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * Scope search global
+     */
+    public function scopeSearch(Builder $query, $request, array $columns)
+    {
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request, $columns) {
+                foreach ($columns as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
+                }
+            });
+        }
+    }
+
+    /**
      * Accessor untuk format nilai
      */
     public function getNilaiFormattedAttribute()
     {
         return 'Rp ' . number_format($this->nilai, 0, ',', '.');
-    }
-
-    /**
-     * Accessor untuk status penyaluran lengkap
-     */
-    public function getStatusLabelAttribute()
-    {
-        $status = [
-            'direncanakan' => ['class' => 'bg-info', 'label' => 'Direncanakan'],
-            'diberikan' => ['class' => 'bg-success', 'label' => 'Telah Diberikan'],
-            'dibatalkan' => ['class' => 'bg-danger', 'label' => 'Dibatalkan']
-        ];
-
-        return $status[$this->status_penyaluran] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
-    }
-
-    /**
-     * Scope untuk penyaluran yang sudah diberikan
-     */
-    public function scopeSudahDiberikan($query)
-    {
-        return $query->where('status_penyaluran', 'diberikan');
-    }
-
-    /**
-     * Scope untuk penyaluran yang direncanakan
-     */
-    public function scopeDirencanakan($query)
-    {
-        return $query->where('status_penyaluran', 'direncanakan');
     }
 
     /**
@@ -118,18 +112,52 @@ class RiwayatPenyaluranBantuan extends Model
     }
 
     /**
-     * Scope berdasarkan metode penyaluran
-     */
-    public function scopeByMetode($query, $metode)
-    {
-        return $query->where('metode_penyaluran', $metode);
-    }
-
-    /**
      * Scope untuk periode tertentu
      */
     public function scopePeriode($query, $startDate, $endDate)
     {
         return $query->whereBetween('tanggal', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope untuk nilai minimal
+     */
+    public function scopeNilaiMin($query, $minNilai)
+    {
+        return $query->where('nilai', '>=', $minNilai);
+    }
+
+    /**
+     * Scope untuk nilai maksimal
+     */
+    public function scopeNilaiMax($query, $maxNilai)
+    {
+        return $query->where('nilai', '<=', $maxNilai);
+    }
+
+    /**
+     * Scope untuk tahap tertentu
+     */
+    public function scopeByTahap($query, $tahap)
+    {
+        return $query->where('tahap_ke', $tahap);
+    }
+
+    /**
+     * Hitung total penyaluran per program
+     */
+    public function scopeTotalPerProgram($query)
+    {
+        return $query->selectRaw('program_id, SUM(nilai) as total_penyaluran')
+                    ->groupBy('program_id');
+    }
+
+    /**
+     * Hitung total penyaluran per penerima
+     */
+    public function scopeTotalPerPenerima($query)
+    {
+        return $query->selectRaw('penerima_id, SUM(nilai) as total_diterima, COUNT(*) as jumlah_tahap')
+                    ->groupBy('penerima_id');
     }
 }

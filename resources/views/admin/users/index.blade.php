@@ -51,6 +51,7 @@
                                 <th class="border-0">No</th>
                                 <th class="border-0">Nama Lengkap</th>
                                 <th class="border-0">Email</th>
+                                <th class="border-0">Role</th>
                                 <th class="border-0">Password</th>
                                 <th class="border-0 rounded-end text-center">Aksi</th>
                             </tr>
@@ -60,6 +61,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->name }}</td>
+                                    <td>{{ $item->role }}</td>
                                     <td>{{ $item->email }}</td>
                                     <td>
                                         <span class="text-muted" title="{{ $item->password }}">

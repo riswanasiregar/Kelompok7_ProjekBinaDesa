@@ -17,7 +17,6 @@
                 </a>
             </li>
 
-            {{-- ROUTE FIX --}}
             <li class="breadcrumb-item"><a href="{{ route('program_bantuan.index') }}">Program Bantuan</a></li>
             <li class="breadcrumb-item active" aria-current="page">Tambah Program Bantuan</li>
         </ol>
@@ -54,24 +53,11 @@
 </div>
 @endif
 
-{{-- Success --}}
-@if (session('success'))
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="alert alert-primary alert-dismissible" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    </div>
-</div>
-@endif
-
 <div class="row">
     <div class="col-12">
         <div class="card border-0 shadow components-section">
             <div class="card-body">
 
-                {{-- ROUTE FIX → harus program_bantuan.store --}}
                 <form action="{{ route('program_bantuan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
@@ -119,7 +105,7 @@
                                     placeholder="Masukkan tahun"
                                     value="{{ old('tahun') }}"
                                     min="2000"
-                                    max="2100">
+                                    max="{{ date('Y') + 1 }}">
                                 <label for="tahun">Tahun</label>
                                 @error('tahun')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -160,16 +146,23 @@
                                 @enderror
                             </div>
 
-                            {{-- Media File --}}
+                            {{-- MULTIPLE MEDIA UPLOAD --}}
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Upload Media (Opsional)</label>
-                                <input type="file" name="media" class="form-control @error('media') is-invalid @enderror">
-                                @error('media')
+                                <label class="form-label fw-bold">Upload Media (Bisa Banyak File)</label>
+
+                                <input type="file"
+                                       name="media[]"
+                                       class="form-control @error('media.*') is-invalid @enderror"
+                                       multiple>
+
+                                @error('media.*')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+
+                                <small class="text-muted">Anda dapat memilih lebih dari satu file.</small>
                             </div>
 
-                            {{-- Caption Media --}}
+                            {{-- Caption --}}
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text"
                                     class="form-control @error('caption') is-invalid @enderror"
@@ -194,6 +187,7 @@
                                    class="btn btn-outline-gray-600">
                                     <i class="fas fa-times me-2"></i> Batal
                                 </a>
+
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-2"></i> Simpan Data
                                 </button>

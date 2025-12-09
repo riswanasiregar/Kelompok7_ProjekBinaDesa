@@ -88,6 +88,12 @@
     </li>
 
     <li class="menu-item">
+        <a href="{{ route('users.index') }}" class="menu-link">
+            <div data-i18n=" Users">Users</div>
+        </a>
+    </li>
+
+    <li class="menu-item">
         <a href="{{ route('program_bantuan.index') }}" class="menu-link">
             <div data-i18n=" Warga">Program Bantuan</div>
         </a>
@@ -100,8 +106,20 @@
     </li>
 
     <li class="menu-item">
-        <a href="{{ route('users.index') }}" class="menu-link">
-            <div data-i18n=" Warga">Users</div>
+        <a href="{{ route('verifikasi_lapangan.index') }}" class="menu-link">
+            <div data-i18n=" Warga">Verifikasi Lapangan</div>
+        </a>
+    </li>
+
+     <li class="menu-item">
+        <a href="{{ route('penerima_bantuan.index') }}" class="menu-link">
+            <div data-i18n=" Warga">Penerima Bantuan</div>
+        </a>
+    </li>
+
+     <li class="menu-item">
+        <a href="{{ route('riwayat_penyaluran_bantuan.index') }}" class="menu-link">
+            <div data-i18n=" Warga">Riwayat Penyaluran Bantuan</div>
         </a>
     </li>
 </ul>

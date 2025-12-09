@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class MediaController extends Controller
 {
@@ -36,58 +37,77 @@ class MediaController extends Controller
     /**
      * Simpan file media yang di-upload.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'ref_table' => 'required|string|max:50',
-            'ref_id'    => 'required|integer',
-            'file'      => 'required|file|max:5120', // max 5MB
-            'caption'   => 'nullable|string|max:255',
-        ]);
-
-        $file = $request->file('file');
-        $path = $file->store('uploads/media', 'public');
-
-        Media::create([
-            'ref_table' => $request->ref_table,
-            'ref_id'    => $request->ref_id,
-            'file_url'  => $path,
-            'caption'   => $request->caption,
-            'mime_type' => $file->getClientMimeType(),
-            'sort_order' => Media::where('ref_table', $request->ref_table)
-                                  ->where('ref_id', $request->ref_id)
-                                  ->max('sort_order') + 1,
-        ]);
-
-        return redirect()->back()->with('success', 'Media berhasil ditambahkan.');
-    }
-
     /**
-     * Menampilkan form edit caption / sort order.
-     */
-    public function edit($id)
-    {
-        $media = Media::findOrFail($id);
+ * Simpan program baru.
+ */
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'kode'         => 'required|string|max:20|unique:program_bantuan,kode',
+        'nama_program' => 'required|string|max:255',
+        'tahun'        => 'required|digits:4|integer|min:2000|max:' . (now()->year + 1),
+        'deskripsi'    => 'nullable|string',
+        'anggaran'     => 'required|numeric|min:0',
 
+        // MULTIPLE FILE UPLOAD VALIDATION - PERBAIKAN
+        'media_files'  => 'nullable|array',
+        'media_files.*' => 'file|max:5120|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx',
+    ]);
+
+    // Gunakan transaction untuk atomic operation
+    DB::transaction(function () use ($validated, $request) {
+        // simpan program
+        $program = ProgramBantuan::create($validated);
+
+        // MULTIPLE FILE UPLOAD HANDLING - PERBAIKAN
+        if ($request->hasFile('media_files')) {
+            $files = [];
+            $sortOrder = 1;
+
+            foreach ($request->file('media_files') as $file) {
+                if ($file->isValid()) {
+                    $filename = time() . '-' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('uploads/program', $filename, 'public');
+
+                    $files[] = [
+                        'ref_table'  => 'program_bantuan',
+                        'ref_id'     => $program->program_id,
+                        'file_url'   => $path,
+                        'caption'    => $file->getClientOriginalName(), // Default caption
+                        'mime_type'  => $file->getClientMimeType(),
+                        'sort_order' => $sortOrder++,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+            }
+
+            // Insert semua file sekaligus
+            if (!empty($files)) {
+                Media::insert($files);
+            }
+        }
+    });
+
+    return redirect()->route('program_bantuan.index')
+                     ->with('success', 'Program berhasil ditambahkan dengan file upload.');
+}
+    public function edit(Media $media)
+    {
         return view('admin.media.edit', compact('media'));
     }
 
     /**
      * Update informasi media (caption & sort_order).
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Media $media)
     {
-        $media = Media::findOrFail($id);
-
         $request->validate([
             'caption'    => 'nullable|string|max:255',
             'sort_order' => 'required|integer'
         ]);
 
-        $media->update([
-            'caption' => $request->caption,
-            'sort_order' => $request->sort_order
-        ]);
+        $media->update($request->only(['caption', 'sort_order']));
 
         return redirect()->back()->with('success', 'Media berhasil diperbarui.');
     }
@@ -95,18 +115,23 @@ class MediaController extends Controller
     /**
      * Hapus media + file fisiknya.
      */
-    public function destroy($id)
+    public function destroy(Media $media)
     {
-        $media = Media::findOrFail($id);
+        try {
+            DB::transaction(function () use ($media) {
+                // Hapus file dari storage
+                if (Storage::disk('public')->exists($media->file_url)) {
+                    Storage::disk('public')->delete($media->file_url);
+                }
 
-        // Hapus file dari storage
-        if (Storage::disk('public')->exists($media->file_url)) {
-            Storage::disk('public')->delete($media->file_url);
+                // Hapus data di database
+                $media->delete();
+            });
+
+            return redirect()->back()->with('success', 'Media berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus media: ' . $e->getMessage());
         }
-
-        // Hapus data di database
-        $media->delete();
-
-        return redirect()->back()->with('success', 'Media berhasil dihapus.');
     }
 }

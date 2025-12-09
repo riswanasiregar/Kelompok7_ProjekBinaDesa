@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pendaftar_bantuan', function (Blueprint $table) {
-            $table->increments('pendaftar_id'); // INTEGER AUTO_INCREMENT
-
-            // Foreign keys - menggunakan unsignedInteger untuk konsistensi
+            $table->increments('pendaftar_id');
             $table->unsignedInteger('program_id');
             $table->unsignedInteger('warga_id');
-
             $table->enum('status_seleksi', ['pending', 'diterima', 'ditolak'])->default('pending');
-            $table->text('keterangan')->nullable();
-            $table->date('tanggal_daftar')->useCurrent();
             $table->timestamps();
 
             // Foreign key constraints
@@ -35,16 +30,18 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             // Constraints
-            $table->unique(['program_id', 'warga_id']); // Satu warga hanya bisa daftar sekali per program
+            $table->unique(['program_id', 'warga_id']);
 
             // Indexes
             $table->index(['program_id', 'status_seleksi']);
             $table->index('warga_id');
-            $table->index('tanggal_daftar');
             $table->index('status_seleksi');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('pendaftar_bantuan');

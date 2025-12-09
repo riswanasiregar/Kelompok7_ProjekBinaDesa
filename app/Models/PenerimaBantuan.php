@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class PenerimaBantuan extends Model
 {
@@ -17,13 +18,7 @@ class PenerimaBantuan extends Model
     protected $fillable = [
         'program_id',
         'warga_id',
-        'keterangan',
-        'tanggal_ditetapkan',
-        'status_penerima'
-    ];
-
-    protected $casts = [
-        'tanggal_ditetapkan' => 'date'
+        'keterangan'
     ];
 
     /**
@@ -51,45 +46,30 @@ class PenerimaBantuan extends Model
     }
 
     /**
-     * Accessor untuk status penerima lengkap
+     * Scope untuk filter berdasarkan request dan kolom yang bisa difilter
      */
-    public function getStatusLabelAttribute()
+    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
     {
-        $status = [
-            'aktif' => ['class' => 'bg-success', 'label' => 'Aktif'],
-            'nonaktif' => ['class' => 'bg-secondary', 'label' => 'Nonaktif'],
-            'dibatalkan' => ['class' => 'bg-danger', 'label' => 'Dibatalkan']
-        ];
-
-        return $status[$this->status_penerima] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
+        foreach ($filterableColumns as $column) {
+            if ($request->filled($column)) {
+                $query->where($column, 'like', '%' . trim($request->input($column)) . '%');
+            }
+        }
+        return $query;
     }
 
     /**
-     * Total nilai penyaluran yang sudah diterima
+     * Scope search global
      */
-    public function getTotalDiterimaAttribute()
+    public function scopeSearch(Builder $query, $request, array $columns)
     {
-        return $this->penyaluran()
-                    ->where('status_penyaluran', 'diberikan')
-                    ->sum('nilai');
-    }
-
-    /**
-     * Jumlah tahap penyaluran yang sudah diberikan
-     */
-    public function getJumlahTahapDiberikanAttribute()
-    {
-        return $this->penyaluran()
-                    ->where('status_penyaluran', 'diberikan')
-                    ->count();
-    }
-
-    /**
-     * Scope untuk filter status penerima
-     */
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status_penerima', $status);
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request, $columns) {
+                foreach ($columns as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
+                }
+            });
+        }
     }
 
     /**
@@ -101,10 +81,116 @@ class PenerimaBantuan extends Model
     }
 
     /**
-     * Scope untuk penerima aktif
+     * Scope untuk filter berdasarkan nama warga (through relationship)
      */
-    public function scopeAktif($query)
+    public function scopeByNamaWarga($query, $namaWarga)
     {
-        return $query->where('status_penerima', 'aktif');
+        return $query->whereHas('warga', function($q) use ($namaWarga) {
+            $q->where('nama', 'like', "%{$namaWarga}%");
+        });
+    }
+
+    /**
+     * Scope untuk penerima yang sudah menerima penyaluran
+     */
+    public function scopeSudahMenerima($query)
+    {
+        return $query->whereHas('penyaluran');
+    }
+
+    /**
+     * Scope untuk penerima yang belum menerima penyaluran
+     */
+    public function scopeBelumMenerima($query)
+    {
+        return $query->whereDoesntHave('penyaluran');
+    }
+
+    /**
+     * Scope untuk penerima dengan penyaluran terbanyak
+     */
+    public function scopeDenganTotalPenyaluran($query)
+    {
+        return $query->withCount(['penyaluran as total_nilai' => function($q) {
+            $q->select(DB::raw('COALESCE(SUM(nilai), 0)'));
+        }])->orderBy('total_nilai', 'desc');
+    }
+
+    /**
+     * Total nilai penyaluran yang sudah diterima
+     */
+    public function getTotalDiterimaAttribute()
+    {
+        return $this->penyaluran()->sum('nilai');
+    }
+
+    /**
+     * Jumlah tahap penyaluran yang sudah diberikan
+     */
+    public function getJumlahTahapDiberikanAttribute()
+    {
+        return $this->penyaluran()->count();
+    }
+
+    /**
+     * Status penerima berdasarkan penyaluran
+     */
+    public function getStatusPenerimaAttribute()
+    {
+        if ($this->penyaluran()->count() > 0) {
+            return 'Sudah Menerima';
+        }
+        return 'Belum Menerima';
+    }
+
+    /**
+     * Accessor untuk label status penerima
+     */
+    public function getStatusLabelAttribute()
+    {
+        $status = $this->status_penerima;
+        $labels = [
+            'Sudah Menerima' => ['class' => 'bg-success', 'label' => 'Sudah Menerima'],
+            'Belum Menerima' => ['class' => 'bg-warning', 'label' => 'Belum Menerima']
+        ];
+
+        return $labels[$status] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
+    }
+
+    /**
+     * Cek apakah penerima sudah menerima bantuan
+     */
+    public function getSudahMenerimaAttribute()
+    {
+        return $this->penyaluran()->exists();
+    }
+
+    /**
+     * Rata-rata nilai penyaluran per tahap
+     */
+    public function getRataRataPerTahapAttribute()
+    {
+        $jumlahTahap = $this->jumlah_tahap_diberikan;
+        if ($jumlahTahap == 0) return 0;
+
+        return $this->total_diterima / $jumlahTahap;
+    }
+
+    /**
+     * Tanggal penyaluran pertama
+     */
+    public function getTanggalPenyaluranPertamaAttribute()
+    {
+        $firstPenyaluran = $this->penyaluran()->orderBy('tanggal')->first();
+        return $firstPenyaluran ? $firstPenyaluran->tanggal : null;
+    }
+
+    /**
+     * Tanggal penyaluran terakhir
+     */
+    public function getTanggalPenyaluranTerakhirAttribute()
+    {
+        $lastPenyaluran = $this->penyaluran()->orderBy('tanggal', 'desc')->first();
+        return $lastPenyaluran ? $lastPenyaluran->tanggal : null;
     }
 }

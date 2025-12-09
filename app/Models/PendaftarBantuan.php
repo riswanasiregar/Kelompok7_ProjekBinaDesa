@@ -18,13 +18,7 @@ class PendaftarBantuan extends Model
     protected $fillable = [
         'program_id',
         'warga_id',
-        'status_seleksi',
-        'keterangan',
-        'tanggal_daftar'
-    ];
-
-    protected $casts = [
-        'tanggal_daftar' => 'date'
+        'status_seleksi'
     ];
 
     /**
@@ -79,7 +73,7 @@ class PendaftarBantuan extends Model
      */
     public function getSudahDiverifikasiAttribute()
     {
-        return $this->verifikasi()->where('status_verifikasi', 'diverifikasi')->exists();
+        return $this->verifikasi()->exists();
     }
 
     /**
@@ -103,17 +97,7 @@ class PendaftarBantuan extends Model
      */
     public function scopeBelumDiverifikasi(Builder $query)
     {
-        return $query->whereDoesntHave('verifikasi', function ($q) {
-            $q->where('status_verifikasi', 'diverifikasi');
-        });
-    }
-
-    /**
-     * Scope untuk pendaftar berdasarkan periode tanggal
-     */
-    public function scopePeriode(Builder $query, $startDate, $endDate)
-    {
-        return $query->whereBetween('tanggal_daftar', [$startDate, $endDate]);
+        return $query->whereDoesntHave('verifikasi');
     }
 
     /**
@@ -152,18 +136,10 @@ class PendaftarBantuan extends Model
     }
 
     /**
-     * Hitung jumlah verifikasi lengkap
+     * Hitung jumlah verifikasi
      */
     public function getJumlahVerifikasiAttribute()
     {
         return $this->verifikasi()->count();
-    }
-
-    /**
-     * Hitung jumlah diverifikasi
-     */
-    public function getJumlahDiverifikasiAttribute()
-    {
-        return $this->verifikasi()->where('status_verifikasi', 'diverifikasi')->count();
     }
 }

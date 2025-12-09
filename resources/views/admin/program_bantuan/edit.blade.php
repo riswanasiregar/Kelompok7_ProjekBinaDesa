@@ -8,180 +8,187 @@
         <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
             <li class="breadcrumb-item">
                 <a href="#">
-                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
+                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                        </path>
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                     </svg>
                 </a>
             </li>
-
             <li class="breadcrumb-item"><a href="{{ route('program_bantuan.index') }}">Program Bantuan</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Program Bantuan</li>
+            <li class="breadcrumb-item active">Edit Program Bantuan</li>
         </ol>
     </nav>
 
     <div class="d-flex justify-content-between w-100 flex-wrap">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Edit Data Program Bantuan</h1>
-            <p class="mb-0">Perbarui data program bantuan</p>
-        </div>
-
         <div>
-            <a href="{{ route('program_bantuan.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center">
+            <h1 class="h4">Edit Program Bantuan</h1>
+            <p class="mb-0">Update informasi program bantuan</p>
+        </div>
+          <div>
+            <a href="{{ route('program_bantuan.index') }}"
+               class="btn btn-outline-secondary d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
         </div>
     </div>
 </div>
 
-
 {{-- Error --}}
 @if ($errors->any())
-<div class="alert alert-danger">
-    <strong>Terjadi kesalahan:</strong>
-    <ul class="mb-0 mt-2">
+<div class="alert alert-danger alert-dismissible">
+    <strong>Terdapat kesalahan input:</strong>
+    <ul class="mt-2 mb-0">
         @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+        <li>{{ $error }}</li>
         @endforeach
     </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 @endif
 
+{{-- Success --}}
+@if (session('success'))
+<div class="alert alert-success alert-dismissible">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
 
-<div class="card border-0 shadow components-section">
+<div class="card shadow border-0">
     <div class="card-body">
-
-        {{-- FORM UPDATE --}}
-        <form action="{{ route('program_bantuan.update', $program->program_id) }}"
-              method="POST" enctype="multipart/form-data">
+        <form action="{{ route('program_bantuan.update', $program->program_id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
             <div class="row">
-                {{-- KOLOM 1 --}}
+                {{-- Kiri --}}
                 <div class="col-xl-6">
-                    <h5 class="fw-bold text-gray-800 mb-4">Data Utama</h5>
+                    <h5 class="fw-bold mb-4">Data Program</h5>
 
                     {{-- Kode --}}
-                    <div class="form-floating form-floating-outline mb-4">
+                    <div class="form-floating mb-4">
                         <input type="text" name="kode" id="kode"
-                               class="form-control @error('kode') is-invalid @enderror"
-                               value="{{ old('kode', $program->kode) }}" required>
+                            class="form-control @error('kode') is-invalid @enderror"
+                            value="{{ old('kode', $program->kode) }}" required>
                         <label for="kode">Kode Program *</label>
-                        @error('kode')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     {{-- Nama --}}
-                    <div class="form-floating form-floating-outline mb-4">
+                    <div class="form-floating mb-4">
                         <input type="text" name="nama_program" id="nama_program"
-                               class="form-control @error('nama_program') is-invalid @enderror"
-                               value="{{ old('nama_program', $program->nama_program) }}" required>
+                            class="form-control @error('nama_program') is-invalid @enderror"
+                            value="{{ old('nama_program', $program->nama_program) }}" required>
                         <label for="nama_program">Nama Program *</label>
-                        @error('nama_program')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     {{-- Tahun --}}
-                    <div class="form-floating form-floating-outline mb-4">
+                    <div class="form-floating mb-4">
                         <input type="number" name="tahun" id="tahun"
-                               class="form-control @error('tahun') is-invalid @enderror"
-                               value="{{ old('tahun', $program->tahun) }}" min="2000" max="2100">
+                            class="form-control @error('tahun') is-invalid @enderror"
+                            value="{{ old('tahun', $program->tahun) }}">
                         <label for="tahun">Tahun</label>
-                        @error('tahun')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
 
-                {{-- KOLOM 2 --}}
+                {{-- Kanan --}}
                 <div class="col-xl-6">
-                    <h5 class="fw-bold text-gray-800 mb-4">Detail Program</h5>
+                    <h5 class="fw-bold mb-4">Detail Program</h5>
 
                     {{-- Anggaran --}}
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="number" name="anggaran" id="anggaran"
-                               step="0.01"
-                               class="form-control @error('anggaran') is-invalid @enderror"
-                               value="{{ old('anggaran', $program->anggaran) }}">
+                    <div class="form-floating mb-4">
+                        <input type="number" step="0.01" name="anggaran" id="anggaran"
+                            class="form-control @error('anggaran') is-invalid @enderror"
+                            value="{{ old('anggaran', $program->anggaran) }}">
                         <label for="anggaran">Anggaran</label>
-                        @error('anggaran')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     {{-- Deskripsi --}}
                     <div class="mb-4">
-                        <label for="deskripsi" class="form-label fw-bold">Deskripsi</label>
                         <textarea name="deskripsi" id="deskripsi" rows="4"
-                                  class="form-control @error('deskripsi') is-invalid @enderror">{{ old('deskripsi', $program->deskripsi) }}</textarea>
-                        @error('deskripsi')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                            class="form-control @error('deskripsi') is-invalid @enderror">{{ old('deskripsi', $program->deskripsi) }}</textarea>
                     </div>
 
+                    {{-- Media lama --}}
+                    <h6 class="fw-bold mb-2">Media Terupload</h6>
 
-                    {{-- AMBIL MEDIA RELASI --}}
-                    @php
-                        $media = $program->media->first() ?? null;
-                    @endphp
+                    @forelse ($program->media as $media)
+                        <div class="media-item d-flex justify-content-between align-items-center p-3 border rounded mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                @if($media->is_image)
+                                    <img src="{{ $media->full_url }}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;">
+                                @else
+                                    <i class="fas fa-file fa-2x text-secondary"></i>
+                                @endif
 
-                    {{-- Media Saat Ini --}}
-                    @if ($media)
-                    <div class="mb-3">
-                        <p class="fw-bold">Media Saat Ini:</p>
-                        <img src="{{ asset('storage/'.$media->file_url) }}"
-                             class="img-thumbnail mb-2"
-                             style="max-height: 160px">
+                                <div>
+                                    <strong>{{ $media->display_name }}</strong><br>
+                                    <small class="text-muted">{{ $media->mime_type }}</small>
+                                </div>
+                            </div>
 
-                        <p><strong>Caption:</strong> {{ $media->caption }}</p>
-                    </div>
-                    @endif
-
-                    {{-- Upload Media Baru --}}
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Upload Media Baru (Opsional)</label>
-                        <input type="file" name="media"
-                               class="form-control @error('media') is-invalid @enderror">
-                        @error('media')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Caption Baru --}}
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="text" name="caption" id="caption"
-                               class="form-control @error('caption') is-invalid @enderror"
-                               value="{{ old('caption') }}">
-                        <label for="caption">Caption Media Baru</label>
-                        @error('caption')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-media"
+                                data-id="{{ $media->media_id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    @empty
+                        <div class="alert alert-info">Belum ada file</div>
+                    @endforelse
 
                 </div>
             </div>
 
+            {{-- Upload baru --}}
+            <div class="border-top pt-4 mt-4">
+                <h5 class="fw-bold mb-3">Upload File Baru</h5>
 
-            {{-- TOMBOL --}}
-            <div class="d-flex justify-content-end mt-4">
-                <a href="{{ route('program_bantuan.index') }}" class="btn btn-outline-secondary me-2">
-                    <i class="fas fa-times me-2"></i>Batal
+                <input type="file" name="files[]" class="form-control" multiple
+                       accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx">
+
+                <small class="text-muted">
+                    Maksimal 5MB per file. Format: JPG, PNG, PDF, DOCX, XLSX.
+                </small>
+            </div>
+
+            {{-- Tombol --}}
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{{ route('program_bantuan.index') }}" class="btn btn-outline-secondary">
+                    Batal
                 </a>
+
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i>Simpan Perubahan
+                    <i class="fas fa-save me-2"></i> Simpan Perubahan
                 </button>
             </div>
 
         </form>
-
     </div>
 </div>
 
+<script>
+document.querySelectorAll('.delete-media').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const id = this.dataset.id;
+
+        if(!confirm("Hapus file ini?")) return;
+
+        fetch("{{ url('program_bantuan/'.$program->program_id.'/media') }}/" + id, {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                this.closest('.media-item').remove();
+            }else{
+                alert("Gagal menghapus media.");
+            }
+        });
+    });
+});
+</script>
 
 <style>
 .form-floating.form-floating-outline .form-control {
@@ -192,6 +199,15 @@
     border-color: #696cff;
     box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2);
 }
+.media-item {
+    transition: all 0.3s ease;
+}
+.media-item:hover {
+    background-color: #f8f9fa !important;
+}
 </style>
+
+
+
 
 @endsection

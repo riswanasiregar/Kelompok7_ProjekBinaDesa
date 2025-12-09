@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Pendaftar Bantuan')
+@section('title', 'Verifikasi Lapangan')
 
 @section('content')
 <div class="py-4">
@@ -14,18 +14,18 @@
                     </svg>
                 </a>
             </li>
-            <li class="breadcrumb-item"><a href="{{ route('pendaftar_bantuan.index') }}">Pendaftar Bantuan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('verifikasi_lapangan.index') }}">Verifikasi Lapangan</a></li>
         </ol>
     </nav>
 
     <div class="d-flex justify-content-between w-100 flex-wrap">
         <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Data Pendaftar Bantuan</h1>
-            <p class="mb-0">List seluruh pendaftar bantuan</p>
+            <h1 class="h4">Data Verifikasi Lapangan</h1>
+            <p class="mb-0">List seluruh verifikasi lapangan</p>
         </div>
         <div>
-            <a href="{{ route('pendaftar_bantuan.create') }}" class="btn btn-success text-white">
-                <i class="fas fa-plus me-1"></i> Tambah Pendaftar
+            <a href="{{ route('verifikasi_lapangan.create') }}" class="btn btn-success text-white">
+                <i class="fas fa-plus me-1"></i> Tambah Verifikasi
             </a>
         </div>
     </div>
@@ -43,29 +43,19 @@
 </div>
 @endif
 
-{{-- Filter Program & Status --}}
-<form method="GET" action="{{ route('pendaftar_bantuan.index') }}" class="mb-3">
+{{-- Filter & Search --}}
+<form method="GET" action="{{ route('verifikasi_lapangan.index') }}" class="mb-3">
     <div class="row g-2">
-        {{-- Filter Program --}}
+        {{-- Filter Petugas --}}
         <div class="col-md-3">
-            <select name="program_id" class="form-select" onchange="this.form.submit()">
-                <option value="">Semua Program</option>
-                @foreach($programs as $program)
-                    <option value="{{ $program->program_id }}" {{ request('program_id') == $program->program_id ? 'selected' : '' }}>
-                        {{ $program->nama_program }}
-                    </option>
-                @endforeach
-            </select>
+            <input type="text" name="petugas" class="form-control"
+                   value="{{ request('petugas') }}" placeholder="Filter petugas">
         </div>
 
-        {{-- Filter Status --}}
+        {{-- Filter Tanggal --}}
         <div class="col-md-3">
-            <select name="status_seleksi" class="form-select" onchange="this.form.submit()">
-                <option value="">Semua Status</option>
-                <option value="pending" {{ request('status_seleksi') == 'pending' ? 'selected' : '' }}>Menunggu</option>
-                <option value="diterima" {{ request('status_seleksi') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                <option value="ditolak" {{ request('status_seleksi') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-            </select>
+            <input type="date" name="start_date" class="form-control"
+                   value="{{ request('start_date') }}" placeholder="Tanggal mulai">
         </div>
 
         {{-- Search --}}
@@ -76,8 +66,8 @@
                 <button type="submit" class="btn btn-outline-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 2q.396 0 .783.036a6 6 0 0 0-.699 1.966L11 4c-3.867 0-7 3.132-7 7s3.133 7 7 7a6.98 6.98 0 0 0 4.875-1.976l.15-.15A6.98 6.98 0 0 0 18 11l-.003-.085a6 6 0 0 0 1.966-.7a8.96 8.96 0 0 1-1.932 6.401l4.283 4.283l-1.415 1.414l-4.282-4.282A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9m5.53-.681a.507.507 0 0 1 .94 0l.254.611a4.37 4.37 0 0 0 2.25 2.326l.718.32a.53.53 0 0 1 0 .963l-.76.338a4.36 4.36 0 0 0-2.218 2.25l-.247.566a.506.506 0 0 1-.934 0l-.246-.565a4.36 4.36 0 0 0-2.22-2.251l-.76-.338a.53.53 0 0 1 0-.963l.718-.32a4.37 4.37 0 0 0 2.251-2.326z"/></svg>
                 </button>
-                @if(request('search'))
-                    <a href="{{ request()->fullUrlWithQuery(['search'=> null]) }}" class="btn btn-outline-secondary ml-3">Clear</a>
+                @if(request('search') || request('petugas') || request('start_date') || request('end_date'))
+                    <a href="{{ route('verifikasi_lapangan.index') }}" class="btn btn-outline-secondary ml-3">Clear</a>
                 @endif
             </div>
         </div>
@@ -93,26 +83,55 @@
                         <thead class="thead-light">
                             <tr>
                                 <th class="border-0">No</th>
-                                <th class="border-0">Nama Warga</th>
-                                <th class="border-0">Program Bantuan</th>
-                                <th class="border-0">Status</th>
+                                <th class="border-0">Pendaftar</th>
+                                <th class="border-0">Petugas</th>
+                                <th class="border-0">Tanggal</th>
+                                <th class="border-0">Skor</th>
+                                <th class="border-0">Kategori</th>
+                                <th class="border-0">Catatan</th>
                                 <th class="border-0">Media</th>
                                 <th class="border-0 rounded-end text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php
-                                $no = ($pendaftar->currentPage()-1) * $pendaftar->perPage() + 1;
+                                $no = ($verifikasi->currentPage()-1) * $verifikasi->perPage() + 1;
                             @endphp
-                            @foreach($pendaftar as $data)
+                            @foreach($verifikasi as $data)
                                 <tr>
                                     <td>{{ $no++ }}</td>
-                                    <td>{{ $data->warga->nama ?? 'N/A' }}</td>
-                                    <td>{{ $data->program->nama_program ?? 'N/A' }}</td>
                                     <td>
-                                        <span class="badge rounded-pill {{ $data->status_label['class'] }}">
-                                            {{ $data->status_label['label'] }}
+                                        <div class="d-flex flex-column">
+                                            <strong>{{ $data->pendaftar->warga->nama ?? 'N/A' }}</strong>
+                                            <small class="text-muted">{{ $data->pendaftar->program->nama_program ?? '' }}</small>
+                                        </div>
+                                    </td>
+                                    <td>{{ $data->petugas }}</td>
+                                    <td>{{ $data->tanggal->format('d/m/Y') }}</td>
+                                    <td>
+                                        <span class="badge rounded-pill
+                                            {{ $data->skor >= 85 ? 'bg-label-success' :
+                                               ($data->skor >= 70 ? 'bg-label-info' :
+                                               ($data->skor >= 55 ? 'bg-label-warning' : 'bg-label-danger')) }}">
+                                            {{ $data->skor }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill
+                                            {{ $data->skor >= 85 ? 'bg-label-success' :
+                                               ($data->skor >= 70 ? 'bg-label-info' :
+                                               ($data->skor >= 55 ? 'bg-label-warning' : 'bg-label-danger')) }}">
+                                            {{ $data->skor >= 85 ? 'Sangat Baik' :
+                                               ($data->skor >= 70 ? 'Baik' :
+                                               ($data->skor >= 55 ? 'Cukup' : 'Kurang')) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($data->catatan)
+                                            {{ Str::limit($data->catatan, 50) }}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td>
                                         @php
@@ -133,7 +152,7 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('pendaftar_bantuan.edit', $data->pendaftar_id) }}"
+                                            <a href="{{ route('verifikasi_lapangan.edit', $data->verifikasi_id) }}"
                                                class="btn btn-info btn-sm d-flex align-items-center">
                                                 <svg class="icon icon-xs me-1" data-slot="icon" fill="none" stroke-width="1.5"
                                                      stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +163,7 @@
                                                 Edit
                                             </a>
 
-                                            <form action="{{ route('pendaftar_bantuan.destroy', $data->pendaftar_id) }}"
+                                            <form action="{{ route('verifikasi_lapangan.destroy', $data->verifikasi_id) }}"
                                                   method="POST" style="display:inline"
                                                   onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                 @csrf
@@ -176,7 +195,7 @@
                     </table>
 
                    <div class="mt-3 d-flex justify-content-end">
-    {{ $pendaftar->links('pagination::bootstrap-5') }}
+    {{ $verifikasi->links('pagination::bootstrap-5') }}
 </div>
 
                 </div>

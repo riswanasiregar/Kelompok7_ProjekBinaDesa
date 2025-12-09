@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RiwayatPenyaluranBantuan;
 use App\Models\ProgramBantuan;
 use App\Models\PenerimaBantuan;
+use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -16,40 +17,46 @@ class RiwayatPenyaluranBantuanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = RiwayatPenyaluranBantuan::with(['program', 'penerima']);
+        $filterableColumns = ['program_id', 'penerima_id'];
+        $searchableColumns = [];
 
-        // Filter berdasarkan request
-        if ($request->program_id) {
-            $query->byProgram($request->program_id);
+        $query = RiwayatPenyaluranBantuan::with(['program', 'penerima.warga', 'media']);
+
+        // Filterable columns
+        foreach ($filterableColumns as $column) {
+            if ($request->filled($column)) {
+                $query->where($column, $request->$column);
+            }
         }
 
-        if ($request->penerima_id) {
-            $query->byPenerima($request->penerima_id);
-        }
-
-        if ($request->status_penyaluran) {
-            $query->where('status_penyaluran', $request->status_penyaluran);
-        }
-
-        if ($request->metode_penyaluran) {
-            $query->byMetode($request->metode_penyaluran);
-        }
-
-        if ($request->tahun) {
+        // Filter tahun
+        if ($request->filled('tahun')) {
             $query->tahun($request->tahun);
         }
 
-        if ($request->start_date && $request->end_date) {
+        // Filter periode tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->periode($request->start_date, $request->end_date);
         }
 
-        $penyaluran = $query->orderBy('tanggal', 'desc')->paginate(10);
+        // Search by penerima name (through relationship)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('penerima.warga', function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%");
+            });
+        }
 
-        return view('penyaluran.index', [
-            'penyaluran' => $penyaluran,
-            'program' => ProgramBantuan::all(),
-            'penerima' => PenerimaBantuan::all()
-        ]);
+        // Order & pagination
+        $penyaluran = $query->orderBy('tanggal', 'desc')
+                           ->orderBy('created_at', 'desc')
+                           ->paginate(10)
+                           ->withQueryString();
+
+        $program = ProgramBantuan::all();
+        $penerima = PenerimaBantuan::with('warga')->get();
+
+        return view('penyaluran.index', compact('penyaluran', 'program', 'penerima'));
     }
 
     /**
@@ -59,7 +66,7 @@ class RiwayatPenyaluranBantuanController extends Controller
     {
         return view('penyaluran.create', [
             'program' => ProgramBantuan::all(),
-            'penerima' => PenerimaBantuan::all()
+            'penerima' => PenerimaBantuan::with('warga')->get()
         ]);
     }
 
@@ -68,31 +75,45 @@ class RiwayatPenyaluranBantuanController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuan,program_id',
             'penerima_id' => 'required|exists:penerima_bantuan,penerima_id',
             'tanggal' => 'required|date',
             'nilai' => 'required|numeric|min:0',
-            'tahap_ke' => 'nullable|integer',
-            'status_penyaluran' => 'required|in:direncanakan,diberikan,dibatalkan',
-            'metode_penyaluran' => 'nullable|string|max:50',
-            'bukti_penyaluran' => 'nullable|file|mimes:jpg,png,pdf|max:2048'
+            'tahap_ke' => 'required|integer|min:1',
+            'file_media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
+            'caption' => 'nullable|string|max:255'
         ]);
 
-        // Hitung otomatis tahap_ke jika tidak diinput
-        $tahap = $request->tahap_ke ?? RiwayatPenyaluranBantuan::where('program_id', $request->program_id)
+        // Cek duplikasi tahap untuk penerima yang sama dalam program yang sama
+        $existingTahap = RiwayatPenyaluranBantuan::where('program_id', $request->program_id)
             ->where('penerima_id', $request->penerima_id)
-            ->max('tahap_ke') + 1;
+            ->where('tahap_ke', $request->tahap_ke)
+            ->exists();
 
-        $data = $request->all();
-        $data['tahap_ke'] = $tahap;
-
-        // Upload file
-        if ($request->hasFile('bukti_penyaluran')) {
-            $data['bukti_penyaluran'] = $request->file('bukti_penyaluran')->store('bukti_penyaluran', 'public');
+        if ($existingTahap) {
+            return back()->with('error', 'Tahap penyaluran ini sudah ada untuk penerima tersebut.')->withInput();
         }
 
-        RiwayatPenyaluranBantuan::create($data);
+        // Gunakan transaction
+        DB::transaction(function () use ($validated, $request) {
+            $penyaluran = RiwayatPenyaluranBantuan::create($validated);
+
+            // Upload media jika ada
+            if ($request->hasFile('file_media')) {
+                $file = $request->file('file_media');
+                $path = $file->store('uploads/penyaluran', 'public');
+
+                Media::create([
+                    'ref_table' => 'penyaluran_bantuan',
+                    'ref_id' => $penyaluran->penyaluran_id,
+                    'file_url' => $path,
+                    'caption' => $request->caption ?? null,
+                    'mime_type' => $file->getClientMimeType(),
+                    'sort_order' => 1
+                ]);
+            }
+        });
 
         return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil ditambahkan.');
     }
@@ -100,51 +121,80 @@ class RiwayatPenyaluranBantuanController extends Controller
     /**
      * Tampilkan detail penyaluran.
      */
-    public function show($id)
+    public function show(RiwayatPenyaluranBantuan $riwayat_penyaluran_bantuan)
     {
-        $data = RiwayatPenyaluranBantuan::with(['program', 'penerima', 'media'])->findOrFail($id);
-
-        return view('penyaluran.show', compact('data'));
+        $penyaluran = $riwayat_penyaluran_bantuan->load(['program', 'penerima.warga', 'media']);
+        return view('penyaluran.show', compact('penyaluran'));
     }
 
     /**
      * Form edit penyaluran.
      */
-    public function edit($id)
+    public function edit(RiwayatPenyaluranBantuan $riwayat_penyaluran_bantuan)
     {
+        $penyaluran = $riwayat_penyaluran_bantuan;
         return view('penyaluran.edit', [
-            'data' => RiwayatPenyaluranBantuan::findOrFail($id),
+            'penyaluran' => $penyaluran,
             'program' => ProgramBantuan::all(),
-            'penerima' => PenerimaBantuan::all()
+            'penerima' => PenerimaBantuan::with('warga')->get()
         ]);
     }
 
     /**
      * Update penyaluran.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, RiwayatPenyaluranBantuan $riwayat_penyaluran_bantuan)
     {
-        $data = RiwayatPenyaluranBantuan::findOrFail($id);
+        $penyaluran = $riwayat_penyaluran_bantuan;
 
-        $request->validate([
+        $validated = $request->validate([
+            'program_id' => 'required|exists:program_bantuan,program_id',
+            'penerima_id' => 'required|exists:penerima_bantuan,penerima_id',
             'tanggal' => 'required|date',
             'nilai' => 'required|numeric|min:0',
-            'status_penyaluran' => 'required|in:direncanakan,diberikan,dibatalkan',
-            'metode_penyaluran' => 'nullable|string|max:50',
-            'bukti_penyaluran' => 'nullable|file|mimes:jpg,png,pdf|max:2048'
+            'tahap_ke' => 'required|integer|min:1',
+            'file_media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
+            'caption' => 'nullable|string|max:255'
         ]);
 
-        $updateData = $request->all();
+        // Cek duplikasi tahap (kecuali data yang sedang diupdate)
+        $existingTahap = RiwayatPenyaluranBantuan::where('program_id', $request->program_id)
+            ->where('penerima_id', $request->penerima_id)
+            ->where('tahap_ke', $request->tahap_ke)
+            ->where('penyaluran_id', '!=', $penyaluran->penyaluran_id)
+            ->exists();
 
-        // Upload file baru jika ada
-        if ($request->hasFile('bukti_penyaluran')) {
-            if ($data->bukti_penyaluran) {
-                Storage::disk('public')->delete($data->bukti_penyaluran);
-            }
-            $updateData['bukti_penyaluran'] = $request->file('bukti_penyaluran')->store('bukti_penyaluran', 'public');
+        if ($existingTahap) {
+            return back()->with('error', 'Tahap penyaluran ini sudah ada untuk penerima tersebut.')->withInput();
         }
 
-        $data->update($updateData);
+        // Gunakan transaction
+        DB::transaction(function () use ($penyaluran, $validated, $request) {
+            $penyaluran->update($validated);
+
+            // Jika media baru diupload
+            if ($request->hasFile('file_media')) {
+                // Hapus media lama
+                foreach ($penyaluran->media as $media) {
+                    if (Storage::disk('public')->exists($media->file_url)) {
+                        Storage::disk('public')->delete($media->file_url);
+                    }
+                    $media->delete();
+                }
+
+                $file = $request->file('file_media');
+                $path = $file->store('uploads/penyaluran', 'public');
+
+                Media::create([
+                    'ref_table' => 'penyaluran_bantuan',
+                    'ref_id' => $penyaluran->penyaluran_id,
+                    'file_url' => $path,
+                    'caption' => $request->caption ?? null,
+                    'mime_type' => $file->getClientMimeType(),
+                    'sort_order' => 1
+                ]);
+            }
+        });
 
         return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil diperbarui.');
     }
@@ -152,16 +202,29 @@ class RiwayatPenyaluranBantuanController extends Controller
     /**
      * Hapus penyaluran.
      */
-    public function destroy($id)
+    public function destroy(RiwayatPenyaluranBantuan $riwayat_penyaluran_bantuan)
     {
-        $data = RiwayatPenyaluranBantuan::findOrFail($id);
+        $penyaluran = $riwayat_penyaluran_bantuan;
 
-        if ($data->bukti_penyaluran) {
-            Storage::disk('public')->delete($data->bukti_penyaluran);
+        try {
+            DB::transaction(function () use ($penyaluran) {
+                // Hapus media
+                foreach ($penyaluran->media as $media) {
+                    if (Storage::disk('public')->exists($media->file_url)) {
+                        Storage::disk('public')->delete($media->file_url);
+                    }
+                    $media->delete();
+                }
+
+                // Hapus penyaluran
+                $penyaluran->delete();
+            });
+
+            return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('penyaluran.index')
+                             ->with('error', 'Gagal menghapus penyaluran: ' . $e->getMessage());
         }
-
-        $data->delete();
-
-        return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil dihapus.');
     }
 }

@@ -6,7 +6,7 @@ use App\Models\PenerimaBantuan;
 use App\Models\ProgramBantuan;
 use App\Models\Warga;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class PenerimaBantuanController extends Controller
 {
@@ -15,24 +15,44 @@ class PenerimaBantuanController extends Controller
      */
     public function index(Request $request)
     {
+        $filterableColumns = ['program_id'];
+        $searchableColumns = ['keterangan'];
+
         $query = PenerimaBantuan::with(['program', 'warga', 'penyaluran']);
 
-        if ($request->program_id) {
-            $query->byProgram($request->program_id);
+        // Filterable columns
+        foreach ($filterableColumns as $column) {
+            if ($request->filled($column)) {
+                $query->where($column, $request->$column);
+            }
         }
 
-        if ($request->status_penerima) {
-            $query->byStatus($request->status_penerima);
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', "%{$search}%");
+                }
+            });
         }
 
-        if ($request->start_date && $request->end_date) {
-            $query->whereBetween('tanggal_ditetapkan', [$request->start_date, $request->end_date]);
+        // Filter by warga name (through relationship)
+        if ($request->filled('warga_nama')) {
+            $query->whereHas('warga', function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->warga_nama . '%');
+            });
         }
 
-        $penerima = $query->orderBy('tanggal_ditetapkan', 'desc')->paginate(15);
+        // Order & pagination
+        $penerima = $query->orderBy('created_at', 'desc')
+                         ->paginate(10)
+                         ->withQueryString();
+
         $program = ProgramBantuan::all();
+        $warga = Warga::all();
 
-        return view('penerima.index', compact('penerima', 'program'));
+        return view('penerima.index', compact('penerima', 'program', 'warga'));
     }
 
     /**
@@ -51,17 +71,11 @@ class PenerimaBantuanController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuan,program_id',
             'warga_id' => 'required|exists:warga,warga_id',
-            'keterangan' => 'nullable|string',
-            'tanggal_ditetapkan' => 'required|date',
-            'status_penerima' => 'required|in:aktif,nonaktif,dibatalkan'
+            'keterangan' => 'nullable|string'
         ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
 
         // Cek apakah warga sudah terdaftar sebagai penerima dalam program yang sama
         $existing = PenerimaBantuan::where('program_id', $request->program_id)
@@ -72,13 +86,10 @@ class PenerimaBantuanController extends Controller
             return back()->with('error', 'Warga ini sudah menjadi penerima di program ini.')->withInput();
         }
 
-        PenerimaBantuan::create([
-            'program_id' => $request->program_id,
-            'warga_id' => $request->warga_id,
-            'keterangan' => $request->keterangan,
-            'tanggal_ditetapkan' => $request->tanggal_ditetapkan,
-            'status_penerima' => $request->status_penerima
-        ]);
+        // Gunakan transaction
+        DB::transaction(function () use ($validated) {
+            PenerimaBantuan::create($validated);
+        });
 
         return redirect()->route('penerima.index')->with('success', 'Penerima bantuan berhasil ditambahkan.');
     }
@@ -86,54 +97,51 @@ class PenerimaBantuanController extends Controller
     /**
      * Detail penerima bantuan.
      */
-    public function show($id)
+    public function show(PenerimaBantuan $penerima_bantuan)
     {
-        $data = PenerimaBantuan::with(['program', 'warga', 'penyaluran'])->findOrFail($id);
-        return view('penerima.show', compact('data'));
+        $penerima = $penerima_bantuan->load(['program', 'warga', 'penyaluran']);
+        return view('penerima.show', compact('penerima'));
     }
 
     /**
      * Form edit penerima bantuan.
      */
-    public function edit($id)
+    public function edit(PenerimaBantuan $penerima_bantuan)
     {
-        $data = PenerimaBantuan::findOrFail($id);
+        $penerima = $penerima_bantuan;
         $program = ProgramBantuan::all();
         $warga = Warga::all();
 
-        return view('penerima.edit', compact('data', 'program', 'warga'));
+        return view('penerima.edit', compact('penerima', 'program', 'warga'));
     }
 
     /**
      * Update data penerima bantuan.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, PenerimaBantuan $penerima_bantuan)
     {
-        $penerima = PenerimaBantuan::findOrFail($id);
+        $penerima = $penerima_bantuan;
 
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuan,program_id',
             'warga_id' => 'required|exists:warga,warga_id',
-            'keterangan' => 'nullable|string',
-            'tanggal_ditetapkan' => 'required|date',
-            'status_penerima' => 'required|in:aktif,nonaktif,dibatalkan'
+            'keterangan' => 'nullable|string'
         ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
 
         // Cek duplikasi (kecuali jika data tidak berubah)
         $existing = PenerimaBantuan::where('program_id', $request->program_id)
                                    ->where('warga_id', $request->warga_id)
-                                   ->where('penerima_id', '!=', $id)
+                                   ->where('penerima_id', '!=', $penerima->penerima_id)
                                    ->first();
 
         if ($existing) {
             return back()->with('error', 'Warga ini sudah terdaftar sebagai penerima di program tersebut.')->withInput();
         }
 
-        $penerima->update($request->all());
+        // Gunakan transaction
+        DB::transaction(function () use ($penerima, $validated) {
+            $penerima->update($validated);
+        });
 
         return redirect()->route('penerima.index')->with('success', 'Data penerima bantuan berhasil diperbarui.');
     }
@@ -141,17 +149,25 @@ class PenerimaBantuanController extends Controller
     /**
      * Hapus penerima bantuan.
      */
-    public function destroy($id)
+    public function destroy(PenerimaBantuan $penerima_bantuan)
     {
-        $penerima = PenerimaBantuan::findOrFail($id);
+        $penerima = $penerima_bantuan;
 
-        // Jika mau: cek apakah sudah menerima penyaluran → tidak boleh dihapus
-        if ($penerima->penyaluran()->exists()) {
-            return back()->with('error', 'Tidak dapat menghapus penerima yang sudah memiliki riwayat penyaluran.');
+        try {
+            DB::transaction(function () use ($penerima) {
+                // Cek apakah sudah menerima penyaluran → tidak boleh dihapus
+                if ($penerima->penyaluran()->exists()) {
+                    throw new \Exception('Tidak dapat menghapus penerima yang sudah memiliki riwayat penyaluran.');
+                }
+
+                $penerima->delete();
+            });
+
+            return redirect()->route('penerima.index')->with('success', 'Data penerima bantuan berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('penerima.index')
+                             ->with('error', 'Gagal menghapus penerima: ' . $e->getMessage());
         }
-
-        $penerima->delete();
-
-        return redirect()->route('penerima.index')->with('success', 'Data penerima bantuan berhasil dihapus.');
     }
 }

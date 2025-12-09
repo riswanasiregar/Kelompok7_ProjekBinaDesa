@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('penerima_bantuan', function (Blueprint $table) {
-            $table->increments('penerima_id'); // INTEGER AUTO_INCREMENT
-
-            // Foreign keys - menggunakan unsignedInteger untuk konsistensi
+            $table->increments('penerima_id');
             $table->unsignedInteger('program_id');
             $table->unsignedInteger('warga_id');
-
             $table->text('keterangan')->nullable();
-            $table->date('tanggal_ditetapkan')->useCurrent();
-            $table->enum('status_penerima', ['aktif', 'nonaktif', 'dibatalkan'])->default('aktif');
             $table->timestamps();
 
             // Foreign key constraints
@@ -35,13 +30,10 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             // Constraints
-            $table->unique(['program_id', 'warga_id']); // Satu warga hanya bisa jadi penerima sekali per program
+            $table->unique(['program_id', 'warga_id']);
 
             // Indexes
-            $table->index(['program_id', 'status_penerima']);
-            $table->index('warga_id');
-            $table->index('tanggal_ditetapkan');
-            $table->index('status_penerima');
+            $table->index(['program_id', 'warga_id']);
         });
     }
 

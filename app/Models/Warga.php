@@ -40,13 +40,14 @@ class Warga extends Model
         return $this->hasMany(PenerimaBantuan::class, 'warga_id');
     }
 
-    /**
-     * Accessor untuk jenis kelamin singkat
-     */
     public function getJenisKelaminSingkatAttribute()
-    {
-        return $this->jenis_kelamin === 'Laki-laki' ? 'L' : 'P';
-    }
+{
+    return match($this->jenis_kelamin) {
+        'Laki-laki' => 'L',
+        'Perempuan' => 'P',
+        default => '-'
+    };
+}
 
     /**
      * Scope untuk filter berdasarkan nama

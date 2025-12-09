@@ -103,9 +103,26 @@
                                 @enderror
                             </div>
 
+
+                             {{-- Role --}}
+                            <div class="form-floating form-floating-outline mb-4">
+                                <select
+                                    id="role"
+                                    name="role"
+                                    class="form-select @error('role') is-invalid @enderror">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="Warga" {{ old('role') == 'Warga' ? 'selected' : '' }}>Warga</option>
+                                </select>
+                                <label for="role">Role</label>
+                                @error('role')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                         </div>
 
-                        <!-- Kolom 2 - Keamanan -->
+                        <!-- Kolom 2 - password -->
                         <div class="col-xl-6">
                             <h5 class="fw-bold text-gray-800 mb-4">Keamanan</h5>
 
@@ -146,20 +163,7 @@
                         </div>
                     </div>
 
-                    <!-- Informasi Tambahan -->
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <h6 class="alert-heading fw-bold">Informasi Penting:</h6>
-                                <ul class="mb-0">
-                                    <li>Field dengan tanda <span class="text-danger">*</span> wajib diisi</li>
-                                    <li>Password harus memiliki minimal 8 karakter</li>
-                                    <li>Pastikan email yang dimasukkan valid dan belum terdaftar</li>
-                                    <li>Konfirmasi password harus sama dengan password</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <!-- Action Buttons -->
                     <div class="row mt-4">
@@ -179,176 +183,14 @@
         </div>
     </div>
 </div>
-
 <style>
 .form-floating.form-floating-outline .form-control {
     border: 1px solid #d9dee3;
     border-radius: 0.375rem;
-    transition: all 0.2s ease-in-out;
 }
-
 .form-floating.form-floating-outline .form-control:focus {
     border-color: #696cff;
     box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2);
 }
-
-.form-floating.form-floating-outline label {
-    color: #6c757d;
-    transition: all 0.2s ease-in-out;
-}
-
-.form-floating.form-floating-outline .form-control:focus ~ label,
-.form-floating.form-floating-outline .form-control:not(:placeholder-shown) ~ label {
-    color: #696cff;
-    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-    background: white;
-    padding: 0 0.25rem;
-    margin-left: -0.25rem;
-}
-
-/* Loading state untuk button */
-.btn-loading {
-    position: relative;
-    color: transparent !important;
-}
-
-.btn-loading::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    left: 50%;
-    margin-left: -8px;
-    margin-top: -8px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-right-color: transparent;
-    animation: spinner .75s linear infinite;
-}
-
-@keyframes spinner {
-    to { transform: rotate(360deg); }
-}
-
-/* Password strength indicator */
-.password-strength {
-    height: 4px;
-    margin-top: 5px;
-    border-radius: 2px;
-    transition: all 0.3s ease;
-}
-
-.strength-weak { background-color: #dc3545; width: 25%; }
-.strength-fair { background-color: #fd7e14; width: 50%; }
-.strength-good { background-color: #ffc107; width: 75%; }
-.strength-strong { background-color: #198754; width: 100%; }
 </style>
-@endsection
-
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('createUserForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('password_confirmation');
-    const passwordStrength = document.createElement('div');
-
-    // Tambahkan password strength indicator
-    if (password) {
-        passwordStrength.className = 'password-strength';
-        password.parentNode.appendChild(passwordStrength);
-
-        password.addEventListener('input', function() {
-            checkPasswordStrength(this.value);
-            validatePasswordConfirmation();
-        });
-    }
-
-    // Validasi real-time password confirmation
-    if (password && confirmPassword) {
-        confirmPassword.addEventListener('input', validatePasswordConfirmation);
-    }
-
-    function validatePasswordConfirmation() {
-        if (password.value !== confirmPassword.value) {
-            confirmPassword.setCustomValidity('Password tidak cocok');
-            confirmPassword.classList.add('is-invalid');
-        } else {
-            confirmPassword.setCustomValidity('');
-            confirmPassword.classList.remove('is-invalid');
-        }
-    }
-
-    // Password strength checker
-    function checkPasswordStrength(password) {
-        let strength = 0;
-
-        if (password.length >= 8) strength++;
-        if (password.match(/[a-z]+/)) strength++;
-        if (password.match(/[A-Z]+/)) strength++;
-        if (password.match(/[0-9]+/)) strength++;
-        if (password.match(/[!@#$%^&*(),.?":{}|<>]+/)) strength++;
-
-        // Update strength indicator
-        passwordStrength.className = 'password-strength ';
-        if (password.length === 0) {
-            passwordStrength.style.width = '0%';
-        } else if (strength <= 2) {
-            passwordStrength.classList.add('strength-weak');
-        } else if (strength === 3) {
-            passwordStrength.classList.add('strength-fair');
-        } else if (strength === 4) {
-            passwordStrength.classList.add('strength-good');
-        } else {
-            passwordStrength.classList.add('strength-strong');
-        }
-    }
-
-    // Loading state pada form submission
-    form.addEventListener('submit', function() {
-        submitBtn.disabled = true;
-        submitBtn.classList.add('btn-loading');
-        submitBtn.innerHTML = '<i class="fas fa-spinner me-2"></i> Menyimpan...';
-    });
-
-    // Auto-format nama (kapitalisasi setiap kata)
-    const nameInput = document.getElementById('name');
-    if (nameInput) {
-        nameInput.addEventListener('blur', function() {
-            this.value = this.value.replace(/\w\S*/g, function(txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
-        });
-    }
-
-    // Validasi email format
-    const emailInput = document.getElementById('email');
-    if (emailInput) {
-        emailInput.addEventListener('blur', function() {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(this.value)) {
-                this.setCustomValidity('Format email tidak valid');
-                this.classList.add('is-invalid');
-            } else {
-                this.setCustomValidity('');
-                this.classList.remove('is-invalid');
-            }
-        });
-    }
-
-    // Real-time validation untuk semua required fields
-    const requiredFields = form.querySelectorAll('[required]');
-    requiredFields.forEach(field => {
-        field.addEventListener('blur', function() {
-            if (!this.value.trim()) {
-                this.classList.add('is-invalid');
-            } else {
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-});
-</script>
 @endsection

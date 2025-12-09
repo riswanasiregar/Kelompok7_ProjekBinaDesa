@@ -105,7 +105,6 @@
 
                             <!-- Jenis Kelamin -->
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Jenis Kelamin <span class="text-danger">*</span></label>
                                 <select
                                     id="jenis_kelamin"
                                     name="jenis_kelamin"

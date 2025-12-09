@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class VerifikasiLapangan extends Model
 {
@@ -19,8 +20,7 @@ class VerifikasiLapangan extends Model
         'petugas',
         'tanggal',
         'catatan',
-        'skor',
-        'status_verifikasi'
+        'skor'
     ];
 
     protected $casts = [
@@ -44,20 +44,6 @@ class VerifikasiLapangan extends Model
     }
 
     /**
-     * Accessor untuk status verifikasi lengkap
-     */
-    public function getStatusLabelAttribute()
-    {
-        $status = [
-            'menunggu' => ['class' => 'bg-warning', 'label' => 'Menunggu'],
-            'diverifikasi' => ['class' => 'bg-success', 'label' => 'Terverifikasi'],
-            'ditolak' => ['class' => 'bg-danger', 'label' => 'Ditolak']
-        ];
-
-        return $status[$this->status_verifikasi] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
-    }
-
-    /**
      * Accessor untuk kategori skor
      */
     public function getKategoriSkorAttribute()
@@ -69,11 +55,30 @@ class VerifikasiLapangan extends Model
     }
 
     /**
-     * Scope untuk filter status verifikasi
+     * Scope untuk filter berdasarkan request dan kolom yang bisa difilter
      */
-    public function scopeByStatus($query, $status)
+    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
     {
-        return $query->where('status_verifikasi', $status);
+        foreach ($filterableColumns as $column) {
+            if ($request->filled($column)) {
+                $query->where($column, 'like', '%' . trim($request->input($column)) . '%');
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * Scope search global
+     */
+    public function scopeSearch(Builder $query, $request, array $columns)
+    {
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request, $columns) {
+                foreach ($columns as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
+                }
+            });
+        }
     }
 
     /**
@@ -98,5 +103,17 @@ class VerifikasiLapangan extends Model
     public function scopeSkorMin($query, $minSkor)
     {
         return $query->where('skor', '>=', $minSkor);
+    }
+
+    /**
+     * Scope untuk filter pendaftar
+     */
+    public function scopeByPendaftar($query, $pendaftarId)
+    {
+        return $query->where('pendaftar_id', $pendaftarId);
+    }
+    public function getMediaAttribute()
+    {
+        return $this->media()->orderBy('sort_order')->first();
     }
 }

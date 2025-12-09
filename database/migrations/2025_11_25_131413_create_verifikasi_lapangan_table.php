@@ -12,16 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('verifikasi_lapangan', function (Blueprint $table) {
-            $table->increments('verifikasi_id'); // INTEGER AUTO_INCREMENT
-
-            // Foreign key - menggunakan unsignedInteger untuk konsistensi
+            $table->increments('verifikasi_id');
             $table->unsignedInteger('pendaftar_id');
-
             $table->string('petugas', 100);
             $table->date('tanggal');
             $table->text('catatan')->nullable();
-            $table->integer('skor')->default(0);
-            $table->enum('status_verifikasi', ['menunggu', 'diverifikasi', 'ditolak'])->default('menunggu');
+            $table->integer('skor');
             $table->timestamps();
 
             // Foreign key constraint
@@ -33,7 +29,6 @@ return new class extends Migration
             // Indexes
             $table->index('pendaftar_id');
             $table->index('tanggal');
-            $table->index('status_verifikasi');
             $table->index('petugas');
         });
     }

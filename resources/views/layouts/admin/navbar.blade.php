@@ -35,70 +35,88 @@
         >
       </li>
 
-      <!-- User -->
-      <li class="nav-item navbar-dropdown dropdown-user dropdown">
-        <a
-          class="nav-link dropdown-toggle hide-arrow p-0"
-          href="javascript:void(0);"
-          data-bs-toggle="dropdown">
-          <div class="avatar avatar-online">
-          <img src="{{ asset('assets-admin/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" />
-          </div>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li>
-            <a class="dropdown-item" href="#">
-              <div class="d-flex">
-                <div class="flex-shrink-0 me-3">
-                  <div class="avatar avatar-online">
-                   <img src="{{ asset('assets-admin/img/avatars/1.png') }}" alt="Avatar" class="w-px-40 h-auto rounded-circle" />
-                  </div>
-                </div>
-                <div class="flex-grow-1">
-                  <h6 class="mb-0">John Doe</h6>
-                  <small class="text-body-secondary">Admin</small>
-                </div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <div class="dropdown-divider my-1"></div>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">
-              <i class="icon-base ri ri-user-line icon-md me-3"></i>
-              <span>My Profile</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">
-              <i class="icon-base ri ri-settings-4-line icon-md me-3"></i>
-              <span>Settings</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">
-              <span class="d-flex align-items-center align-middle">
-                <i class="flex-shrink-0 icon-base ri ri-bank-card-line icon-md me-3"></i>
-                <span class="flex-grow-1 align-middle ms-1">Billing Plan</span>
-                <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-              </span>
-            </a>
-          </li>
-          <li>
-            <div class="dropdown-divider my-1"></div>
-          </li>
-          <li>
-            <div class="d-grid px-4 pt-2 pb-1">
-              <a class="btn btn-danger d-flex" href="javascript:void(0);">
-                <small class="align-middle">Logout</small>
-                <i class="ri ri-logout-box-r-line ms-2 ri-xs"></i>
-              </a>
+      <!-- Auth Check: Tampilkan User dropdown jika sudah login, tombol Login jika belum -->
+      @if(Auth::check())
+        <!-- User dropdown (hanya tampil jika user sudah login) -->
+        <li class="nav-item navbar-dropdown dropdown-user dropdown">
+          <a
+            class="nav-link dropdown-toggle hide-arrow p-0"
+            href="javascript:void(0);"
+            data-bs-toggle="dropdown">
+            <div class="avatar avatar-online">
+              <img src="{{ asset('assets-admin/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" />
             </div>
-          </li>
-        </ul>
-      </li>
-      <!--/ User -->
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="#">
+                <div class="d-flex">
+                  <div class="flex-shrink-0 me-3">
+                    <div class="avatar avatar-online">
+                      <img src="{{ asset('assets-admin/img/avatars/1.png') }}" alt="Avatar" class="w-px-40 h-auto rounded-circle" />
+                    </div>
+                  </div>
+                <div class="flex-grow-1">
+    <h6 class="mb-0">{{ Auth::user()->name ?? 'User' }}</h6>
+    <small class="text-body-secondary">{{ Auth::user()->role ?? 'Admin' }}</small>
+</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <div class="dropdown-divider my-1"></div>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="icon-base ri ri-user-line icon-md me-3"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="icon-base ri ri-time-line icon-md me-3"></i>
+                @if(session('last_login'))
+                  {{ session('last_login')->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }}
+                @else
+                  First time login
+                @endif
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="icon-base ri ri-settings-4-line icon-md me-3"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <span class="d-flex align-items-center align-middle">
+                  <i class="flex-shrink-0 icon-base ri ri-bank-card-line icon-md me-3"></i>
+                  <span class="flex-grow-1 align-middle ms-1">Billing Plan</span>
+                  <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <div class="dropdown-divider my-1"></div>
+            </li>
+            <li>
+              <div class="d-grid px-4 pt-2 pb-1">
+                <a class="btn btn-danger d-flex" href="{{ route('auth.logout') }}">
+                  <small class="align-middle">Logout</small>
+                  <i class="ri ri-logout-box-r-line ms-2 ri-xs"></i>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <!--/ User -->
+      @else
+        <!-- Tombol Login (hanya tampil jika user BELUM login) -->
+        <li class="nav-item">
+          <a class="btn btn-primary" href="{{ route('login') }}">Login</a>
+        </li>
+      @endif
     </ul>
   </div>
 </nav>
