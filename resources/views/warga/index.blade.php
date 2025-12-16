@@ -2,12 +2,10 @@
 
 @section('content')
 <div class="container">
+    
+    <h3 class="mb-3">daftar data warga</h3>
    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
-    <div>
-        <p class="text-muted mb-1 text-uppercase fw-semibold small">Pendaftaran</p>
-        <h4 class="mb-0 fw-semibold">Data warga</h4>
-        <span class="text-muted small">Kelola data warga desa</span>
-    </div>
+   
     <!-- search -->
     <form method="GET" action="{{ route('warga.index') }}" class="d-flex flex-wrap gap-2 align-items-center">
         <input type="hidden" name="jenis_kelamin" value="{{ request('jenis_kelamin') }}">

@@ -2,12 +2,9 @@
 
 @section('content')
 <div class="container">
-    <div class="container" style="margin-top: 100px;">
+    <div  style="margin-top: 60px;">
+    <h3 class="mb-3">Daftar Pendaftar Bantuan</h3>
     <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
-        <div>
-            <h4 class="mb-0 fw-semibold">Data Pendaftar Bantuan</h4>
-            <span class="text-muted small">Kelola data pendaftar bantuan</span>
-        </div>
         <div class="d-flex gap-2">
             <a href="{{ route('pendaftar-bantuan.create') }}" class="btn btn-primary">Tambah Pendaftar</a>
         </div>

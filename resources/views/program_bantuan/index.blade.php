@@ -5,13 +5,10 @@
 @php use Illuminate\Support\Str; @endphp
 
 <div class="container">
+    
+    <h3 class="mb-3">Daftar program Bantuan</h3>
     <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
-    <div>
-        <p class="text-muted mb-1 text-uppercase fw-semibold small">Pendaftaran</p>
-        <h4 class="mb-0 fw-semibold">Data Program Bantuan</h4>
-        <span class="text-muted small">Kelola program bantuan desa</span>
-    </div>
-    <div class="d-flex gap-2">
+     <div class="d-flex gap-2">
         <a href="{{ route('program_bantuan.create') }}" class="btn btn-primary">
             <i class="ti ti-plus me-1"></i> Tambah program
         </a>

@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+    <div  style="margin-top: 100px;">
     <h3 class="mb-3">Riwayat Penyaluran Bantuan</h3>
 
     @if(session('success'))
