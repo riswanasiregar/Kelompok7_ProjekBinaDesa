@@ -12,59 +12,37 @@
         <a href="{{ route('verifikasi.create') }}" class="btn btn-primary">+ Tambah Verifikasi</a>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Pendaftar</th>
-                <th>Petugas</th>
-                <th>Tanggal</th>
-                <th>Skor</th>
-                <th>Status</th>
-                <th>Media</th>
-                <th width="18%">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($verifikasi as $item)
-                <tr>
-                    <td>{{ $item->verifikasi_id }}</td>
-                    <td>{{ $item->pendaftar->warga->nama ?? '-' }}</td>
-                    <td>{{ $item->petugas }}</td>
-                    <td>{{ $item->tanggal->format('d-m-Y') }}</td>
-                    <td>
-                        {{ $item->skor }} <br>
-                        <small class="text-muted">({{ $item->kategori_skor }})</small>
-                    </td>
-                    <td>
-                        <span class="badge {{ $item->status_label['class'] }}">
-                            {{ $item->status_label['label'] }}
-                        </span>
-                    </td>
-                    <td>
-                        @if ($item->media->count())
-                            <a href="{{ asset('storage/' . $item->media->first()->file_path) }}" target="_blank" class="btn btn-info btn-sm">Lihat</a>
-                        @else
-                            <span class="text-muted">Tidak ada</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('verifikasi.edit', $item->verifikasi_id) }}" class="btn btn-warning btn-sm">Edit</a>
-
-                        <form action="{{ route('verifikasi.destroy', $item->verifikasi_id) }}"
-                              method="POST"
-                              class="d-inline"
-                              onsubmit="return confirm('Yakin ingin menghapus?')">
+    <div class="row g-3">
+        @forelse ($verifikasi as $item)
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $item->pendaftar->warga->nama ?? '-' }}</h5>
+                        <p class="mb-1"><strong>Program:</strong> {{ $item->pendaftar->program->nama_program ?? '-' }}</p>
+                        <p class="mb-1"><strong>Petugas:</strong> {{ $item->petugas }}</p>
+                        <p class="mb-1"><strong>Tanggal:</strong> {{ $item->tanggal->format('d-m-Y') }}</p>
+                        <p class="mb-1"><strong>Skor:</strong> {{ $item->skor }} ({{ $item->kategori_skor }})</p>
+                        <span class="badge {{ $item->status_label['class'] }}">{{ $item->status_label['label'] }}</span>
+                    </div>
+                    <div class="card-footer bg-white d-flex justify-content-between">
+                        <a href="{{ route('verifikasi.edit', $item->verifikasi_id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <form action="{{ route('verifikasi.destroy', $item->verifikasi_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus?')">
                             @csrf 
                             @method('DELETE')
-                            <button class="btn btn-danger btn-sm">Hapus</button>
+                            <button class="btn btn-sm btn-danger">Hapus</button>
                         </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="col-12">
+                <div class="alert alert-info text-center mb-0">Data tidak ditemukan</div>
+            </div>
+        @endforelse
+    </div>
 
-    {{ $verifikasi->links() }}
+    <div class="mt-3">
+        {{ $verifikasi->links('pagination::bootstrap-5') }}
+    </div>
 </div>
 @endsection

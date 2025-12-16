@@ -50,15 +50,11 @@ class PendaftarBantuanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'warga_name' => 'required|string|max:100',
             'warga_id' => 'required|exists:warga,warga_id',
             'program_id' => 'required|exists:program_bantuans,program_id',
             'tanggal_daftar' => 'required|date',
             'status' => 'required|in:Diproses,Diterima,Ditolak',
             'keterangan' => 'nullable|string',
-        ], [
-            'warga_id.required' => 'Nama warga harus dipilih dari Data Warga. Tambah warga baru jika belum ada.',
-            'warga_id.exists' => 'Nama warga tidak ditemukan pada Data Warga.',
         ]);
 
         if (!Auth::user()->isAdmin()) {
@@ -104,15 +100,11 @@ class PendaftarBantuanController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'warga_name' => 'required|string|max:100',
             'warga_id' => 'required|exists:warga,warga_id',
             'program_id' => 'required|exists:program_bantuans,program_id',
             'tanggal_daftar' => 'required|date',
             'status' => 'required|in:Diproses,Diterima,Ditolak',
             'keterangan' => 'nullable|string',
-        ], [
-            'warga_id.required' => 'Nama warga dipilih dari Data Warga. Tambah warga baru jika belum ada.',
-            'warga_id.exists' => 'Nama warga tidak ditemukan pada Data Warga.',
         ]);
 
         if (!Auth::user()->isAdmin()) {

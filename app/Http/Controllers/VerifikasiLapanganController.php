@@ -48,9 +48,7 @@ class VerifikasiLapanganController extends Controller
      */
     public function create()
     {
-        $pendaftar = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->get();
+        $pendaftar = PendaftarBantuan::all();
         return view('verifikasi_lapangan.create', compact('pendaftar'));
     }
 
@@ -73,10 +71,7 @@ class VerifikasiLapanganController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Pastikan pendaftar milik user saat ini (untuk guest)
-        $pendaftar = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($request->pendaftar_bantuan_id);
+        $pendaftar = PendaftarBantuan::findOrFail($request->pendaftar_bantuan_id);
 
         // Simpan data
         $verifikasi = VerifikasiLapangan::create([
@@ -89,7 +84,7 @@ class VerifikasiLapanganController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        // Upload media jika ada
+        // Upload media 
         if ($request->hasFile('file_media')) {
             $path = $request->file('file_media')->store('media/verifikasi', 'public');
 
@@ -111,11 +106,7 @@ class VerifikasiLapanganController extends Controller
      */
     public function show($id)
     {
-        $data = VerifikasiLapangan::with(['pendaftar', 'media'])
-            ->when(!Auth::user()->isAdmin(), function ($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->findOrFail($id);
+        $data = VerifikasiLapangan::with(['pendaftar', 'media'])->findOrFail($id);
         return view('verifikasi_lapangan.show', compact('data'));
     }
 
@@ -124,15 +115,8 @@ class VerifikasiLapanganController extends Controller
      */
     public function edit($id)
     {
-        $data = VerifikasiLapangan::with('media')
-            ->when(!Auth::user()->isAdmin(), function ($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->findOrFail($id);
-
-        $pendaftar = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->get();
+        $data = VerifikasiLapangan::with('media')->findOrFail($id);
+        $pendaftar = PendaftarBantuan::all();
 
         return view('verifikasi_lapangan.edit', compact('data', 'pendaftar'));
     }

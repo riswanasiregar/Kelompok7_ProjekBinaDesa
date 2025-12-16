@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('pendaftar_bantuan', function (Blueprint $table) {
             $table->increments('pendaftar_bantuan_id'); // PK
             $table->unsignedInteger('warga_id'); // FK 
-            $table->unsignedInteger('program_id'); // FK 
+            $table->unsignedBigInteger('program_id'); // FK 
             $table->date('tanggal_daftar');
             $table->enum('status', ['Diproses', 'Diterima', 'Ditolak'])->default('Diproses');
             $table->text('keterangan')->nullable();

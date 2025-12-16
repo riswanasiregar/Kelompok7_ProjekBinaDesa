@@ -32,28 +32,45 @@
             <nav class="sidebar-nav" data-simplebar>
                 <ul id="sidebarnav" class="list-unstyled mb-0">
                     @auth
+                     <li class="sidebar-item">
+                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('warga.*') ? 'active' : '' }}" href="{{ route('warga.index') }}">
+                            <i class=""></i>
+                            <span>Data Warga</span>
+                        </a>
+                    </li>
+                    
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('program_bantuan.*') ? 'active' : '' }}" href="{{ route('program_bantuan.index') }}">
                             <i class=""></i>
                             <span>Program Bantuan</span>
                         </a>
                     </li>
+
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('pendaftar-bantuan.*') ? 'active' : '' }}" href="{{ route('pendaftar-bantuan.index') }}">
                             <i class=""></i>
                             <span>Pendaftaran Bantuan</span>
                         </a>
                     </li>
+
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('verifikasi.*') ? 'active' : '' }}" href="{{ route('verifikasi.index') }}">
                             <i class=""></i>
                             <span>Verifikasi Lapangan</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('warga.*') ? 'active' : '' }}" href="{{ route('warga.index') }}">
+
+                   <li class="sidebar-item">
+                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('penerima.*') ? 'active' : '' }}" href="{{ route('penerima.index') }}">
                             <i class=""></i>
-                            <span>Data Warga</span>
+                            <span>Penerima Bantuan</span>
+                        </a>
+                    </li>
+
+                     <li class="sidebar-item">
+                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('riwayat.*') ? 'active' : '' }}" href="{{ route('riwayat.index') }}">
+                            <i class=""></i>
+                            <span>Riwayat Penyaluran</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -62,6 +79,7 @@
                             <span>Multi Upload</span>
                         </a>
                     </li>
+                    
                     @if(auth()->user()->isAdmin())
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
