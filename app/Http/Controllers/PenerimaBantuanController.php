@@ -84,7 +84,7 @@ class PenerimaBantuanController extends Controller
             'program_id' => 'required|exists:program_bantuans,program_id',
             'warga_id' => 'required|exists:warga,warga_id',
             'keterangan' => 'nullable|string',
-            'status' => 'required|in:Aktif,Tidak Aktif'
+            'status' => 'required|in:Sudah Menerima,Belum Menerima'
         ]);
 
         // Cek apakah warga sudah terdaftar sebagai penerima dalam program yang sama
@@ -133,7 +133,7 @@ class PenerimaBantuanController extends Controller
             'program_id' => 'required|exists:program_bantuans,program_id',
             'warga_id' => 'required|exists:warga,warga_id',
             'keterangan' => 'nullable|string',
-            'status' => 'required|in:Aktif,Tidak Aktif'
+            'status' => 'required|in:Sudah Menerima,Belum Menerima'
         ]);
 
         // Cek duplikasi (kecuali jika data tidak berubah)

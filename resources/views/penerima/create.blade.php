@@ -4,6 +4,10 @@
 <div class="container">
     <h3 class="mb-3">Tambah Penerima Bantuan</h3>
 
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <form action="{{ route('penerima.store') }}" method="POST">
         @csrf
 
@@ -42,8 +46,8 @@
             <label class="form-label">Status</label>
             <select name="status" class="form-select @error('status') is-invalid @enderror">
                 <option value="">-- Pilih Status --</option>
-                <option value="Sudah Menerima" {{ old('status')=='Aktif' ? 'selected' : '' }}>Sudah Menerima</option>
-                <option value="Belum Menerima" {{ old('status')=='Nonaktif' ? 'selected' : '' }}>Belum Menerima</option>
+                <option value="Sudah Menerima" {{ old('status')=='Sudah Menerima' ? 'selected' : '' }}>Sudah Menerima</option>
+                <option value="Belum Menerima" {{ old('status')=='Belum Menerima' ? 'selected' : '' }}>Belum Menerima</option>
             </select>
             @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
@@ -53,6 +57,3 @@
     </form>
 </div>
 @endsection
-
-
-
