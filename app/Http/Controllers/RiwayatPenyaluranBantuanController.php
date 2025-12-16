@@ -56,7 +56,19 @@ class RiwayatPenyaluranBantuanController extends Controller
         $program = ProgramBantuan::all();
         $penerima = PenerimaBantuan::with('warga')->get();
 
-        return view('penyaluran.index', compact('penyaluran', 'program', 'penerima'));
+        // DEBUG: Log untuk cek data media
+        foreach($penyaluran as $item) {
+            if($item->media->count() > 0) {
+                foreach($item->media as $media) {
+                    \Log::info("Media Debug - Penyaluran ID: {$item->penyaluran_id}, Media ID: {$media->id}, Path: {$media->file_url}, Exists: " .
+                        (Storage::disk('public')->exists($media->file_url) ? 'Yes' : 'No'));
+                }
+            } else {
+                \Log::info("Media Debug - Penyaluran ID: {$item->penyaluran_id}, No media found");
+            }
+        }
+
+        return view('admin.riwayat_penyaluran_bantuan.index', compact('penyaluran', 'program', 'penerima'));
     }
 
     /**
@@ -64,7 +76,7 @@ class RiwayatPenyaluranBantuanController extends Controller
      */
     public function create()
     {
-        return view('penyaluran.create', [
+        return view('admin.riwayat_penyaluran_bantuan.create', [
             'program' => ProgramBantuan::all(),
             'penerima' => PenerimaBantuan::with('warga')->get()
         ]);
@@ -75,11 +87,17 @@ class RiwayatPenyaluranBantuanController extends Controller
      */
     public function store(Request $request)
     {
+        // Bersihkan nilai dari format rupiah jika ada
+        if ($request->has('nilai')) {
+            $cleanedNilai = (float) str_replace(['.', ','], '', $request->nilai);
+            $request->merge(['nilai' => $cleanedNilai]);
+        }
+
         $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuan,program_id',
             'penerima_id' => 'required|exists:penerima_bantuan,penerima_id',
             'tanggal' => 'required|date',
-            'nilai' => 'required|numeric|min:0',
+            'nilai' => 'required|numeric|min:0|max:999999999999999.99', // Tambah batas maksimum
             'tahap_ke' => 'required|integer|min:1',
             'file_media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
             'caption' => 'nullable|string|max:255'
@@ -95,27 +113,38 @@ class RiwayatPenyaluranBantuanController extends Controller
             return back()->with('error', 'Tahap penyaluran ini sudah ada untuk penerima tersebut.')->withInput();
         }
 
-        // Gunakan transaction
-        DB::transaction(function () use ($validated, $request) {
-            $penyaluran = RiwayatPenyaluranBantuan::create($validated);
+        try {
+            // Gunakan transaction
+            DB::transaction(function () use ($validated, $request) {
+                $penyaluran = RiwayatPenyaluranBantuan::create($validated);
 
-            // Upload media jika ada
-            if ($request->hasFile('file_media')) {
-                $file = $request->file('file_media');
-                $path = $file->store('uploads/penyaluran', 'public');
+                // Upload media jika ada
+                if ($request->hasFile('file_media')) {
+                    $file = $request->file('file_media');
 
-                Media::create([
-                    'ref_table' => 'penyaluran_bantuan',
-                    'ref_id' => $penyaluran->penyaluran_id,
-                    'file_url' => $path,
-                    'caption' => $request->caption ?? null,
-                    'mime_type' => $file->getClientMimeType(),
-                    'sort_order' => 1
-                ]);
-            }
-        });
+                    // Generate nama file unik
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('uploads/penyaluran', $filename, 'public');
 
-        return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil ditambahkan.');
+                    \Log::info("File uploaded - Path: {$path}, Original Name: {$file->getClientOriginalName()}");
+
+                    Media::create([
+                        'ref_table' => 'penyaluran_bantuan',
+                        'ref_id' => $penyaluran->penyaluran_id,
+                        'file_url' => $path,
+                        'caption' => $request->caption ?? null,
+                        'mime_type' => $file->getClientMimeType(),
+                        'sort_order' => 1
+                    ]);
+                }
+            });
+
+            return redirect()->route('riwayat_penyaluran_bantuan.index')->with('success', 'Data penyaluran berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            \Log::error("Store error: " . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -124,7 +153,14 @@ class RiwayatPenyaluranBantuanController extends Controller
     public function show(RiwayatPenyaluranBantuan $riwayat_penyaluran_bantuan)
     {
         $penyaluran = $riwayat_penyaluran_bantuan->load(['program', 'penerima.warga', 'media']);
-        return view('penyaluran.show', compact('penyaluran'));
+
+        // Debug data media
+        foreach($penyaluran->media as $media) {
+            \Log::info("Show Media Debug - Path: {$media->file_url}, Exists: " .
+                (Storage::disk('public')->exists($media->file_url) ? 'Yes' : 'No'));
+        }
+
+        return view('admin.riwayat_penyaluran_bantuan.show', compact('penyaluran'));
     }
 
     /**
@@ -133,7 +169,14 @@ class RiwayatPenyaluranBantuanController extends Controller
     public function edit(RiwayatPenyaluranBantuan $riwayat_penyaluran_bantuan)
     {
         $penyaluran = $riwayat_penyaluran_bantuan;
-        return view('penyaluran.edit', [
+
+        // Debug data media
+        foreach($penyaluran->media as $media) {
+            \Log::info("Edit Media Debug - Path: {$media->file_url}, Exists: " .
+                (Storage::disk('public')->exists($media->file_url) ? 'Yes' : 'No'));
+        }
+
+        return view('admin.riwayat_penyaluran_bantuan.edit', [
             'penyaluran' => $penyaluran,
             'program' => ProgramBantuan::all(),
             'penerima' => PenerimaBantuan::with('warga')->get()
@@ -147,11 +190,17 @@ class RiwayatPenyaluranBantuanController extends Controller
     {
         $penyaluran = $riwayat_penyaluran_bantuan;
 
+        // Bersihkan nilai dari format rupiah jika ada
+        if ($request->has('nilai')) {
+            $cleanedNilai = (float) str_replace(['.', ','], '', $request->nilai);
+            $request->merge(['nilai' => $cleanedNilai]);
+        }
+
         $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuan,program_id',
             'penerima_id' => 'required|exists:penerima_bantuan,penerima_id',
             'tanggal' => 'required|date',
-            'nilai' => 'required|numeric|min:0',
+            'nilai' => 'required|numeric|min:0|max:999999999999999.99',
             'tahap_ke' => 'required|integer|min:1',
             'file_media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
             'caption' => 'nullable|string|max:255'
@@ -168,35 +217,46 @@ class RiwayatPenyaluranBantuanController extends Controller
             return back()->with('error', 'Tahap penyaluran ini sudah ada untuk penerima tersebut.')->withInput();
         }
 
-        // Gunakan transaction
-        DB::transaction(function () use ($penyaluran, $validated, $request) {
-            $penyaluran->update($validated);
+        try {
+            // Gunakan transaction
+            DB::transaction(function () use ($penyaluran, $validated, $request) {
+                $penyaluran->update($validated);
 
-            // Jika media baru diupload
-            if ($request->hasFile('file_media')) {
-                // Hapus media lama
-                foreach ($penyaluran->media as $media) {
-                    if (Storage::disk('public')->exists($media->file_url)) {
-                        Storage::disk('public')->delete($media->file_url);
+                // Jika media baru diupload
+                if ($request->hasFile('file_media')) {
+                    // Hapus media lama
+                    foreach ($penyaluran->media as $media) {
+                        if (Storage::disk('public')->exists($media->file_url)) {
+                            Storage::disk('public')->delete($media->file_url);
+                        }
+                        $media->delete();
                     }
-                    $media->delete();
+
+                    $file = $request->file('file_media');
+
+                    // Generate nama file unik
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('uploads/penyaluran', $filename, 'public');
+
+                    \Log::info("Update Media - New Path: {$path}");
+
+                    Media::create([
+                        'ref_table' => 'penyaluran_bantuan',
+                        'ref_id' => $penyaluran->penyaluran_id,
+                        'file_url' => $path,
+                        'caption' => $request->caption ?? null,
+                        'mime_type' => $file->getClientMimeType(),
+                        'sort_order' => 1
+                    ]);
                 }
+            });
 
-                $file = $request->file('file_media');
-                $path = $file->store('uploads/penyaluran', 'public');
+            return redirect()->route('riwayat_penyaluran_bantuan.index')->with('success', 'Data penyaluran berhasil diperbarui.');
 
-                Media::create([
-                    'ref_table' => 'penyaluran_bantuan',
-                    'ref_id' => $penyaluran->penyaluran_id,
-                    'file_url' => $path,
-                    'caption' => $request->caption ?? null,
-                    'mime_type' => $file->getClientMimeType(),
-                    'sort_order' => 1
-                ]);
-            }
-        });
-
-        return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil diperbarui.');
+        } catch (\Exception $e) {
+            \Log::error("Update error: " . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -208,6 +268,12 @@ class RiwayatPenyaluranBantuanController extends Controller
 
         try {
             DB::transaction(function () use ($penyaluran) {
+                // Debug sebelum hapus
+                foreach ($penyaluran->media as $media) {
+                    \Log::info("Destroy Media - Path: {$media->file_url}, Exists: " .
+                        (Storage::disk('public')->exists($media->file_url) ? 'Yes' : 'No'));
+                }
+
                 // Hapus media
                 foreach ($penyaluran->media as $media) {
                     if (Storage::disk('public')->exists($media->file_url)) {
@@ -220,11 +286,42 @@ class RiwayatPenyaluranBantuanController extends Controller
                 $penyaluran->delete();
             });
 
-            return redirect()->route('penyaluran.index')->with('success', 'Data penyaluran berhasil dihapus.');
+            return redirect()->route('riwayat_penyaluran_bantuan.index')->with('success', 'Data penyaluran berhasil dihapus.');
 
         } catch (\Exception $e) {
-            return redirect()->route('penyaluran.index')
+            \Log::error("Destroy error: " . $e->getMessage());
+            return redirect()->route('riwayat_penyaluran_bantuan.index')
                              ->with('error', 'Gagal menghapus penyaluran: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Download dokumen/media.
+     */
+    public function downloadMedia(Media $media)
+    {
+        if (!Storage::disk('public')->exists($media->file_url)) {
+            return back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return Storage::disk('public')->download($media->file_url);
+    }
+
+    /**
+     * Preview gambar.
+     */
+    public function previewImage(Media $media)
+    {
+        if (!Storage::disk('public')->exists($media->file_url)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $path = Storage::disk('public')->path($media->file_url);
+        $mime = mime_content_type($path);
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline'
+        ]);
     }
 }

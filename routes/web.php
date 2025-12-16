@@ -11,7 +11,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenerimaBantuanController;
-use App\Http\Controllers\RiwayatPenyaluranBantuan;
+use App\Http\Controllers\RiwayatPenyaluranBantuanController;
 use App\Http\Middleware\CheckIsLogin;
 
 //Route tanpa Middleware
@@ -48,7 +48,7 @@ Route::group(['middleware' => ['checkislogin']], function () {
     Route::resource('media', MediaController::class);
     Route::resource('verifikasi_lapangan', VerifikasiLapanganController::class);
     Route::resource('penerima_bantuan', PenerimaBantuanController::class);
-    Route::resource('riwayat_penyaluran_bantuan', RiwayatPenyaluranBantuan::class);
+    Route::resource('riwayat_penyaluran_bantuan', RiwayatPenyaluranBantuanController::class);
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

@@ -71,94 +71,70 @@
     </a>
   </div>
 
-  <div class="menu-inner-shadow"></div>
   <ul class="menu-inner py-1">
+    <div class="menu-inner-shadow"></div>
     <!-- Dashboards -->
-    <li class="menu-item ">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
+   <li class="menu-item">
+    <a href="{{ route('dashboard') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-home-smile-line"></i>
         <div data-i18n="Dashboards">Dashboards</div>
+    </a>
+</li>
 
+    <!-- Warga -->
+    <li class="menu-item">
+      <a href="{{ route('warga.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ri ri-group-line"></i>
+        <div data-i18n="Warga">Warga</div>
       </a>
-     <ul class="menu-sub">
+    </li>
+
+    <!-- Users -->
     <li class="menu-item">
-        <a href="{{ route('warga.index') }}" class="menu-link">
-            <div data-i18n=" Warga"> Warga</div>
-        </a>
-    </li>
-
-    <li class="menu-item">
-        <a href="{{ route('users.index') }}" class="menu-link">
-            <div data-i18n=" Users">Users</div>
-        </a>
-    </li>
-
-    <li class="menu-item">
-        <a href="{{ route('program_bantuan.index') }}" class="menu-link">
-            <div data-i18n=" Warga">Program Bantuan</div>
-        </a>
-    </li>
-
-   <li class="menu-item">
-        <a href="{{ route('pendaftar_bantuan.index') }}" class="menu-link">
-            <div data-i18n=" Warga">Pendaftar Bantuan</div>
-        </a>
-    </li>
-
-    <li class="menu-item">
-        <a href="{{ route('verifikasi_lapangan.index') }}" class="menu-link">
-            <div data-i18n=" Warga">Verifikasi Lapangan</div>
-        </a>
-    </li>
-
-     <li class="menu-item">
-        <a href="{{ route('penerima_bantuan.index') }}" class="menu-link">
-            <div data-i18n=" Warga">Penerima Bantuan</div>
-        </a>
-    </li>
-
-     <li class="menu-item">
-        <a href="{{ route('riwayat_penyaluran_bantuan.index') }}" class="menu-link">
-            <div data-i18n=" Warga">Riwayat Penyaluran Bantuan</div>
-        </a>
-    </li>
-</ul>
-    </li>
-
-    <!-- Layouts -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon icon-base ri ri-layout-2-line"></i>
-        <div data-i18n="Layouts">Layouts</div>
+      <a href="{{ route('users.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ri ri-user-settings-line"></i>
+        <div data-i18n="Users">Users</div>
       </a>
+    </li>
 
-      <ul class="menu-sub">
-        <li class="menu-item">
-         <a href="{{ route('layout.without.menu') }}" class="menu-link">
-            <div data-i18n="Without menu">Without menu</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="{{route('layout.without.navbar') }}" class="menu-link">
-            <div data-i18n="Without navbar">Without navbar</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-container.html" class="menu-link">
-            <div data-i18n="Container">Container</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-fluid.html" class="menu-link">
-            <div data-i18n="Fluid">Fluid</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-blank.html" class="menu-link">
-            <div data-i18n="Blank">Blank</div>
-          </a>
-        </li>
-      </ul>
+    <!-- Program Bantuan -->
+    <li class="menu-item">
+      <a href="{{ route('program_bantuan.index') }}" class="menu-link">
+      <i class="menu-icon icon-base ri ri-hand-heart-line"></i>
+        <div data-i18n="Program Bantuan">Program Bantuan</div>
+      </a>
+    </li>
+
+    <!-- Pendaftar Bantuan -->
+    <li class="menu-item">
+      <a href="{{ route('pendaftar_bantuan.index') }}" class="menu-link">
+       <i class="menu-icon icon-base ri ri-survey-line"></i>
+        <div data-i18n="Pendaftar Bantuan">Pendaftar Bantuan</div>
+      </a>
+    </li>
+
+    <!-- Verifikasi Lapangan -->
+    <li class="menu-item">
+      <a href="{{ route('verifikasi_lapangan.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ri ri-check-double-line"></i>
+        <div data-i18n="Verifikasi Lapangan">Verifikasi Lapangan</div>
+      </a>
+    </li>
+
+    <!-- Penerima Bantuan -->
+    <li class="menu-item">
+      <a href="{{ route('penerima_bantuan.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ri ri-user-received-line"></i>
+        <div data-i18n="Penerima Bantuan">Penerima Bantuan</div>
+      </a>
+    </li>
+
+    <!-- Riwayat Penyaluran Bantuan -->
+    <li class="menu-item">
+      <a href="{{ route('riwayat_penyaluran_bantuan.index') }}" class="menu-link">
+        <i class="menu-icon icon-base ri ri-history-line"></i>
+        <div data-i18n="Riwayat Penyaluran Bantuan">Riwayat Penyaluran Bantuan</div>
+      </a>
     </li>
 
     <!-- Apps & Pages -->

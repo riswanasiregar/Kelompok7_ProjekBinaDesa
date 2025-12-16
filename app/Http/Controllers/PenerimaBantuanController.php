@@ -52,7 +52,7 @@ class PenerimaBantuanController extends Controller
         $program = ProgramBantuan::all();
         $warga = Warga::all();
 
-        return view('penerima.index', compact('penerima', 'program', 'warga'));
+        return view('admin.penerima_bantuan.index', compact('penerima', 'program', 'warga'));
     }
 
     /**
@@ -63,7 +63,7 @@ class PenerimaBantuanController extends Controller
         $program = ProgramBantuan::all();
         $warga = Warga::all();
 
-        return view('penerima.create', compact('program', 'warga'));
+        return view('admin.penerima_bantuan.create', compact('program', 'warga'));
     }
 
     /**
@@ -91,7 +91,7 @@ class PenerimaBantuanController extends Controller
             PenerimaBantuan::create($validated);
         });
 
-        return redirect()->route('penerima.index')->with('success', 'Penerima bantuan berhasil ditambahkan.');
+        return redirect()->route('penerima_bantuan.index')->with('success', 'Penerima bantuan berhasil ditambahkan.');
     }
 
     /**
@@ -100,7 +100,7 @@ class PenerimaBantuanController extends Controller
     public function show(PenerimaBantuan $penerima_bantuan)
     {
         $penerima = $penerima_bantuan->load(['program', 'warga', 'penyaluran']);
-        return view('penerima.show', compact('penerima'));
+        return view('admin.penerima_bantuan.show', compact('penerima'));
     }
 
     /**
@@ -112,7 +112,7 @@ class PenerimaBantuanController extends Controller
         $program = ProgramBantuan::all();
         $warga = Warga::all();
 
-        return view('penerima.edit', compact('penerima', 'program', 'warga'));
+        return view('admin.penerima_bantuan.edit', compact('penerima', 'program', 'warga'));
     }
 
     /**
@@ -143,7 +143,7 @@ class PenerimaBantuanController extends Controller
             $penerima->update($validated);
         });
 
-        return redirect()->route('penerima.index')->with('success', 'Data penerima bantuan berhasil diperbarui.');
+        return redirect()->route('penerima_bantuan.index')->with('success', 'Data penerima bantuan berhasil diperbarui.');
     }
 
     /**
@@ -163,10 +163,10 @@ class PenerimaBantuanController extends Controller
                 $penerima->delete();
             });
 
-            return redirect()->route('penerima.index')->with('success', 'Data penerima bantuan berhasil dihapus.');
+            return redirect()->route('penerima_bantuan.index')->with('success', 'Data penerima bantuan berhasil dihapus.');
 
         } catch (\Exception $e) {
-            return redirect()->route('penerima.index')
+            return redirect()->route('penerima_bantuan.index')
                              ->with('error', 'Gagal menghapus penerima: ' . $e->getMessage());
         }
     }
