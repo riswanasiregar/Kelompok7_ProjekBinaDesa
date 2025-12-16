@@ -1,36 +1,22 @@
 @extends('layouts.admin.app')
 
 @section('title', 'Riwayat Penyaluran Bantuan')
-
 @section('content')
 <div class="py-4">
-    <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
-        <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
-            <li class="breadcrumb-item">
-                <a href="#">
-                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                </a>
-            </li>
-            <li class="breadcrumb-item"><a href="{{ route('riwayat_penyaluran_bantuan.index') }}">Riwayat Penyaluran Bantuan</a></li>
-        </ol>
-    </nav>
 
-    <div class="d-flex justify-content-between w-100 flex-wrap">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Data Riwayat Penyaluran Bantuan</h1>
-            <p class="mb-0">List seluruh penyaluran bantuan yang telah dilakukan</p>
+
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center w-100 flex-wrap mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-2">Data Riwayat Penyaluran Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('riwayat_penyaluran_bantuan.create') }}" class="btn btn-success text-white">
-                <i class="fas fa-plus me-1"></i> Tambah Penyaluran
+            <a href="{{ route('riwayat_penyaluran_bantuan.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Tambah Riwayat Penyaluran Bantuan
             </a>
         </div>
     </div>
-</div>
+
 
 {{-- Success Message --}}
 @if (session('success'))

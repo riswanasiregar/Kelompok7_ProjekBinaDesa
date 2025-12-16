@@ -1,35 +1,19 @@
 @extends('layouts.admin.app')
 @section('title', 'Program Bantuan')
-
 @section('content')
 <div class="py-4">
-    <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
-        <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
-            <li class="breadcrumb-item">
-                <a href="#">
-                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                </a>
-            </li>
-            <li class="breadcrumb-item"><a href="{{ route('program_bantuan.index') }}">Program Bantuan</a></li>
-        </ol>
-    </nav>
 
-    <div class="d-flex justify-content-between w-100 flex-wrap">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Data Program Bantuan</h1>
-            <p class="mb-0">List seluruh program bantuan</p>
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center w-100 flex-wrap mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-2">Data Program Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('program_bantuan.create') }}" class="btn btn-success text-white">
-                <i class="fas fa-plus me-1"></i> Tambah Program Bantuan
+            <a href="{{ route('program_bantuan.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Tambah Program Bantuan
             </a>
         </div>
     </div>
-</div>
 
 {{-- Success Message --}}
 @if (session('success'))
@@ -105,20 +89,71 @@
                                     <td>{{ $data->deskripsi }}</td>
                                     <td>{{ $data->anggaran_formatted }}</td>
 
-                                    {{-- Media Thumbnail --}}
                                     <td>
                                         @php
-                                            $media = $data->media->first();
+                                            $mediaItems = $data->media->filter(function($media) {
+                                                return Storage::disk('public')->exists($media->file_url);
+                                            });
                                         @endphp
-                                        @if($media && Storage::disk('public')->exists($media->file_url))
-                                            @php
-                                                $filePath = storage_path('app/public/' . $media->file_url);
-                                                $type = pathinfo($filePath, PATHINFO_EXTENSION);
-                                                $imgData = base64_encode(file_get_contents($filePath));
-                                            @endphp
-                                            <img src="data:image/{{ $type }};base64,{{ $imgData }}"
-                                                 alt="Media"
-                                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+
+                                        @if($mediaItems->count() > 0)
+                                            @if($mediaItems->count() == 1)
+                                                {{-- Tampilkan single image --}}
+                                                @php
+                                                    $media = $mediaItems->first();
+                                                    $filePath = storage_path('app/public/' . $media->file_url);
+                                                    $type = pathinfo($filePath, PATHINFO_EXTENSION);
+                                                    $imgData = base64_encode(file_get_contents($filePath));
+                                                @endphp
+                                                <img src="data:image/{{ $type }};base64,{{ $imgData }}"
+                                                     alt="Media"
+                                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;"
+                                                     data-bs-toggle="tooltip"
+                                                     data-bs-title="Klik untuk zoom"
+                                                     onclick="showImageModal('data:image/{{ $type }};base64,{{ $imgData }}', '{{ $data->nama_program }}')">
+                                            @else
+                                                {{-- Tampilkan carousel untuk multiple images --}}
+                                                <div id="carousel-{{ $data->program_id }}" class="carousel slide" style="width: 120px; height: 80px;">
+                                                    <div class="carousel-inner" style="border-radius: 4px; overflow: hidden;">
+                                                        @foreach($mediaItems as $index => $media)
+                                                            @php
+                                                                $filePath = storage_path('app/public/' . $media->file_url);
+                                                                $type = pathinfo($filePath, PATHINFO_EXTENSION);
+                                                                $imgData = base64_encode(file_get_contents($filePath));
+                                                            @endphp
+                                                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                                                <img src="data:image/{{ $type }};base64,{{ $imgData }}"
+                                                                     alt="Media {{ $index + 1 }}"
+                                                                     style="width: 120px; height: 80px; object-fit: cover; cursor: pointer;"
+                                                                     data-bs-toggle="tooltip"
+                                                                     data-bs-title="Klik untuk zoom ({{ $index + 1 }}/{{ $mediaItems->count() }})"
+                                                                     onclick="showImageModal('data:image/{{ $type }};base64,{{ $imgData }}', '{{ $data->nama_program }} - Gambar {{ $index + 1 }}')">
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    @if($mediaItems->count() > 1)
+                                                        <button class="carousel-control-prev" type="button"
+                                                                data-bs-target="#carousel-{{ $data->program_id }}"
+                                                                data-bs-slide="prev"
+                                                                style="width: 30px; height: 30px; top: 50%; transform: translateY(-50%); left: 0;">
+                                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                            <span class="visually-hidden">Previous</span>
+                                                        </button>
+                                                        <button class="carousel-control-next" type="button"
+                                                                data-bs-target="#carousel-{{ $data->program_id }}"
+                                                                data-bs-slide="next"
+                                                                style="width: 30px; height: 30px; top: 50%; transform: translateY(-50%); right: 0;">
+                                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                            <span class="visually-hidden">Next</span>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                                <div class="text-center mt-1">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-images"></i> {{ $mediaItems->count() }} gambar
+                                                    </small>
+                                                </div>
+                                            @endif
                                         @else
                                             -
                                         @endif
@@ -178,4 +213,127 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for Image Zoom -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <a id="downloadLink" href="#" class="btn btn-primary" download>
+                    <i class="fas fa-download me-2"></i> Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    // Function to show image in modal
+    function showImageModal(imageSrc, title) {
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        document.getElementById('modalImage').src = imageSrc;
+        document.getElementById('imageModalLabel').textContent = title;
+
+        // Set download link
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = imageSrc;
+        downloadLink.download = title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.png';
+
+        modal.show();
+    }
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Initialize all carousels
+        document.querySelectorAll('.carousel').forEach(carouselElement => {
+            new bootstrap.Carousel(carouselElement, {
+                interval: false, // Disable auto-slide for table carousels
+                wrap: true
+            });
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+
+<style>
+    /* Carousel styling for white controls */
+    .carousel-control-prev,
+    .carousel-control-next {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.9) !important;
+        border-radius: 50% !important;
+        opacity: 0.8 !important;
+        width: 30px !important;
+        height: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background-color: rgba(255, 255, 255, 1) !important;
+        opacity: 1 !important;
+        transform: translateY(-50%) scale(1.1) !important;
+    }
+
+    .carousel-control-prev {
+        left: 5px !important;
+    }
+
+    .carousel-control-next {
+        right: 5px !important;
+    }
+
+    /* White arrow icons */
+    .carousel-control-prev-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e") !important;
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .carousel-control-next-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .carousel-item img {
+        transition: transform 0.3s ease;
+    }
+
+    .carousel-item img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Modal image styling */
+    #modalImage {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+</style>
+@endpush

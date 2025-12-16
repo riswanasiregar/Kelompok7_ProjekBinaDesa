@@ -1,36 +1,20 @@
 @extends('layouts.admin.app')
 
 @section('title', 'Tambah Warga')
-
 @section('content')
 <div class="py-4">
-    <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
-        <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
-            <li class="breadcrumb-item">
-                <a href="#">
-                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                </a>
-            </li>
-            <li class="breadcrumb-item"><a href="{{ route('warga.index') }}">Warga</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Tambah Warga</li>
-        </ol>
-    </nav>
-    <div class="d-flex justify-content-between w-100 flex-wrap">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Tambah Data Warga</h1>
-            <p class="mb-0">Form untuk menambahkan data warga baru</p>
+
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center w-100 flex-wrap mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-2">Tambah  Data Warga</h1>
         </div>
         <div>
-            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center">
-    <i class="fas fa-arrow-left me-2"></i> Kembali
-</a>
+            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Kembali
+            </a>
         </div>
     </div>
-</div>
-
-<!-- Pesan Error di luar card -->
 @if ($errors->any())
 <div class="row mb-4">
     <div class="col-12">
@@ -65,150 +49,135 @@
                 <form action="{{ route('warga.store') }}" method="POST">
                     @csrf
 
-                    <div class="row">
-                        <!-- Kolom 1 - Data Pribadi -->
-                        <div class="col-xl-6">
-                            <h5 class="fw-bold text-gray-800 mb-4">Data Pribadi</h5>
+                    <!-- Hanya 1 kolom -->
+                    <h5 class="fw-bold text-gray-800 mb-4">Data Warga</h5>
 
-                            <!-- No KTP -->
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input
-                                    type="text"
-                                    class="form-control @error('no_ktp') is-invalid @enderror"
-                                    id="no_ktp"
-                                    name="no_ktp"
-                                    placeholder="Masukkan nomor KTP"
-                                    value="{{ old('no_ktp') }}"
-                                    required />
-                                <label for="no_ktp">No. KTP <span class="text-danger">*</span></label>
-                                @error('no_ktp')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <!-- No KTP -->
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input
+                            type="text"
+                            class="form-control @error('no_ktp') is-invalid @enderror"
+                            id="no_ktp"
+                            name="no_ktp"
+                            placeholder="Masukkan nomor KTP"
+                            value="{{ old('no_ktp') }}"
+                            required />
+                        <label for="no_ktp">No. KTP <span class="text-danger">*</span></label>
+                        @error('no_ktp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                            <!-- Nama -->
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input
-                                    type="text"
-                                    class="form-control @error('nama') is-invalid @enderror"
-                                    id="nama"
-                                    name="nama"
-                                    placeholder="Masukkan nama lengkap"
-                                    value="{{ old('nama') }}"
-                                    required />
-                                <label for="nama">Nama Lengkap <span class="text-danger">*</span></label>
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <!-- Nama -->
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input
+                            type="text"
+                            class="form-control @error('nama') is-invalid @enderror"
+                            id="nama"
+                            name="nama"
+                            placeholder="Masukkan nama lengkap"
+                            value="{{ old('nama') }}"
+                            required />
+                        <label for="nama">Nama Lengkap <span class="text-danger">*</span></label>
+                        @error('nama')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                            <!-- Jenis Kelamin -->
-                            <div class="mb-4">
-                                <select
-                                    id="jenis_kelamin"
-                                    name="jenis_kelamin"
-                                    class="form-select @error('jenis_kelamin') is-invalid @enderror"
-                                    required>
-                                    <option value="">-- Pilih Jenis Kelamin --</option>
-                                    <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                        Laki-laki
-                                    </option>
-                                    <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                        Perempuan
-                                    </option>
-                                </select>
-                                @error('jenis_kelamin')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <!-- Jenis Kelamin -->
+                    <div class="mb-4">
+                        <select
+                            id="jenis_kelamin"
+                            name="jenis_kelamin"
+                            class="form-select @error('jenis_kelamin') is-invalid @enderror"
+                            required>
+                            <option value="">-- Pilih Jenis Kelamin --</option>
+                            <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                                Laki-laki
+                            </option>
+                            <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                                Perempuan
+                            </option>
+                        </select>
+                        @error('jenis_kelamin')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                            <!-- Agama -->
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input
-                                    type="text"
-                                    class="form-control @error('agama') is-invalid @enderror"
-                                    id="agama"
-                                    name="agama"
-                                    placeholder="Masukkan agama"
-                                    value="{{ old('agama') }}" />
-                                <label for="agama">Agama</label>
-                                @error('agama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <!-- Agama -->
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input
+                            type="text"
+                            class="form-control @error('agama') is-invalid @enderror"
+                            id="agama"
+                            name="agama"
+                            placeholder="Masukkan agama"
+                            value="{{ old('agama') }}" />
+                        <label for="agama">Agama</label>
+                        @error('agama')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        </div>
+                    <!-- Pekerjaan -->
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input
+                            type="text"
+                            class="form-control @error('pekerjaan') is-invalid @enderror"
+                            id="pekerjaan"
+                            name="pekerjaan"
+                            placeholder="Masukkan pekerjaan"
+                            value="{{ old('pekerjaan') }}" />
+                        <label for="pekerjaan">Pekerjaan</label>
+                        @error('pekerjaan')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        <!-- Kolom 2 - Kontak & Pekerjaan -->
-                        <div class="col-xl-6">
-                            <h5 class="fw-bold text-gray-800 mb-4">Kontak & Pekerjaan</h5>
+                    <!-- Email -->
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input
+                            type="email"
+                            class="form-control @error('email') is-invalid @enderror"
+                            id="email"
+                            name="email"
+                            placeholder="john@example.com"
+                            value="{{ old('email') }}" />
+                        <label for="email">Email</label>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                            <!-- Pekerjaan -->
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input
-                                    type="text"
-                                    class="form-control @error('pekerjaan') is-invalid @enderror"
-                                    id="pekerjaan"
-                                    name="pekerjaan"
-                                    placeholder="Masukkan pekerjaan"
-                                    value="{{ old('pekerjaan') }}" />
-                                <label for="pekerjaan">Pekerjaan</label>
-                                @error('pekerjaan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Email -->
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input
-                                    type="email"
-                                    class="form-control @error('email') is-invalid @enderror"
-                                    id="email"
-                                    name="email"
-                                    placeholder="john@example.com"
-                                    value="{{ old('email') }}" />
-                                <label for="email">Email</label>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Telp -->
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input
-                                    type="tel"
-                                    class="form-control @error('telp') is-invalid @enderror"
-                                    id="telp"
-                                    name="telp"
-                                    placeholder="081234567890"
-                                    value="{{ old('telp') }}" />
-                                <label for="telp">No. Telepon</label>
-                                @error('telp')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                    <!-- Telp -->
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input
+                            type="tel"
+                            class="form-control @error('telp') is-invalid @enderror"
+                            id="telp"
+                            name="telp"
+                            placeholder="081234567890"
+                            value="{{ old('telp') }}" />
+                        <label for="telp">No. Telepon</label>
+                        @error('telp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('warga.index') }}" class="btn btn-outline-gray-600">
-                                    <i class="fas fa-times me-2"></i> Batal
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i> Simpan Data
-                                </button>
-                            </div>
-                        </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <a href="{{ route('warga.index') }}" class="btn btn-outline-gray-600">
+                            <i class="fas fa-times me-2"></i> Batal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Simpan Data
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 <style>
 .form-floating.form-floating-outline .form-control {
     border: 1px solid #d9dee3;
