@@ -40,7 +40,6 @@
                             <label class="form-label">Role</label>
                             <select name="role" class="form-control" required>
                                 <option value="guest" {{ old('role') === 'guest' ? 'selected' : '' }}>Guest</option>
-                                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                             </select>
                         </div>
                         <div class="d-flex align-items-center justify-content-between">

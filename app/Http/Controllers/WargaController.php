@@ -14,9 +14,7 @@ class WargaController extends Controller
         $searchableColumns = ['nama', 'no_ktp', 'pekerjaan', 'telp', 'email'];
 
         $wargas = Warga::query()
-            ->when(!Auth::user()->isAdmin(), function ($query) {
-                $query->where('user_id', Auth::id());
-            })
+            ->where('user_id', Auth::id())
             ->filter($request, $filterableColumns)
             ->when($request->filled('search'), function ($query) use ($request, $searchableColumns) {
                 $search = $request->input('search');
@@ -64,7 +62,7 @@ class WargaController extends Controller
 
     public function edit(Warga $warga)
     {
-        if (!Auth::user()->isAdmin() && $warga->user_id !== Auth::id()) {
+        if ($warga->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -73,7 +71,7 @@ class WargaController extends Controller
 
     public function update(Request $request, Warga $warga)
     {
-        if (!Auth::user()->isAdmin() && $warga->user_id !== Auth::id()) {
+        if ($warga->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -101,7 +99,7 @@ class WargaController extends Controller
 
     public function destroy(Warga $warga)
     {
-        if (!Auth::user()->isAdmin() && $warga->user_id !== Auth::id()) {
+        if ($warga->user_id !== Auth::id()) {
             abort(403);
         }
 

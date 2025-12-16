@@ -10,11 +10,8 @@ class ProgramBantuanController extends Controller
 {
     public function index()
     {
-        $query = ProgramBantuan::orderByDesc('created_at');
-
-        if (!Auth::user()->isAdmin()) {
-            $query->where('user_id', Auth::id());
-        }
+        $query = ProgramBantuan::orderByDesc('created_at')
+            ->where('user_id', Auth::id());
 
         $data = $query->paginate(2);
         return view('program_bantuan.index', compact('data'));
@@ -52,17 +49,15 @@ class ProgramBantuanController extends Controller
 
     public function edit($id)
     {
-        $data = ProgramBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $data = ProgramBantuan::where('user_id', Auth::id())
+            ->findOrFail($id);
         return view('program_bantuan.edit', compact('data'));
     }
 
     public function update(Request $request, $id)
     {
-        $data = ProgramBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $data = ProgramBantuan::where('user_id', Auth::id())
+            ->findOrFail($id);
 
         $request->validate([
             'kode' => 'required|unique:program_bantuans,kode,' . $id . ',program_id',
@@ -87,9 +82,8 @@ class ProgramBantuanController extends Controller
 
     public function destroy($id)
     {
-        $data = ProgramBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $data = ProgramBantuan::where('user_id', Auth::id())
+            ->findOrFail($id);
         $data->delete();
 
         return redirect()->route('program_bantuan.index')->with('success', 'Data berhasil dihapus.');
@@ -104,4 +98,3 @@ class ProgramBantuanController extends Controller
         return redirect()->route('program_bantuan.index');
     }
 }
-

@@ -22,19 +22,14 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-Route::middleware('checkislogin')->group(function () {
-    Route::get('/dashboard', function () {
-        return redirect()->route('program_bantuan.index');
-    })->name('dashboard');
-});
-
-// Redirect jalur lama ke yang baru (jika ada yang masih mengakses /penerima_bantuan)
-Route::redirect('/penerima_bantuan', '/penerima');
-
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect()->route('program_bantuan.index');
     })->name('home');
+
+    Route::get('/dashboard', function () {
+        return redirect()->route('program_bantuan.index');
+    })->name('dashboard');
 
     Route::resource('program_bantuan', ProgramBantuanController::class);
     Route::resource('warga', WargaController::class);
@@ -44,13 +39,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('riwayat', RiwayatPenyaluranBantuanController::class);
     Route::resource('verifikasi', VerifikasiLapanganController::class)->except(['show']);
 
+    Route::resource('users', UserManagementController::class);
+
     Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
     Route::post('/save', [MultipleuploadsController::class, 'store'])->name('uploads.store');
     Route::delete('/uploads/{multipleupload}', [MultipleuploadsController::class, 'destroy'])->name('uploads.destroy');
-
-
-    //  pengguna khusus admin
-    Route::middleware('role:admin')->group(function () {
-        Route::resource('users', UserManagementController::class)->except(['show']);
-    });
 });
+
+// Redirect jalur lama ke yang baru (jika ada yang masih mengakses /penerima_bantuan)
+Route::redirect('/penerima_bantuan', '/penerima');

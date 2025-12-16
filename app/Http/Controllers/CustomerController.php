@@ -12,9 +12,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })
+        $customers = Customer::where('user_id', Auth::id())
             ->orderByDesc('created_at')
             ->paginate(10);
 
@@ -45,7 +43,7 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+        if ($customer->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -59,7 +57,7 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
-        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+        if ($customer->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -68,7 +66,7 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
-        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+        if ($customer->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -87,7 +85,7 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
-        if (!Auth::user()->isAdmin() && $customer->user_id !== Auth::id()) {
+        if ($customer->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -103,4 +101,3 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')->with('success', 'Customer berhasil dihapus.');
     }
 }
-

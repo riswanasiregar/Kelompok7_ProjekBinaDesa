@@ -13,17 +13,13 @@ class PendaftarBantuanController extends Controller
     public function index(Request $request)
     {
         $dataQuery = PendaftarBantuan::with(['warga', 'program'])
-            ->when(!Auth::user()->isAdmin(), function ($query) {
-                $query->where('user_id', Auth::id());
-            })
+            ->where('user_id', Auth::id())
             ->latest('tanggal_daftar');
 
         $data = $dataQuery->paginate(9)->appends($request->query());
 
         $statsBase = PendaftarBantuan::query()
-            ->when(!Auth::user()->isAdmin(), function ($query) {
-                $query->where('user_id', Auth::id());
-            });
+            ->where('user_id', Auth::id());
 
         $stats = [
             'total' => $statsBase->count(),
@@ -37,13 +33,9 @@ class PendaftarBantuanController extends Controller
 
     public function create()
     {
-        $warga = Warga::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->get();
+        $warga = Warga::where('user_id', Auth::id())->get();
 
-        $program = ProgramBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->get();
+        $program = ProgramBantuan::where('user_id', Auth::id())->get();
         return view('pendaftaran_bantuan.create', compact('warga', 'program'));
     }
 
@@ -57,13 +49,11 @@ class PendaftarBantuanController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        if (!Auth::user()->isAdmin()) {
-            $validWarga = Warga::where('user_id', Auth::id())->where('warga_id', $validated['warga_id'])->exists();
-            $validProgram = ProgramBantuan::where('user_id', Auth::id())->where('program_id', $validated['program_id'])->exists();
+        $validWarga = Warga::where('user_id', Auth::id())->where('warga_id', $validated['warga_id'])->exists();
+        $validProgram = ProgramBantuan::where('user_id', Auth::id())->where('program_id', $validated['program_id'])->exists();
 
-            if (!$validWarga || !$validProgram) {
-                abort(403, 'Data tidak valid untuk akun Anda.');
-            }
+        if (!$validWarga || !$validProgram) {
+            abort(403, 'Data tidak valid untuk akun Anda.');
         }
 
         PendaftarBantuan::create(
@@ -82,17 +72,11 @@ class PendaftarBantuanController extends Controller
 
     public function edit($id)
     {
-        $data = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $data = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($id);
 
-        $warga = Warga::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->get();
+        $warga = Warga::where('user_id', Auth::id())->get();
 
-        $program = ProgramBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->get();
+        $program = ProgramBantuan::where('user_id', Auth::id())->get();
 
         return view('pendaftaran_bantuan.edit', compact('data', 'warga', 'program'));
     }
@@ -107,18 +91,14 @@ class PendaftarBantuanController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        if (!Auth::user()->isAdmin()) {
-            $validWarga = Warga::where('user_id', Auth::id())->where('warga_id', $validated['warga_id'])->exists();
-            $validProgram = ProgramBantuan::where('user_id', Auth::id())->where('program_id', $validated['program_id'])->exists();
+        $validWarga = Warga::where('user_id', Auth::id())->where('warga_id', $validated['warga_id'])->exists();
+        $validProgram = ProgramBantuan::where('user_id', Auth::id())->where('program_id', $validated['program_id'])->exists();
 
-            if (!$validWarga || !$validProgram) {
-                abort(403, 'Data tidak valid untuk akun Anda.');
-            }
+        if (!$validWarga || !$validProgram) {
+            abort(403, 'Data tidak valid untuk akun Anda.');
         }
 
-        $data = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $data = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($id);
         $data->update(collect($validated)->only([
             'warga_id',
             'program_id',
@@ -133,9 +113,7 @@ class PendaftarBantuanController extends Controller
 
     public function destroy($id)
     {
-        $data = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $data = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($id);
 
         $data->delete();
 

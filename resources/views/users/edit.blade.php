@@ -30,21 +30,8 @@
                 <label class="form-label">Konfirmasi Password</label>
                 <input type="password" name="password_confirmation" class="form-control">
             </div>
-            <div class="mb-3">
-                <label class="form-label">Role</label>
-                <select name="role" class="form-control" required>
-                    <option value="guest" {{ old('role', $user->role) === 'guest' ? 'selected' : '' }}>Guest</option>
-                    <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
-                </select>
-            </div>
             <button class="btn btn-primary">Simpan</button>
         </form>
     </div>
 </div>
 @endsection
-
-
-
-
-
-

@@ -80,14 +80,13 @@
                         </a>
                     </li>
                     
-                    @if(auth()->user()->isAdmin())
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                             <i class=""></i>
                             <span>Manajemen Akun</span>
                         </a>
                     </li>
-                    @endif
+                   
                     @endauth
                     <!-- Tambahkan menu lain di sini -->
                 </ul>

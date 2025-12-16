@@ -18,9 +18,7 @@ class VerifikasiLapanganController extends Controller
     public function index(Request $request)
     {
         $query = VerifikasiLapangan::with(['pendaftar', 'media'])
-            ->when(!Auth::user()->isAdmin(), function ($query) {
-                $query->where('user_id', Auth::id());
-            });
+            ->where('user_id', Auth::id());
 
         if ($request->status_verifikasi) {
             $query->byStatus($request->status_verifikasi);
@@ -127,7 +125,7 @@ class VerifikasiLapanganController extends Controller
     public function update(Request $request, $id)
     {
         $verifikasi = VerifikasiLapangan::findOrFail($id);
-        if (!Auth::user()->isAdmin() && $verifikasi->user_id !== Auth::id()) {
+        if ($verifikasi->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -146,9 +144,7 @@ class VerifikasiLapanganController extends Controller
         }
 
         // Validasi kepemilikan pendaftar untuk guest
-        $pendaftar = PendaftarBantuan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($request->pendaftar_bantuan_id);
+        $pendaftar = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($request->pendaftar_bantuan_id);
 
         // Update data verifikasi
         $verifikasi->update([
@@ -191,9 +187,7 @@ class VerifikasiLapanganController extends Controller
      */
     public function destroy($id)
     {
-        $verifikasi = VerifikasiLapangan::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->findOrFail($id);
+        $verifikasi = VerifikasiLapangan::where('user_id', Auth::id())->findOrFail($id);
 
         $media = Media::where('ref_table', 'verifikasi_lapangan')
             ->where('ref_id', $verifikasi->verifikasi_id)

@@ -47,14 +47,13 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed|min:8',
-            'role' => 'required|in:admin,guest',
         ]);
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'] ?? 'guest',
+            'role' => 'guest',
         ]);
 
         Auth::login($user);
@@ -71,4 +70,3 @@ class AuthController extends Controller
         return redirect()->route('auth.index');
     }
 }
-

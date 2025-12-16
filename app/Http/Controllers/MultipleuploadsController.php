@@ -14,9 +14,7 @@ class MultipleuploadsController extends Controller
      */
     public function index()
     {
-        $uploads = Multipleuploads::when(!Auth::user()->isAdmin(), function ($query) {
-            $query->where('user_id', Auth::id());
-        })->latest()->get();
+        $uploads = Multipleuploads::where('user_id', Auth::id())->latest()->get();
 
         return view('multipleuploads', compact('uploads'));
     }
@@ -84,7 +82,7 @@ class MultipleuploadsController extends Controller
      */
     public function destroy(Multipleuploads $multipleupload)
     {
-        if (!Auth::user()->isAdmin() && $multipleupload->user_id !== Auth::id()) {
+        if ($multipleupload->user_id !== Auth::id()) {
             abort(403);
         }
 

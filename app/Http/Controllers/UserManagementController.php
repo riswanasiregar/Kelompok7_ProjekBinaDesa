@@ -33,14 +33,13 @@ class UserManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'role' => 'required|in:admin,guest',
         ]);
 
         User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'],
+            'role' => 'guest',
         ]);
 
         return redirect()->route('users.index')->with('success', 'Akun berhasil dibuat.');
@@ -57,13 +56,11 @@ class UserManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:8|confirmed',
-            'role' => 'required|in:admin,guest',
         ]);
 
         $payload = [
             'name' => $data['name'],
             'email' => $data['email'],
-            'role' => $data['role'],
         ];
 
         if (!empty($data['password'])) {
@@ -112,4 +109,3 @@ class UserManagementController extends Controller
         return redirect()->route('users.index')->with('success', 'Akun dan seluruh datanya berhasil dihapus.');
     }
 }
-

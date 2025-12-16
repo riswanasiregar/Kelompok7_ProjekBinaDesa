@@ -22,7 +22,6 @@
                     <tr>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th>Status</th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
@@ -31,7 +30,6 @@
                         <tr>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
-                            <td><span class="badge bg-info-subtle text-info text-capitalize">{{ $user->role }}</span></td>
                             <td class="text-end">
                                 <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning">Ubah</a>
                                 <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus akun beserta seluruh datanya?')">
@@ -53,4 +51,3 @@
     </div>
   </div>
 @endsection
-
