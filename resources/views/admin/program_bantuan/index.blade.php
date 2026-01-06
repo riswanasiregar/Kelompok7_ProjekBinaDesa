@@ -1,16 +1,16 @@
 @extends('layouts.admin.app')
-@section('title', 'Verifikasi Lapangan')
+@section('title', 'Program Bantuan')
 @section('content')
 <div class="py-4">
 
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center w-100 flex-wrap mb-4">
         <div>
-            <h1 class="h3 fw-bold mb-2">Data Verifikasi Lapangan</h1>
+            <h1 class="h3 fw-bold mb-2">Data Program Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('admin.verifikasi_lapangan.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i> Tambah Verifikasi Lapangan
+            <a href="{{ route('program_bantuan.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Tambah Program Bantuan
             </a>
         </div>
     </div>
@@ -27,66 +27,31 @@
 </div>
 @endif
 
-{{-- Error Message --}}
-@if (session('error'))
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    </div>
-</div>
-@endif
-
-{{-- Filter & Search --}}
-<form method="GET" action="{{ route('admin.verifikasi_lapangan.index') }}" class="mb-3">
+{{-- Filter Tahun & Search --}}
+<form method="GET" action="{{ route('program_bantuan.index') }}" class="mb-3">
     <div class="row g-2">
-        {{-- Filter Pendaftar --}}
+        {{-- Filter Tahun --}}
         <div class="col-md-3">
-            <select name="pendaftar_id" class="form-select">
-                <option value="">Semua Pendaftar</option>
-                @foreach($pendaftarList as $pendaftar)
-                    <option value="{{ $pendaftar->pendaftar_id }}"
-                        {{ request('pendaftar_id') == $pendaftar->pendaftar_id ? 'selected' : '' }}>
-                        {{ $pendaftar->warga->nama ?? 'N/A' }} - {{ $pendaftar->program->nama_program ?? 'N/A' }}
+            <select name="tahun" class="form-select" onchange="this.form.submit()">
+                <option value="">Semua Tahun</option>
+                @foreach($tahun_list as $tahun)
+                    <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                        {{ $tahun }}
                     </option>
                 @endforeach
             </select>
-        </div>
-
-        {{-- Filter Petugas --}}
-        <div class="col-md-2">
-            <input type="text" name="petugas" class="form-control"
-                   value="{{ request('petugas') }}" placeholder="Filter petugas">
-        </div>
-
-        {{-- Filter Tanggal Mulai --}}
-        <div class="col-md-2">
-            <input type="date" name="start_date" class="form-control"
-                   value="{{ request('start_date') }}" placeholder="Tanggal mulai">
-        </div>
-
-        {{-- Filter Tanggal Akhir --}}
-        <div class="col-md-2">
-            <input type="date" name="end_date" class="form-control"
-                   value="{{ request('end_date') }}" placeholder="Tanggal akhir">
         </div>
 
         {{-- Search --}}
         <div class="col-md-3">
             <div class="input-group">
                 <input type="text" name="search" class="form-control"
-                       value="{{ request('search') }}" placeholder="Cari petugas atau catatan..." aria-label="Search">
+                       value="{{ request('search') }}" placeholder="Search" aria-label="Search">
                 <button type="submit" class="btn btn-outline-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M11 2q.396 0 .783.036a6 6 0 0 0-.699 1.966L11 4c-3.867 0-7 3.132-7 7s3.133 7 7 7a6.98 6.98 0 0 0 4.875-1.976l.15-.15A6.98 6.98 0 0 0 18 11l-.003-.085a6 6 0 0 0 1.966-.7a8.96 8.96 0 0 1-1.932 6.401l4.283 4.283l-1.415 1.414l-4.282-4.282A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9m5.53-.681a.507.507 0 0 1 .94 0l.254.611a4.37 4.37 0 0 0 2.25 2.326l.718.32a.53.53 0 0 1 0 .963l-.76.338a4.36 4.36 0 0 0-2.218 2.25l-.247.566a.506.506 0 0 1-.934 0l-.246-.565a4.36 4.36 0 0 0-2.22-2.251l-.76-.338a.53.53 0 0 1 0-.963l.718-.32a4.37 4.37 0 0 0 2.251-2.326z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 2q.396 0 .783.036a6 6 0 0 0-.699 1.966L11 4c-3.867 0-7 3.132-7 7s3.133 7 7 7a6.98 6.98 0 0 0 4.875-1.976l.15-.15A6.98 6.98 0 0 0 18 11l-.003-.085a6 6 0 0 0 1.966-.7a8.96 8.96 0 0 1-1.932 6.401l4.283 4.283l-1.415 1.414l-4.282-4.282A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9m5.53-.681a.507.507 0 0 1 .94 0l.254.611a4.37 4.37 0 0 0 2.25 2.326l.718.32a.53.53 0 0 1 0 .963l-.76.338a4.36 4.36 0 0 0-2.218 2.25l-.247.566a.506.506 0 0 1-.934 0l-.246-.565a4.36 4.36 0 0 0-2.22-2.251l-.76-.338a.53.53 0 0 1 0-.963l.718-.32a4.37 4.37 0 0 0 2.251-2.326z"/></svg>
                 </button>
-                @if(request('search') || request('pendaftar_id') || request('petugas') || request('start_date') || request('end_date'))
-                    <a href="{{ route('admin.verifikasi_lapangan.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i> Clear
-                    </a>
+                @if(request('search'))
+                    <a href="{{ request()->fullUrlWithQuery(['search'=> null]) }}" class="btn btn-outline-secondary ml-3">Clear</a>
                 @endif
             </div>
         </div>
@@ -102,60 +67,28 @@
                         <thead class="thead-light">
                             <tr>
                                 <th class="border-0">No</th>
-                                <th class="border-0">Pendaftar</th>
-                                <th class="border-0">Program</th>
-                                <th class="border-0">Petugas</th>
-                                <th class="border-0">Tanggal</th>
-                                <th class="border-0">Skor</th>
-                                <th class="border-0">Kategori</th>
-                                <th class="border-0">Catatan</th>
+                                <th class="border-0">Kode</th>
+                                <th class="border-0">Nama Program</th>
+                                <th class="border-0">Tahun</th>
+                                <th class="border-0">Deskripsi</th>
+                                <th class="border-0">Anggaran</th>
                                 <th class="border-0">Media</th>
                                 <th class="border-0 rounded-end text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php
-                                $no = ($verifikasi->currentPage()-1) * $verifikasi->perPage() + 1;
+                                $no = ($ProgramBantuan->currentPage()-1) * $ProgramBantuan->perPage() + 1;
                             @endphp
-                            @foreach($verifikasi as $data)
+                            @foreach($ProgramBantuan as $data)
                                 <tr>
                                     <td>{{ $no++ }}</td>
-                                    <td>
-                                        <div class="fw-bold">{{ $data->pendaftar->warga->nama ?? 'N/A' }}</div>
-                                        <small class="text-muted">{{ $data->pendaftar->warga->no_ktp ?? 'N/A' }}</small>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">
-                                            {{ $data->pendaftar->program->nama_program ?? 'N/A' }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $data->petugas }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($data->tanggal)->format('d/m/Y') }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $data->skor >= 70 ? 'success' : ($data->skor >= 50 ? 'warning' : 'danger') }}">
-                                            {{ $data->skor }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($data->skor >= 70)
-                                            <span class="badge bg-success">Baik</span>
-                                        @elseif($data->skor >= 50)
-                                            <span class="badge bg-warning">Cukup</span>
-                                        @else
-                                            <span class="badge bg-danger">Kurang</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($data->catatan)
-                                            {{ Str::limit($data->catatan, 50) }}
-                                            @if(strlen($data->catatan) > 50)
-                                                <a href="#" data-bs-toggle="tooltip"
-                                                   data-bs-title="{{ $data->catatan }}">[...]</a>
-                                            @endif
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
-                                    </td>
+                                    <td>{{ $data->kode }}</td>
+                                    <td>{{ $data->nama_program }}</td>
+                                    <td>{{ $data->tahun }}</td>
+                                    <td>{{ $data->deskripsi }}</td>
+                                    <td>{{ $data->anggaran_formatted }}</td>
+
                                     <td>
                                         @php
                                             $mediaItems = $data->media->filter(function($media) {
@@ -165,76 +98,49 @@
 
                                         @if($mediaItems->count() > 0)
                                             @if($mediaItems->count() == 1)
-                                                {{-- Tampilkan single image atau PDF --}}
+                                                {{-- Tampilkan single image --}}
                                                 @php
                                                     $media = $mediaItems->first();
                                                     $filePath = storage_path('app/public/' . $media->file_url);
                                                     $type = pathinfo($filePath, PATHINFO_EXTENSION);
-
-                                                    if(in_array(strtolower($type), ['jpg', 'jpeg', 'png', 'gif'])) {
-                                                        $imgData = base64_encode(file_get_contents($filePath));
+                                                    $imgData = base64_encode(file_get_contents($filePath));
                                                 @endphp
-                                                        <img src="data:image/{{ $type }};base64,{{ $imgData }}"
-                                                             alt="Media"
-                                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer;"
-                                                             data-bs-toggle="tooltip"
-                                                             data-bs-title="Klik untuk lihat"
-                                                             onclick="showMediaModal('{{ $media->file_url }}', '{{ $media->caption ?: 'Verifikasi Media' }}', '{{ $type }}')">
-                                                @php
-                                                    } else {
-                                                @endphp
-                                                        <div class="pdf-thumbnail"
-                                                             style="width: 60px; height: 60px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
-                                                             onclick="showPdfModal('{{ asset('storage/' . $media->file_url) }}', '{{ $media->caption ?: 'Document PDF' }}')">
-                                                            <i class="fas fa-file-pdf text-danger" style="font-size: 24px;"></i>
-                                                        </div>
-                                                @php
-                                                    }
-                                                @endphp
+                                                <img src="data:image/{{ $type }};base64,{{ $imgData }}"
+                                                     alt="Media"
+                                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;"
+                                                     data-bs-toggle="tooltip"
+                                                     data-bs-title="Klik untuk zoom"
+                                                     onclick="showImageModal('data:image/{{ $type }};base64,{{ $imgData }}', '{{ $data->nama_program }}')">
                                             @else
                                                 {{-- Tampilkan carousel untuk multiple images --}}
-                                                <div id="carousel-{{ $data->verifikasi_id }}" class="carousel slide" style="width: 120px; height: 80px;">
+                                                <div id="carousel-{{ $data->program_id }}" class="carousel slide" style="width: 120px; height: 80px;">
                                                     <div class="carousel-inner" style="border-radius: 4px; overflow: hidden;">
                                                         @foreach($mediaItems as $index => $media)
                                                             @php
                                                                 $filePath = storage_path('app/public/' . $media->file_url);
                                                                 $type = pathinfo($filePath, PATHINFO_EXTENSION);
-
-                                                                if(in_array(strtolower($type), ['jpg', 'jpeg', 'png', 'gif'])) {
-                                                                    $imgData = base64_encode(file_get_contents($filePath));
+                                                                $imgData = base64_encode(file_get_contents($filePath));
                                                             @endphp
-                                                                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                                                        <img src="data:image/{{ $type }};base64,{{ $imgData }}"
-                                                                             alt="Media {{ $index + 1 }}"
-                                                                             style="width: 120px; height: 80px; object-fit: cover; cursor: pointer;"
-                                                                             data-bs-toggle="tooltip"
-                                                                             data-bs-title="Klik untuk lihat ({{ $index + 1 }}/{{ $mediaItems->count() }})"
-                                                                             onclick="showMediaModal('{{ $media->file_url }}', '{{ $media->caption ?: 'Verifikasi Media ' . ($index + 1) }}', '{{ $type }}')">
-                                                                    </div>
-                                                            @php
-                                                                } else {
-                                                            @endphp
-                                                                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                                                        <div style="width: 120px; height: 80px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; cursor: pointer;"
-                                                                             onclick="showPdfModal('{{ asset('storage/' . $media->file_url) }}', '{{ $media->caption ?: 'Document PDF ' . ($index + 1) }}')">
-                                                                            <i class="fas fa-file-pdf text-danger" style="font-size: 32px;"></i>
-                                                                        </div>
-                                                                    </div>
-                                                            @php
-                                                                }
-                                                            @endphp
+                                                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                                                <img src="data:image/{{ $type }};base64,{{ $imgData }}"
+                                                                     alt="Media {{ $index + 1 }}"
+                                                                     style="width: 120px; height: 80px; object-fit: cover; cursor: pointer;"
+                                                                     data-bs-toggle="tooltip"
+                                                                     data-bs-title="Klik untuk zoom ({{ $index + 1 }}/{{ $mediaItems->count() }})"
+                                                                     onclick="showImageModal('data:image/{{ $type }};base64,{{ $imgData }}', '{{ $data->nama_program }} - Gambar {{ $index + 1 }}')">
+                                                            </div>
                                                         @endforeach
                                                     </div>
                                                     @if($mediaItems->count() > 1)
                                                         <button class="carousel-control-prev" type="button"
-                                                                data-bs-target="#carousel-{{ $data->verifikasi_id }}"
+                                                                data-bs-target="#carousel-{{ $data->program_id }}"
                                                                 data-bs-slide="prev"
                                                                 style="width: 30px; height: 30px; top: 50%; transform: translateY(-50%); left: 0;">
                                                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                             <span class="visually-hidden">Previous</span>
                                                         </button>
                                                         <button class="carousel-control-next" type="button"
-                                                                data-bs-target="#carousel-{{ $data->verifikasi_id }}"
+                                                                data-bs-target="#carousel-{{ $data->program_id }}"
                                                                 data-bs-slide="next"
                                                                 style="width: 30px; height: 30px; top: 50%; transform: translateY(-50%); right: 0;">
                                                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
@@ -244,37 +150,50 @@
                                                 </div>
                                                 <div class="text-center mt-1">
                                                     <small class="text-muted">
-                                                        <i class="fas fa-file-alt"></i> {{ $mediaItems->count() }} file
+                                                        <i class="fas fa-images"></i> {{ $mediaItems->count() }} gambar
                                                     </small>
                                                 </div>
                                             @endif
                                         @else
-                                            <span class="text-muted">-</span>
+                                            -
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('admin.verifikasi_lapangan.show', $data->verifikasi_id) }}"
-                                               class="btn btn-info btn-sm d-flex align-items-center"
-                                               data-bs-toggle="tooltip" data-bs-title="Detail">
-                                                <i class="fas fa-eye me-1"></i>
+                                            <a href="{{ route('program_bantuan.edit', $data->program_id) }}"
+                                               class="btn btn-info btn-sm d-flex align-items-center">
+                                                <svg class="icon icon-xs me-1" data-slot="icon" fill="none" stroke-width="1.5"
+                                                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                                     aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"></path>
+                                                </svg>
+                                                Edit
                                             </a>
 
-                                            <a href="{{ route('admin.verifikasi_lapangan.edit', $data->verifikasi_id) }}"
-                                               class="btn btn-warning btn-sm d-flex align-items-center"
-                                               data-bs-toggle="tooltip" data-bs-title="Edit">
-                                                <i class="fas fa-edit me-1"></i>
-                                            </a>
-
-                                            <form action="{{ route('admin.verifikasi_lapangan.destroy', $data->verifikasi_id) }}"
+                                            <form action="{{ route('program_bantuan.destroy', $data->program_id) }}"
                                                   method="POST" style="display:inline"
-                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus verifikasi ini?');">
+                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                 @csrf
                                                 @method("DELETE")
-                                                <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center"
-                                                        data-bs-toggle="tooltip" data-bs-title="Hapus">
-                                                    <i class="fas fa-trash me-1"></i>
+                                                <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center">
+                                                    <svg class="icon icon-xs me-1" fill="none" stroke-width="1.5" stroke="currentColor"
+                                                         viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166
+                                                                 m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084
+                                                                 a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79
+                                                                 m14.456 0a48.108 48.108 0 0 0-3.478-.397
+                                                                 m-12 .562c.34-.059.68-.114 1.022-.165
+                                                                 m0 0a48.11 48.11 0 0 1 3.478-.397
+                                                                 m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201
+                                                                 a51.964 51.964 0 0 0-3.32 0
+                                                                 c-1.18.037-2.09 1.022-2.09 2.201v.916
+                                                                 m7.5 0a48.667 48.667 0 0 0-7.5 0">
+                                                        </path>
+                                                    </svg>
+                                                    Hapus
                                                 </button>
                                             </form>
                                         </div>
@@ -285,9 +204,9 @@
                         </tbody>
                     </table>
 
-                    <div class="mt-3 d-flex justify-content-end">
-                        {{ $verifikasi->links('pagination::bootstrap-5') }}
-                    </div>
+                   <div class="mt-3 d-flex justify-content-end">
+    {{ $ProgramBantuan->links('pagination::bootstrap-5') }}
+</div>
 
                 </div>
             </div>
@@ -295,16 +214,16 @@
     </div>
 </div>
 
-<!-- Modal for Image/PDF -->
-<div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="mediaModalLabel" aria-hidden="true">
+<!-- Modal for Image Zoom -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="mediaModalLabel"></h5>
+                <h5 class="modal-title" id="imageModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center" id="mediaModalBody">
-                <!-- Content will be loaded here -->
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -317,7 +236,48 @@
 </div>
 @endsection
 
-@push('styles')
+@push('scripts')
+<script>
+    // Function to show image in modal
+    function showImageModal(imageSrc, title) {
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        document.getElementById('modalImage').src = imageSrc;
+        document.getElementById('imageModalLabel').textContent = title;
+
+        // Set download link
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = imageSrc;
+        downloadLink.download = title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.png';
+
+        modal.show();
+    }
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Initialize all carousels
+        document.querySelectorAll('.carousel').forEach(carouselElement => {
+            new bootstrap.Carousel(carouselElement, {
+                interval: false, // Disable auto-slide for table carousels
+                wrap: true
+            });
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+
 <style>
     /* Carousel styling for white controls */
     .carousel-control-prev,
@@ -369,135 +329,11 @@
         transform: scale(1.05);
     }
 
-    .pdf-thumbnail:hover {
-        background: #e9ecef !important;
-        transform: scale(1.05);
-        transition: all 0.3s ease;
-    }
-
-    /* Modal styling */
-    #mediaModalBody img {
+    /* Modal image styling */
+    #modalImage {
         max-width: 100%;
-        max-height: 70vh;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-
-    #mediaModalBody iframe {
-        width: 100%;
-        height: 70vh;
-        border: none;
-        border-radius: 8px;
-    }
-
-    .badge {
-        font-size: 0.85em;
-        padding: 0.35em 0.65em;
-    }
 </style>
-@endpush
-
-@push('scripts')
-<script>
-    // Function to show media (image/PDF) in modal
-    function showMediaModal(filePath, title, fileType) {
-        const modal = new bootstrap.Modal(document.getElementById('mediaModal'));
-        const modalBody = document.getElementById('mediaModalBody');
-        const modalTitle = document.getElementById('mediaModalLabel');
-        const downloadLink = document.getElementById('downloadLink');
-
-        modalTitle.textContent = title;
-
-        // Clear previous content
-        modalBody.innerHTML = '';
-
-        // Get full URL
-        const fullUrl = '{{ asset("storage/") }}' + '/' + filePath;
-
-        if(['jpg', 'jpeg', 'png', 'gif'].includes(fileType.toLowerCase())) {
-            // For images
-            const img = document.createElement('img');
-            img.src = fullUrl;
-            img.alt = title;
-            img.className = 'img-fluid';
-            modalBody.appendChild(img);
-
-            // Set download link for image
-            downloadLink.href = fullUrl;
-            downloadLink.download = title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.' + fileType;
-        } else if(fileType.toLowerCase() === 'pdf') {
-            // For PDF
-            showPdfModal(fullUrl, title);
-            return; // Exit early since PDF has its own modal
-        } else {
-            // For other file types
-            const link = document.createElement('a');
-            link.href = fullUrl;
-            link.className = 'btn btn-primary';
-            link.textContent = 'Download File';
-            link.target = '_blank';
-            modalBody.appendChild(link);
-
-            // Set download link
-            downloadLink.href = fullUrl;
-            downloadLink.download = title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.' + fileType;
-        }
-
-        modal.show();
-    }
-
-    // Function to show PDF in iframe modal
-    function showPdfModal(pdfUrl, title) {
-        const modal = new bootstrap.Modal(document.getElementById('mediaModal'));
-        const modalBody = document.getElementById('mediaModalBody');
-        const modalTitle = document.getElementById('mediaModalLabel');
-        const downloadLink = document.getElementById('downloadLink');
-
-        modalTitle.textContent = title;
-
-        // Clear previous content
-        modalBody.innerHTML = '';
-
-        // Create iframe for PDF
-        const iframe = document.createElement('iframe');
-        iframe.src = pdfUrl + '#view=FitH';
-        iframe.style.width = '100%';
-        iframe.style.height = '70vh';
-        iframe.style.border = 'none';
-
-        modalBody.appendChild(iframe);
-
-        // Set download link for PDF
-        downloadLink.href = pdfUrl;
-        downloadLink.download = title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.pdf';
-
-        modal.show();
-    }
-
-    // Initialize tooltips and carousels
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-
-        // Initialize all carousels
-        document.querySelectorAll('.carousel').forEach(carouselElement => {
-            new bootstrap.Carousel(carouselElement, {
-                interval: false,
-                wrap: true
-            });
-        });
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-    });
-</script>
 @endpush

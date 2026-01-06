@@ -57,7 +57,7 @@ class PendaftarBantuanController extends Controller
 
         // Pagination
         $pendaftar = $query->paginate(5)->withQueryString();
-
+        
         // List program untuk filter
         $programs = ProgramBantuan::all();
 
