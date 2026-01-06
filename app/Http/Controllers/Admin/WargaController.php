@@ -67,7 +67,7 @@ public function index(Request $request)
 
         Warga::create($validatedData);
 
-        return redirect()->route('warga.index')
+        return redirect()->route('admin.warga.index')
                          ->with('success', 'Penambahan Data Berhasil!');
     }
 
@@ -99,7 +99,7 @@ public function index(Request $request)
 
         $warga->update($validatedData);
 
-        return redirect()->route('warga.index')
+        return redirect()->route('admin.warga.index')
                          ->with('success', 'Perubahan Data Berhasil!');
     }
 
@@ -111,7 +111,7 @@ public function index(Request $request)
         $warga = Warga::findOrFail($id);
         $warga->delete();
 
-        return redirect()->route('warga.index')
+        return redirect()->route('admin.warga.index')
                          ->with('success', 'Data Berhasil Dihapus!');
     }
 }
