@@ -10,7 +10,7 @@
             <h1 class="h3 fw-bold mb-2">Tambah  Data Warga</h1>
         </div>
         <div>
-            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('admin.warga.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
         </div>
@@ -46,7 +46,7 @@
     <div class="col-12">
         <div class="card border-0 shadow components-section">
             <div class="card-body">
-                <form action="{{ route('warga.update', $dataWarga->warga_id) }}" method="POST">
+                <form action="{{ route('admin.warga.update', $dataWarga->warga_id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -167,7 +167,7 @@
 
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{{ route('warga.index') }}" class="btn btn-outline-gray-600">
+                        <a href="{{ route('admin.warga.index') }}" class="btn btn-outline-gray-600">
                             <i class="fas fa-times me-2"></i> Batal
                         </a>
                         <button type="submit" class="btn btn-primary">

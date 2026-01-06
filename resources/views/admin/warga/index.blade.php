@@ -10,7 +10,7 @@
             <h1 class="h3 fw-bold mb-2">Data Warga</h1>
         </div>
         <div>
-            <a href="{{ route('warga.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.warga.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i> Tambah Warga
             </a>
         </div>
@@ -28,7 +28,7 @@
 @endif
 
 {{-- Filter & Search --}}
-<form method="GET" action="{{ route('warga.index') }}" class="mb-3">
+<form method="GET" action="{{ route('admin.warga.index') }}" class="mb-3">
     <div class="row g-2">
         <div class="col-md-3">
             <select name="jenis_kelamin" class="form-select" onchange="this.form.submit()">
@@ -89,13 +89,13 @@
                                     <td>{{ $data->telp }}</td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('warga.edit', $data->warga_id) }}" class="btn btn-info btn-sm d-flex align-items-center">
+                                            <a href="{{ route('admin.warga.edit', $data->warga_id) }}" class="btn btn-info btn-sm d-flex align-items-center">
                                                 <svg class="icon icon-xs me-1" fill="none" stroke-width="1.5" stroke="currentColor"
                                                      viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
                                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"></path></svg>
                                                 Edit
                                             </a>
-                                            <form action="{{ route('warga.destroy', $data->warga_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                                            <form action="{{ route('admin.warga.destroy', $data->warga_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                 @csrf
                                                 @method("DELETE")
                                                 <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center">

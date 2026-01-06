@@ -7,7 +7,7 @@
    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
 
     <!-- search -->
-    <form method="GET" action="{{ route('admin.warga.index') }}" class="d-flex flex-wrap gap-2 align-items-center">
+    <form method="GET" action="{{ route('warga.index') }}" class="d-flex flex-wrap gap-2 align-items-center">
         <input type="hidden" name="jenis_kelamin" value="{{ request('jenis_kelamin') }}">
         <div class="col-md-3" style="min-width: 280px;">
             <div class="input-group">
@@ -18,18 +18,18 @@
             </div>
         </div>
         @if(request('search') || request('jenis_kelamin'))
-            <a href="{{ route('admin.warga.index') }}" class="btn btn-outline-secondary" id="clear-search">Clear</a>
+            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary" id="clear-search">Clear</a>
         @endif
     </form>
     <div class="d-flex gap-2">
-        <a href="{{ route('admin.warga.create') }}" class="btn btn-primary">
+        <a href="{{ route('warga.create') }}" class="btn btn-primary">
             <i class="ti ti-plus me-1"></i> Tambah data
         </a>
     </div>
 </div>
     <!-- filter -->
     <div class="table-responsive">
-        <form method="GET" action="{{ route('admin.warga.index') }}" class="mb-3">
+        <form method="GET" action="{{ route('warga.index') }}" class="mb-3">
             <input type="hidden" name="search" value="{{ request('search') }}">
             <div class="row">
                 <div class="col-md-2">
@@ -72,10 +72,10 @@
                         </div>
 
                         <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                            <a href="{{ route('admin.warga.edit', $warga->warga_id) }}"
+                            <a href="{{ route('warga.edit', $warga->warga_id) }}"
                                class="btn btn-sm btn-warning">Edit</a>
 
-                            <form action="{{ route('admin.warga.destroy', $warga->warga_id) }}"
+                            <form action="{{ route('warga.destroy', $warga->warga_id) }}"
                                   method="POST"
                                   onsubmit="return confirm('Yakin hapus data warga ini?')">
                                 @csrf
@@ -94,7 +94,7 @@
     @else
         <div class="alert alert-info text-center mt-4">
             Belum ada data warga. <br>
-            <a href="{{ route('admin.warga.create') }}" class="btn btn-primary mt-2">Tambah Sekarang</a>
+            <a href="{{ route('warga.create') }}" class="btn btn-primary mt-2">Tambah Sekarang</a>
         </div>
     @endif
 </div>

@@ -42,8 +42,6 @@
     </form>
     @endif
 
-    <a href="{{ route('riwayat.create') }}" class="btn btn-success mb-3">+ Tambah Penyaluran</a>
-
     <div class="row g-3">
         @forelse($penyaluran as $item)
             <div class="col-md-4">
@@ -54,7 +52,7 @@
                         <p class="mb-1"><strong>Tanggal:</strong> {{ $item->tanggal->format('d-m-Y') }}</p>
                         <p class="mb-1"><strong>Tahap:</strong> {{ $item->tahap_ke }}</p>
                         <p class="mb-1"><strong>Nilai:</strong> Rp {{ number_format($item->nilai, 0, ',', '.') }}</p>
-                        
+
                         <!-- button lihat foto -->
                         @php
                             $foto = $item->media()->first(); // Ambil foto pertama
@@ -70,15 +68,6 @@
                                 <small class="text-muted">Tidak ada foto</small>
                             </div>
                         @endif
-                    </div>
-                    
-                    <div class="card-footer bg-white d-flex justify-content-between">
-                        <a href="{{ route('riwayat.edit', $item->penyaluran_id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('riwayat.destroy', $item->penyaluran_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                        </form>
                     </div>
                 </div>
             </div>

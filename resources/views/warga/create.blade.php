@@ -4,7 +4,7 @@
 <div class="container">
     <h4 class="fw-semibold mb-4">Tambah Data Warga</h4>
 
-    <form action="{{ route('admin.warga.store') }}" method="POST" class="card p-4 shadow-sm border-0" enctype="multipart/form-data">
+    <form action="{{ route('warga.store') }}" method="POST" class="card p-4 shadow-sm border-0" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label>No KTP</label>
@@ -45,7 +45,7 @@
         </div>
 
         <div class="d-flex justify-content-between">
-            <a href="{{ route('admin.warga.index') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route('warga.index') }}" class="btn btn-secondary">Kembali</a>
             <button type="submit" class="btn btn-primary">Simpan</button>
         </div>
     </form>
