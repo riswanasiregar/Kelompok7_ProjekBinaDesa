@@ -43,6 +43,7 @@ class ProgramBantuanController extends Controller
             'kode' => $request->kode,
             'nama_program' => $request->nama_program,
             'tahun' => $request->tahun,
+            'deskripsi' => $request->deskripsi, // Tambah deskripsi yang hilang
             'anggaran' => $request->anggaran,
             'user_id' => Auth::id(),
         ]);
@@ -105,6 +106,7 @@ class ProgramBantuanController extends Controller
             'kode' => $request->kode,
             'nama_program' => $request->nama_program,
             'tahun' => $request->tahun,
+            'deskripsi' => $request->deskripsi, // Tambah deskripsi yang hilang
             'anggaran' => $request->anggaran,
         ]);
 

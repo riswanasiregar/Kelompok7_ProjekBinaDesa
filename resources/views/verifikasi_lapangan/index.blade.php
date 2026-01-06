@@ -24,6 +24,18 @@
                         <p class="mb-1"><strong>Tanggal:</strong> {{ $item->tanggal->format('d-m-Y') }}</p>
                         <p class="mb-1"><strong>Skor:</strong> {{ $item->skor }} ({{ $item->kategori_skor }})</p>
                         
+                        {{-- Tampilkan catatan verifikasi --}}
+                        @if($item->catatan)
+                            <div class="mb-2">
+                                <p class="mb-1"><strong>Catatan:</strong></p>
+                                <p class="text-secondary small" style="white-space: pre-line;">{{ $item->catatan }}</p>
+                            </div>
+                        @else
+                            <p class="text-muted small mb-2">
+                                <em>Tidak ada catatan</em>
+                            </p>
+                        @endif
+                        
                         <!-- button lihat foto -->
                         @php
                             $foto = $item->media()->first(); // Ambil foto pertama
@@ -31,7 +43,7 @@
                         @if($foto)
                             <div class="mt-2">
                                 <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
-                                     Lihat Foto
+                                    📷 Lihat Foto
                                 </a>
                             </div>
                         @else
@@ -42,7 +54,7 @@
                     </div>
                     <div class="card-footer bg-white d-flex justify-content-between">
                         <a href="{{ route('verifikasi.edit', $item->verifikasi_id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('verifikasi.destroy', $item->verifikasi_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin mau hapus data ini?')">>
+                        <form action="{{ route('verifikasi.destroy', $item->verifikasi_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin mau hapus data ini?')">>>
                             @csrf 
                             @method('DELETE')
                             <button class="btn btn-sm btn-danger">Hapus</button>

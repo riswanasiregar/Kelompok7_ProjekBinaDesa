@@ -24,7 +24,7 @@ return new class extends Migration
             // Foreign key constraints 
             $table->foreign('program_id')
                   ->references('program_id')
-                  ->on('program_bantuans')
+                  ->on('program_bantuan')
                   ->onDelete('cascade');
 
             $table->foreign('penerima_id')

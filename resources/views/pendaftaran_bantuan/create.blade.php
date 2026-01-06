@@ -52,11 +52,7 @@
                         <input type="date" name="tanggal_daftar" class="form-control" required value="{{ old('tanggal_daftar') }}">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Keterangan</label>
-                        <textarea name="keterangan" class="form-control" rows="3">{{ old('keterangan') }}</textarea>
-                    </div>
-
+                    
                     <div class="mb-3">
                         <label class="form-label">Upload Foto/File (opsional)</label>
                         <input type="file" name="media" class="form-control" accept=".jpg,.jpeg,.png,.pdf">

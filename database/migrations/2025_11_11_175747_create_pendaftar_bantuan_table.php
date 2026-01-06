@@ -21,7 +21,6 @@ return new class extends Migration
             $table->unsignedBigInteger('program_id'); // FK 
             $table->date('tanggal_daftar');
             $table->enum('status_seleksi', ['pending', 'diterima', 'ditolak'])->default('pending');
-            $table->text('keterangan')->nullable();
             $table->timestamps();
 
             // Foreign Key Constraints

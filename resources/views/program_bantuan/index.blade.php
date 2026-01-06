@@ -36,9 +36,17 @@
                                 <strong>Tahun:</strong> {{ $item->tahun }}
                             </p>
 
-                            <p class="text-secondary small flex-grow-1 text-start" style="white-space: pre-line;">
-                                {{ $item->deskripsi }}
-                            </p>
+                            {{-- Tampilkan deskripsi program --}}
+                            @if($item->deskripsi)
+                                <p class="text-secondary small flex-grow-1 text-start mb-2" style="white-space: pre-line;">
+                                    <strong>Deskripsi:</strong><br>
+                                    {{ $item->deskripsi }}
+                                </p>
+                            @else
+                                <p class="text-muted small mb-2">
+                                    <em>Tidak ada deskripsi</em>
+                                </p>
+                            @endif
 
                             <!-- Anggaran program -->
                             <div class="">
@@ -47,15 +55,14 @@
                                 </p>
                             </div>
 
-                            <!-- button lihat foto -->
-                                @php
-                                    $foto = $item->media()->first(); // Cek apakah ada foto
-                                @endphp
-                                @if($foto)
-                            
+                            {{-- Button lihat foto - harus klik untuk melihat --}}
+                            @php
+                                $foto = $item->media()->first(); // Cek apakah ada foto
+                            @endphp
+                            @if($foto)
                                 <div class="mb-2">
                                     <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
-                                         Lihat Foto
+                                        📷 Lihat Foto
                                     </a>
                                 </div>
                             @else
