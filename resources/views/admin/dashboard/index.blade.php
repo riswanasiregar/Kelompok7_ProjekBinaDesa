@@ -53,7 +53,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="avatar flex-shrink-0" style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-hand-heart-line ri-28px text-white"></i>
+                            <i class="ri-gift-line ri-28px text-white"></i>
                         </div>
                         <div class="text-end">
                             <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Program</small>
@@ -97,7 +97,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="avatar flex-shrink-0" style="width: 56px; height: 56px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-survey-line ri-28px text-white"></i>
+                            <i class="ri-user-add-line ri-28px text-white"></i>
                         </div>
                         <div class="text-end">
                             <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Pendaftar</small>
@@ -119,7 +119,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="avatar flex-shrink-0" style="width: 56px; height: 56px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-user-received-line ri-28px text-white"></i>
+                            <i class="ri-user-heart-line ri-28px text-white"></i>
                         </div>
                         <div class="text-end">
                             <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Penerima</small>
@@ -217,7 +217,7 @@
                 <div class="card-header bg-transparent border-0 pt-4 pb-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar me-3" style="width: 42px; height: 42px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-survey-line ri-20px text-white"></i>
+                            <i class="ri-user-follow-line ri-20px text-white"></i>
                         </div>
                         <div>
                             <h5 class="card-title m-0 fw-bold">Status Pendaftar</h5>
@@ -271,7 +271,7 @@
                 <div class="card-header bg-transparent border-0 pt-4 pb-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar me-3" style="width: 42px; height: 42px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-user-received-line ri-20px text-white"></i>
+                            <i class="ri-user-heart-line ri-20px text-white"></i>
                         </div>
                         <div>
                             <h5 class="card-title m-0 fw-bold">Status Penerima</h5>
@@ -400,7 +400,7 @@
                 <div class="card-header bg-transparent border-0 pt-4 pb-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar me-3" style="width: 42px; height: 42px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-history-line ri-20px text-white"></i>
+                            <i class="ri-hand-coin-line ri-20px text-white"></i>
                         </div>
                         <div>
                             <h5 class="card-title m-0 fw-bold">Penyaluran Terbaru</h5>
@@ -420,7 +420,7 @@
                                 </span>
                             </div>
                             <small class="text-muted d-block mb-1">
-                                <i class="ri-hand-heart-line me-1"></i>{{ $item->program->nama_program ?? '-' }}
+                                <i class="ri-gift-line me-1"></i>{{ $item->program->nama_program ?? '-' }}
                             </small>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="fw-semibold text-success">{{ $item->nilai_formatted }} - Tahap {{ $item->tahap_ke }}</small>
@@ -448,7 +448,7 @@
                 <div class="card-header bg-transparent border-0 pt-4 pb-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar me-3" style="width: 42px; height: 42px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-survey-line ri-20px text-white"></i>
+                            <i class="ri-user-add-line ri-20px text-white"></i>
                         </div>
                         <div>
                             <h5 class="card-title m-0 fw-bold">Pendaftar Terbaru</h5>
@@ -468,7 +468,7 @@
                                 </span>
                             </div>
                             <small class="text-muted d-block mb-1">
-                                <i class="ri-hand-heart-line me-1"></i>{{ $item->program->nama_program ?? '-' }}
+                                <i class="ri-gift-line me-1"></i>{{ $item->program->nama_program ?? '-' }}
                             </small>
                             <small class="text-muted">
                                 <i class="ri-time-line me-1"></i>{{ $item->created_at->diffForHumans() }}
@@ -493,7 +493,7 @@
                 <div class="card-header bg-transparent border-0 pt-4 pb-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar me-3" style="width: 42px; height: 42px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ri-check-double-line ri-20px text-white"></i>
+                            <i class="ri-shield-check-line ri-20px text-white"></i>
                         </div>
                         <div>
                             <h5 class="card-title m-0 fw-bold">Verifikasi Terbaru</h5>
@@ -513,7 +513,7 @@
                                 </span>
                             </div>
                             <small class="text-muted d-block mb-1">
-                                <i class="ri-hand-heart-line me-1"></i>{{ $item->pendaftar->program->nama_program ?? '-' }}
+                                <i class="ri-gift-line me-1"></i>{{ $item->pendaftar->program->nama_program ?? '-' }}
                             </small>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="fw-semibold text-primary">Skor: {{ $item->skor }}</small>

@@ -19,3 +19,4 @@
 <!-- Vendors CSS -->
 <link rel="stylesheet" href="{{ asset('assets-admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets-admin/vendor/libs/apex-charts/apex-charts.css') }}" />
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
