@@ -34,7 +34,7 @@
 
     <!-- Warga -->
     <li class="menu-item">
-      <a href="{{ route('warga.index') }}" class="menu-link">
+      <a href="{{ route('admin.warga.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-group-line"></i>
         <div data-i18n="Warga">Warga</div>
       </a>
@@ -42,7 +42,7 @@
 
     <!-- Users -->
     <li class="menu-item">
-      <a href="{{ route('users.index') }}" class="menu-link">
+      <a href="{{ route('admin.users.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-user-settings-line"></i>
         <div data-i18n="Users">Users</div>
       </a>
@@ -50,7 +50,7 @@
 
     <!-- Program Bantuan -->
     <li class="menu-item">
-      <a href="{{ route('program_bantuan.index') }}" class="menu-link">
+      <a href="{{ route('admin.program_bantuan.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-hand-heart-line"></i>
         <div data-i18n="Program Bantuan">Program Bantuan</div>
       </a>
@@ -58,7 +58,7 @@
 
     <!-- Pendaftar Bantuan -->
     <li class="menu-item">
-      <a href="{{ route('pendaftar_bantuan.index') }}" class="menu-link">
+      <a href="{{ route('admin.pendaftar_bantuan.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-survey-line"></i>
         <div data-i18n="Pendaftar Bantuan">Pendaftar Bantuan</div>
       </a>
@@ -66,7 +66,7 @@
 
     <!-- Verifikasi Lapangan -->
     <li class="menu-item">
-      <a href="{{ route('verifikasi_lapangan.index') }}" class="menu-link">
+      <a href="{{ route('admin.verifikasi_lapangan.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-check-double-line"></i>
         <div data-i18n="Verifikasi Lapangan">Verifikasi Lapangan</div>
       </a>
@@ -74,7 +74,7 @@
 
     <!-- Penerima Bantuan -->
     <li class="menu-item">
-      <a href="{{ route('penerima_bantuan.index') }}" class="menu-link">
+      <a href="{{ route('admin.penerima_bantuan.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-user-received-line"></i>
         <div data-i18n="Penerima Bantuan">Penerima Bantuan</div>
       </a>
@@ -82,86 +82,14 @@
 
     <!-- Riwayat Penyaluran Bantuan -->
     <li class="menu-item">
-      <a href="{{ route('riwayat_penyaluran_bantuan.index') }}" class="menu-link">
+      <a href="{{ route('admin.riwayat_penyaluran_bantuan.index') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-history-line"></i>
         <div data-i18n="Riwayat Penyaluran Bantuan">Riwayat Penyaluran Bantuan</div>
       </a>
     </li>
 
-    <!-- Apps & Pages -->
-    <li class="menu-header mt-7">
-      <span class="menu-header-text">Apps &amp; Pages</span>
-    </li>
 
-    <!-- Account Settings -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon icon-base ri ri-layout-left-line"></i>
-        <div data-i18n="Account Settings">Account Settings</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="pages-account-settings-account.html" class="menu-link">
-            <div data-i18n="Account">Account</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="pages-account-settings-notifications.html" class="menu-link">
-            <div data-i18n="Notifications">Notifications</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="pages-account-settings-connections.html" class="menu-link">
-            <div data-i18n="Connections">Connections</div>
-          </a>
-        </li>
-      </ul>
-    </li>
 
-    <!-- Authentications -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon icon-base ri ri-shield-keyhole-line"></i>
-        <div data-i18n="Authentications">Authentications</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="{{route('login') }}" class="menu-link" target="_blank">
-            <div data-i18n="Basic">Login</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="auth-register-basic.html" class="menu-link" target="_blank">
-            <div data-i18n="Basic">Register</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
-            <div data-i18n="Basic">Forgot Password</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
-    <!-- Misc -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon icon-base ri ri-box-3-line"></i>
-        <div data-i18n="Misc">Misc</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="pages-misc-error.html" class="menu-link" target="_blank">
-            <div data-i18n="Error">Error</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="pages-misc-under-maintenance.html" class="menu-link" target="_blank">
-            <div data-i18n="Under Maintenance">Under Maintenance</div>
-          </a>
-        </li>
-      </ul>
-    </li>
   </ul>
 </aside>
 

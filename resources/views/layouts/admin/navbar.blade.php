@@ -70,12 +70,6 @@
             </li>
             <li>
               <a class="dropdown-item" href="#">
-                <i class="icon-base ri ri-user-line icon-md me-3"></i>
-                <span>My Profile</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">
                 <i class="icon-base ri ri-time-line icon-md me-3"></i>
                 <span>
                   @if(session('last_login'))
@@ -86,32 +80,21 @@
                 </span>
               </a>
             </li>
-            <li>
-              <a class="dropdown-item" href="#">
-                <i class="icon-base ri ri-settings-4-line icon-md me-3"></i>
-                <span>Settings</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">
-                <span class="d-flex align-items-center align-middle">
-                  <i class="flex-shrink-0 icon-base ri ri-bank-card-line icon-md me-3"></i>
-                  <span class="flex-grow-1 align-middle ms-1">Billing Plan</span>
-                  <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-                </span>
-              </a>
-            </li>
+
             <li>
               <div class="dropdown-divider my-1"></div>
             </li>
-            <li>
-              <div class="d-grid px-4 pt-2 pb-1">
-                <a class="btn btn-danger d-flex" href="{{ route('auth.logout') }}">
-                  <small class="align-middle">Logout</small>
-                  <i class="ri ri-logout-box-r-line ms-2 ri-xs"></i>
-                </a>
-              </div>
-            </li>
+           <li>
+  <div class="d-grid px-4 pt-2 pb-1">
+    <form id="logout-form" action="{{ route('auth.logout') }}" method="POST">
+      @csrf
+      <button type="submit" class="btn btn-danger d-flex">
+        <small class="align-middle">Logout</small>
+        <i class="ri ri-logout-box-r-line ms-2 ri-xs"></i>
+      </button>
+    </form>
+  </div>
+</li>
           </ul>
         </li>
         <!--/ User -->

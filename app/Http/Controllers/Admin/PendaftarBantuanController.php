@@ -136,7 +136,7 @@ class PendaftarBantuanController extends Controller
         });
 
         return redirect()
-            ->route('pendaftar_bantuan.index')
+            ->route('admin.pendaftar_bantuan.index')
             ->with('success', 'Pendaftar berhasil ditambahkan.');
     }
 
@@ -219,7 +219,7 @@ class PendaftarBantuanController extends Controller
         });
 
         return redirect()
-            ->route('pendaftar_bantuan.index')
+            ->route('admin.pendaftar_bantuan.index')
             ->with('success', 'Data pendaftar berhasil diperbarui.');
     }
 
@@ -265,7 +265,7 @@ class PendaftarBantuanController extends Controller
         });
 
         return redirect()
-            ->route('pendaftar_bantuan.index')
+            ->route('admin.pendaftar_bantuan.index')
             ->with('success', 'Pendaftar berhasil dihapus.');
     }
 

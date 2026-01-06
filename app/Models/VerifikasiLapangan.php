@@ -20,7 +20,8 @@ class VerifikasiLapangan extends Model
         'petugas',
         'tanggal',
         'catatan',
-        'skor'
+        'skor',
+        'user_id',
     ];
 
     protected $casts = [
@@ -31,9 +32,9 @@ class VerifikasiLapangan extends Model
      * Relationship dengan pendaftar
      */
     public function pendaftar()
-    {
-        return $this->belongsTo(PendaftarBantuan::class, 'pendaftar_id');
-    }
+{
+    return $this->belongsTo(PendaftarBantuan::class, 'pendaftar_id', 'pendaftar_id');
+}
 
     /**
      * Relationship dengan media
@@ -110,10 +111,25 @@ class VerifikasiLapangan extends Model
      */
     public function scopeByPendaftar($query, $pendaftarId)
     {
-        return $query->where('pendaftar_id', $pendaftarId);
+        return $query->where('pendaftar_id', $pendaftarId)
+                    ->orWhere('pendaftar_id', $pendaftarId);
     }
+
     public function getMediaAttribute()
     {
         return $this->media()->orderBy('sort_order')->first();
+    }
+
+    // Fungsi untuk mendapatkan foto yang diupload
+    public function getFoto()
+    {
+        $foto = $this->media()->first();
+        return $foto ? $foto->getUrlFile() : null;
+    }
+
+    // Fungsi untuk cek apakah ada foto
+    public function adaFoto()
+    {
+        return $this->media()->count() > 0;
     }
 }

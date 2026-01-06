@@ -18,4 +18,3 @@ class CreateFirstUser extends Seeder
         ]);
     }
 }
-

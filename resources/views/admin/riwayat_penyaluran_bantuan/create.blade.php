@@ -16,7 +16,7 @@
                     </svg>
                 </a>
             </li>
-            <li class="breadcrumb-item"><a href="{{ route('riwayat_penyaluran_bantuan.index') }}">Riwayat Penyaluran Bantuan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.riwayat_penyaluran_bantuan.index') }}">Riwayat Penyaluran Bantuan</a></li>
             <li class="breadcrumb-item active" aria-current="page">Tambah Riwayat Penyaluran</li>
         </ol>
     </nav>
@@ -27,7 +27,7 @@
             <p class="mb-0">Form untuk menambahkan data penyaluran bantuan baru</p>
         </div>
         <div>
-            <a href="{{ route('riwayat_penyaluran_bantuan.index') }}"
+            <a href="{{ route('admin.riwayat_penyaluran_bantuan.index') }}"
                class="btn btn-outline-secondary d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
@@ -80,7 +80,7 @@
     <div class="col-12">
         <div class="card border-0 shadow components-section">
             <div class="card-body">
-                <form action="{{ route('riwayat_penyaluran_bantuan.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.riwayat_penyaluran_bantuan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="row">
@@ -249,7 +249,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('riwayat_penyaluran_bantuan.index') }}"
+                                <a href="{{ route('admin.riwayat_penyaluran_bantuan.index') }}"
                                    class="btn btn-outline-gray-600">
                                     <i class="fas fa-times me-2"></i> Batal
                                 </a>

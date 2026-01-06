@@ -18,7 +18,8 @@ class PenerimaBantuan extends Model
     protected $fillable = [
         'program_id',
         'warga_id',
-        'keterangan'
+        'keterangan',
+        'status',
     ];
 
     /**
@@ -153,6 +154,12 @@ class PenerimaBantuan extends Model
             'Sudah Menerima' => ['class' => 'bg-success', 'label' => 'Sudah Menerima'],
             'Belum Menerima' => ['class' => 'bg-warning', 'label' => 'Belum Menerima']
         ];
+
+        // Jika ada field status di database, gunakan itu
+        if ($this->status) {
+            $labels[$this->status] = ['class' => 'bg-info', 'label' => $this->status];
+            return $labels[$this->status] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
+        }
 
         return $labels[$status] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
     }

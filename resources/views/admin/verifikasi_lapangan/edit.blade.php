@@ -16,7 +16,7 @@
                     </svg>
                 </a>
             </li>
-            <li class="breadcrumb-item"><a href="{{ route('verifikasi_lapangan.index') }}">Verifikasi Lapangan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.verifikasi_lapangan.index') }}">Verifikasi Lapangan</a></li>
             <li class="breadcrumb-item active" aria-current="page">Edit Verifikasi Lapangan</li>
         </ol>
     </nav>
@@ -27,7 +27,7 @@
             <p class="mb-0">Form untuk mengedit data verifikasi lapangan</p>
         </div>
         <div>
-            <a href="{{ route('verifikasi_lapangan.index') }}"
+            <a href="{{ route('admin.verifikasi_lapangan.index') }}"
                class="btn btn-outline-secondary d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
@@ -68,7 +68,7 @@
     <div class="col-12">
         <div class="card border-0 shadow components-section">
             <div class="card-body">
-                <form action="{{ route('verifikasi_lapangan.update', $verifikasi->verifikasi_id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.verifikasi_lapangan.update', $verifikasi->verifikasi_id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -91,7 +91,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <label for="pendaftar_id">Pendaftar Bantuan <span class="text-danger">*</span></label>
+                                <label for="pendaftar_id">Pendaftar Bantuan *</label>
                                 @error('pendaftar_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -106,7 +106,7 @@
                                     placeholder="Masukkan nama petugas"
                                     value="{{ old('petugas', $verifikasi->petugas) }}"
                                     required>
-                                <label for="petugas">Nama Petugas <span class="text-danger">*</span></label>
+                                <label for="petugas">Nama Petugas *</label>
                                 @error('petugas')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -120,7 +120,7 @@
                                     name="tanggal"
                                     value="{{ old('tanggal', $verifikasi->tanggal->format('Y-m-d')) }}"
                                     required>
-                                <label for="tanggal">Tanggal Verifikasi <span class="text-danger">*</span></label>
+                                <label for="tanggal">Tanggal Verifikasi *</label>
                                 @error('tanggal')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -138,7 +138,7 @@
                                     max="100"
                                     oninput="updateSkorPreview(this.value)"
                                     required>
-                                <label for="skor">Skor (0-100) <span class="text-danger">*</span></label>
+                                <label for="skor">Skor (0-100) *</label>
                                 @error('skor')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -154,16 +154,16 @@
                                                 $skor = old('skor', $verifikasi->skor);
                                                 if($skor >= 85) {
                                                     $kategori = 'Sangat Baik';
-                                                    $badgeClass = 'bg-label-success';
+                                                    $badgeClass = 'bg-success';
                                                 } elseif($skor >= 70) {
                                                     $kategori = 'Baik';
-                                                    $badgeClass = 'bg-label-info';
+                                                    $badgeClass = 'bg-info';
                                                 } elseif($skor >= 55) {
                                                     $kategori = 'Cukup';
-                                                    $badgeClass = 'bg-label-warning';
+                                                    $badgeClass = 'bg-warning';
                                                 } else {
                                                     $kategori = 'Kurang';
-                                                    $badgeClass = 'bg-label-danger';
+                                                    $badgeClass = 'bg-danger';
                                                 }
                                             @endphp
                                             <span id="kategoriBadge" class="badge rounded-pill {{ $badgeClass }}">{{ $kategori }}</span>
@@ -173,12 +173,14 @@
                             </div>
 
                             {{-- Info Kategori Skor --}}
-                            <div class="small fw-medium mb-2">Kategori Skor:</div>
-                            <div class="demo-inline-spacing">
-                                <span class="badge rounded-pill bg-label-success">85-100: Sangat Baik</span>
-                                <span class="badge rounded-pill bg-label-info">70-84: Baik</span>
-                                <span class="badge rounded-pill bg-label-warning">55-69: Cukup</span>
-                                <span class="badge rounded-pill bg-label-danger">0-54: Kurang</span>
+                            <div class="alert alert-info">
+                                <div class="small fw-medium mb-2"><i class="fas fa-info-circle me-2"></i>Kategori Skor:</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-success">85-100: Sangat Baik</span>
+                                    <span class="badge bg-info">70-84: Baik</span>
+                                    <span class="badge bg-warning">55-69: Cukup</span>
+                                    <span class="badge bg-danger">0-54: Kurang</span>
+                                </div>
                             </div>
                         </div>
 
@@ -193,48 +195,82 @@
                                     class="form-control @error('catatan') is-invalid @enderror"
                                     id="catatan"
                                     name="catatan"
-                                    rows="4"
-                                    placeholder="Masukkan catatan hasil verifikasi lapangan">{{ old('catatan', $verifikasi->catatan) }}</textarea>
+                                    rows="6"
+                                    placeholder="Masukkan catatan hasil verifikasi lapangan...">{{ old('catatan', $verifikasi->catatan) }}</textarea>
                                 @error('catatan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-
-                            {{-- Tampilkan Media Saat Ini --}}
-                            @if($verifikasi->media)
+                            {{-- Media yang Sudah Ada --}}
+                            @if($verifikasi->media && $verifikasi->media->count() > 0)
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Berkas Saat Ini</label>
-                                <div class="d-flex align-items-center gap-3 p-3 border rounded bg-light">
-                                    @if($verifikasi->media->is_image)
-                                        <img src="{{ $verifikasi->media->full_url }}"
-                                             alt="{{ $verifikasi->media->caption }}"
-                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;"
-                                             class="img-thumbnail">
-                                    @else
-                                        <div class="bg-white rounded p-2 text-center border" style="width: 60px; height: 60px;">
-                                            <i class="fas fa-file text-primary fs-5"></i>
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-images me-2"></i>Media Saat Ini ({{ $verifikasi->media->count() }} file)
+                                </label>
+                                <div id="existingMediaContainer">
+                                    @foreach($verifikasi->media as $media)
+                                        <div class="media-item border rounded p-3 mb-2 bg-light" id="media-{{ $media->media_id }}">
+                                            <div class="d-flex align-items-center gap-3">
+                                                {{-- Preview --}}
+                                                <div>
+                                                    @if(in_array(strtolower(pathinfo($media->file_url, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                                        <img src="{{ asset('storage/' . $media->file_url) }}"
+                                                             alt="{{ $media->caption }}"
+                                                             style="width: 80px; height: 80px; object-fit: cover;"
+                                                             class="rounded">
+                                                    @else
+                                                        <div class="bg-white rounded p-3 text-center border" style="width: 80px; height: 80px;">
+                                                            <i class="fas fa-file-pdf text-danger fs-3"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Info --}}
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-1 fw-bold">{{ basename($media->file_url) }}</p>
+                                                    <small class="text-muted">{{ $media->caption ?? 'No caption' }}</small>
+                                                </div>
+
+                                                {{-- Action --}}
+                                                <div>
+                                                    <button type="button"
+                                                            class="btn btn-danger btn-sm"
+                                                            onclick="deleteMedia({{ $verifikasi->verifikasi_id }}, {{ $media->media_id }})">
+                                                        <i class="fas fa-trash"></i> Hapus
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    @endif
-                                    <div class="flex-grow-1">
-                                        <p class="mb-1 fw-bold">{{ $verifikasi->media->display_name }}</p>
-                                        <small class="text-muted">{{ $verifikasi->media->caption }}</small>
-                                    </div>
+                                    @endforeach
                                 </div>
-                                <small class="text-muted">Upload berkas baru untuk mengganti berkas saat ini</small>
                             </div>
                             @endif
 
-                            {{-- Upload File Baru --}}
-                            <div class="form-floating form-floating-outline mb-4">
+                            {{-- Upload File Baru (Multiple) --}}
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-upload me-2"></i>Upload Media Baru (Opsional)
+                                </label>
                                 <input type="file"
-                                    name="file_media"
-                                    class="form-control @error('file_media') is-invalid @enderror"
-                                    placeholder="Upload berkas baru">
-                                <label for="file_media">Upload Berkas Baru (Opsional)</label>
-                                @error('file_media')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                    name="media[]"
+                                    class="form-control @error('media.*') is-invalid @enderror"
+                                    accept=".jpg,.jpeg,.png,.pdf"
+                                    multiple
+                                    id="mediaInput">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Format: JPG, PNG, PDF (Maks. 5MB per file). Bisa upload beberapa file sekaligus.
+                                </div>
+                                @error('media.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
+                            </div>
+
+                            {{-- Preview File Baru --}}
+                            <div id="filePreview" class="mb-4" style="display: none;">
+                                <label class="form-label fw-bold">File yang akan ditambahkan:</label>
+                                <div id="fileList" class="border rounded p-2 bg-light"></div>
                             </div>
 
                             {{-- Caption Media --}}
@@ -243,15 +279,13 @@
                                     class="form-control @error('caption') is-invalid @enderror"
                                     id="caption"
                                     name="caption"
-                                    placeholder="Tulis caption berkas"
-                                    value="{{ old('caption', $verifikasi->media->caption ?? '') }}">
-                                <label for="caption">Keterangan Berkas</label>
+                                    placeholder="Tulis caption untuk file baru"
+                                    value="{{ old('caption') }}">
+                                <label for="caption">Keterangan File Baru (Opsional)</label>
                                 @error('caption')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
-                            <small class="text-muted">Format: JPG, PNG, PDF (Maks. 5MB)</small>
                         </div>
                     </div>
 
@@ -259,7 +293,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('verifikasi_lapangan.index') }}"
+                                <a href="{{ route('admin.verifikasi_lapangan.index') }}"
                                    class="btn btn-outline-gray-600">
                                     <i class="fas fa-times me-2"></i> Batal
                                 </a>
@@ -286,9 +320,29 @@
     border-color: #696cff;
     box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2);
 }
+.media-item {
+    transition: all 0.3s ease;
+}
+.media-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+#fileList .file-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+#fileList .file-item i {
+    color: #696cff;
+}
 </style>
 
 <script>
+// Update kategori skor real-time
 function updateSkorPreview(skor) {
     const preview = document.getElementById('skorPreview');
     const badge = document.getElementById('kategoriBadge');
@@ -304,16 +358,16 @@ function updateSkorPreview(skor) {
 
     if (skor >= 85) {
         kategori = 'Sangat Baik';
-        badgeClass = 'bg-label-success';
+        badgeClass = 'bg-success';
     } else if (skor >= 70) {
         kategori = 'Baik';
-        badgeClass = 'bg-label-info';
+        badgeClass = 'bg-info';
     } else if (skor >= 55) {
         kategori = 'Cukup';
-        badgeClass = 'bg-label-warning';
+        badgeClass = 'bg-warning';
     } else {
         kategori = 'Kurang';
-        badgeClass = 'bg-label-danger';
+        badgeClass = 'bg-danger';
     }
 
     badge.textContent = kategori;
@@ -321,7 +375,79 @@ function updateSkorPreview(skor) {
     preview.style.display = 'block';
 }
 
-// Initialize preview
+// Hapus media via AJAX
+function deleteMedia(verifikasiId, mediaId) {
+    if (!confirm('Apakah Anda yakin ingin menghapus file ini?')) {
+        return;
+    }
+
+    fetch(`/admin/verifikasi-lapangan/${verifikasiId}/media/${mediaId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`media-${mediaId}`).remove();
+
+            // Cek apakah masih ada media
+            const container = document.getElementById('existingMediaContainer');
+            if (container.children.length === 0) {
+                container.parentElement.remove();
+            }
+
+            alert('Media berhasil dihapus');
+        } else {
+            alert('Gagal menghapus media');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menghapus media');
+    });
+}
+
+// Preview file baru yang dipilih
+document.getElementById('mediaInput').addEventListener('change', function(e) {
+    const filePreview = document.getElementById('filePreview');
+    const fileList = document.getElementById('fileList');
+    const files = e.target.files;
+
+    if (files.length > 0) {
+        filePreview.style.display = 'block';
+        fileList.innerHTML = '';
+
+        Array.from(files).forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+
+            // Icon berdasarkan tipe file
+            let icon = 'fa-file';
+            if (file.type.includes('image')) {
+                icon = 'fa-image';
+            } else if (file.type.includes('pdf')) {
+                icon = 'fa-file-pdf';
+            }
+
+            fileItem.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span class="flex-grow-1">${file.name}</span>
+                <span class="badge bg-secondary">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+            `;
+
+            fileList.appendChild(fileItem);
+        });
+    } else {
+        filePreview.style.display = 'none';
+        fileList.innerHTML = '';
+    }
+});
+
+// Initialize preview on page load
 document.addEventListener('DOMContentLoaded', function() {
     const skorInput = document.getElementById('skor');
     updateSkorPreview(skorInput.value);

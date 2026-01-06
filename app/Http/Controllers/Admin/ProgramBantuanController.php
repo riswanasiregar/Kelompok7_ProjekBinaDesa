@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProgramBantuan\Admin;
+use App\Models\ProgramBantuan;
 use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +99,7 @@ class ProgramBantuanController extends Controller
         });
 
         return redirect()
-            ->route('program_bantuan.index')
+            ->route('admin.program_bantuan.index')
             ->with('success', 'Program bantuan berhasil ditambahkan.');
     }
 
@@ -164,7 +164,7 @@ class ProgramBantuanController extends Controller
         });
 
         return redirect()
-            ->route('program_bantuan.index')
+            ->route('admin.program_bantuan.index')
             ->with('success', 'Program bantuan berhasil diperbarui.');
     }
 
@@ -211,7 +211,7 @@ class ProgramBantuanController extends Controller
         });
 
         return redirect()
-            ->route('program_bantuan.index')
+            ->route('admin.program_bantuan.index')
             ->with('success', 'Program bantuan berhasil dihapus.');
     }
 

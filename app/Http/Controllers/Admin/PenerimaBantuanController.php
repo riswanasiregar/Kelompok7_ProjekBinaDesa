@@ -92,7 +92,7 @@ class PenerimaBantuanController extends Controller
             PenerimaBantuan::create($validated);
         });
 
-        return redirect()->route('penerima_bantuan.index')->with('success', 'Penerima bantuan berhasil ditambahkan.');
+        return redirect()->route('admin.penerima_bantuan.index')->with('success', 'Penerima bantuan berhasil ditambahkan.');
     }
 
     /**
@@ -144,7 +144,7 @@ class PenerimaBantuanController extends Controller
             $penerima->update($validated);
         });
 
-        return redirect()->route('penerima_bantuan.index')->with('success', 'Data penerima bantuan berhasil diperbarui.');
+        return redirect()->route('admin.penerima_bantuan.index')->with('success', 'Data penerima bantuan berhasil diperbarui.');
     }
 
     /**
@@ -164,10 +164,10 @@ class PenerimaBantuanController extends Controller
                 $penerima->delete();
             });
 
-            return redirect()->route('penerima_bantuan.index')->with('success', 'Data penerima bantuan berhasil dihapus.');
+            return redirect()->route('admin.penerima_bantuan.index')->with('success', 'Data penerima bantuan berhasil dihapus.');
 
         } catch (\Exception $e) {
-            return redirect()->route('penerima_bantuan.index')
+            return redirect()->route('admin.penerima_bantuan.index')
                              ->with('error', 'Gagal menghapus penerima: ' . $e->getMessage());
         }
     }

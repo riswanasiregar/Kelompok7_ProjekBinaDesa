@@ -18,7 +18,9 @@ class PendaftarBantuan extends Model
     protected $fillable = [
         'program_id',
         'warga_id',
-        'status_seleksi'
+        'status_seleksi',
+        'keterangan',
+        'user_id',
     ];
 
     protected $casts = [
@@ -45,11 +47,11 @@ class PendaftarBantuan extends Model
     /**
      * Relationship dengan verifikasi
      */
-    public function verifikasi()
-    {
-        return $this->hasMany(VerifikasiLapangan::class, 'pendaftar_id');
-    }
-
+// Di model PendaftarBantuan.php (jika nanti dibutuhkan)
+public function verifikasi()
+{
+    return $this->hasOne(VerifikasiLapangan::class, 'pendaftar_id', 'pendaftar_id');
+}
     /**
      * Relationship dengan media
      */
@@ -59,7 +61,10 @@ class PendaftarBantuan extends Model
                     ->where('ref_table', 'pendaftar_bantuan')
                     ->orderBy('sort_order');
     }
-
+public function programBantuan()
+    {
+        return $this->belongsTo(ProgramBantuan::class, 'program_bantuan_id');
+    }
     /**
      * Relationship dengan penerima (jika diterima)
      */
@@ -328,5 +333,18 @@ class PendaftarBantuan extends Model
         return $query->whereHas('program', function($q) {
             $q->where('tahun', '>=', now()->year);
         });
+    }
+
+    // Fungsi untuk mendapatkan file yang diupload
+    public function getFile()
+    {
+        $media = $this->media()->first();
+        return $media ? $media->getUrlFile() : null;
+    }
+
+    // Fungsi untuk cek apakah ada file
+    public function hasFile()
+    {
+        return $this->media()->count() > 0;
     }
 }

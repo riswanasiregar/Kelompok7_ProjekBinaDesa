@@ -12,7 +12,13 @@ class AuthController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            return redirect()->route('admin.dashboard');
+            // Redirect sesuai role
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('dashboard');
+            }
         }
 
         return view('auth.login');
@@ -28,16 +34,43 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-
             Auth::login($user);
-
             session(['last_login' => now()]);
 
-
-            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!'); // FIX
+            // Redirect sesuai role
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Login berhasil sebagai Admin!');
+            } else {
+                return redirect()->route('dashboard')->with('success', 'Login berhasil sebagai Guest!');
+            }
         }
 
         return back()->withErrors(['email' => 'Email atau password salah'])->withInput();
+    }
+
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role' => 'guest', // default guest
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil, Anda login sebagai Guest!');
     }
 
     public function logout(Request $request)
@@ -49,4 +82,3 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Anda telah logout.');
     }
 }
-

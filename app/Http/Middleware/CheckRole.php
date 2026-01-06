@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Middleware;
-use Illuminate\Support\Facades\Auth;
+
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
@@ -13,12 +14,13 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role): Response
-{
-    if (Auth::check() && Auth::user()->role == $role) {
-        return $next($request);
-    }
-   return response()->view('auth.error', [], 403);
-}
+    public function handle(Request $request, Closure $next, string $role): Response
+    {
+        if (Auth::check() && Auth::user()->role === $role) {
+            return $next($request);
+        }
 
+        // Kalau role tidak sesuai, kembalikan 403
+        return response()->view('auth.error', [], 403);
+    }
 }

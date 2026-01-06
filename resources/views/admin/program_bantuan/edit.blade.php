@@ -11,7 +11,7 @@
             <h1 class="h3 fw-bold mb-2">Edit Data Program Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('program_bantuan.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('admin.program_bantuan.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
         </div>
@@ -47,7 +47,7 @@
             <div class="card border-0 shadow components-section">
                 <div class="card-body">
 
-                    <form action="{{ route('program_bantuan.update', $program->program_id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.program_bantuan.update', $program->program_id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -232,7 +232,7 @@
 
                         {{-- Tombol --}}
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="{{ route('program_bantuan.index') }}" class="btn btn-outline-gray-600">
+                            <a href="{{ route('admin.program_bantuan.index') }}" class="btn btn-outline-gray-600">
                                 <i class="fas fa-times me-2"></i> Batal
                             </a>
 

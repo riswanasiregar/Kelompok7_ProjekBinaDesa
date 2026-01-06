@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class RiwayatPenyaluranBantuan extends Model
 {
@@ -20,7 +21,9 @@ class RiwayatPenyaluranBantuan extends Model
         'penerima_id',
         'tahap_ke',
         'tanggal',
-        'nilai'
+        'nilai',
+        'file_media',
+        'caption',
     ];
 
     protected $casts = [
@@ -49,7 +52,11 @@ class RiwayatPenyaluranBantuan extends Model
      */
     public function media()
     {
-        return $this->hasMany(Media::class, 'ref_id')->where('ref_table', 'penyaluran_bantuan');
+        return $this->hasMany(Media::class, 'ref_id')
+                    ->where(function($q) {
+                        $q->where('ref_table', 'penyaluran_bantuan')
+                          ->orWhere('ref_table', 'riwayat_penyaluran_bantuan');
+                    });
     }
 
     /**
@@ -85,6 +92,38 @@ class RiwayatPenyaluranBantuan extends Model
     public function getNilaiFormattedAttribute()
     {
         return 'Rp ' . number_format($this->nilai, 0, ',', '.');
+    }
+
+    /**
+     * Mutator untuk membersihkan format rupiah sebelum disimpan
+     * Mengubah "1.000.000" atau "Rp 1.000.000" menjadi "1000000"
+     */
+    public function setNilaiAttribute($value)
+    {
+        // Jika value sudah format angka standard (ada titik sebagai desimal), simpan langsung.
+        if (is_numeric($value)) {
+            $this->attributes['nilai'] = $value;
+            return;
+        }
+
+        if (is_string($value)) {
+            // Hapus semua karakter kecuali angka dan koma (regex lebih aman)
+            $value = preg_replace('/[^0-9,]/', '', $value);
+            // Ubah koma jadi titik desimal
+            $value = str_replace(',', '.', $value);
+        }
+        $this->attributes['nilai'] = $value;
+    }
+
+    /**
+     * Mutator untuk memastikan format tanggal Y-m-d (Database format)
+     */
+    public function setTanggalAttribute($value)
+    {
+        if (!empty($value)) {
+            // Parse tanggal dari format apapun (d-m-Y atau Y-m-d) ke Y-m-d
+            $this->attributes['tanggal'] = Carbon::parse($value)->format('Y-m-d');
+        }
     }
 
     /**
@@ -159,5 +198,18 @@ class RiwayatPenyaluranBantuan extends Model
     {
         return $query->selectRaw('penerima_id, SUM(nilai) as total_diterima, COUNT(*) as jumlah_tahap')
                     ->groupBy('penerima_id');
+    }
+
+    // Fungsi untuk mendapatkan file yang diupload
+    public function getFile()
+    {
+        $media = $this->media()->first();
+        return $media ? $media->getUrlFile() : null;
+    }
+
+    // Fungsi untuk cek apakah ada file
+    public function hasFile()
+    {
+        return $this->media()->count() > 0;
     }
 }

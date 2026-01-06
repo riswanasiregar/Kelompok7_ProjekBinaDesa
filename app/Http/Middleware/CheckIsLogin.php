@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckIsLogin
@@ -16,9 +16,12 @@ class CheckIsLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        	if (!Auth::check()) {
-		    return redirect()->route('login')->withErrors('Silahkan login terlebih dahulu!');
-		}
+        if (!Auth::check()) {
+            // Jika belum login, arahkan ke halaman login utama
+            return redirect()->route('login')->withErrors('Silahkan login terlebih dahulu!');
+        }
+
         return $next($request);
     }
 }
+

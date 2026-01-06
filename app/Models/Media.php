@@ -18,9 +18,12 @@ class Media extends Model
         'ref_table',
         'ref_id',
         'file_url',
+        'file_path',
+        'file_name',
         'caption',
         'mime_type',
-        'sort_order'
+        'sort_order',
+        'user_id',
     ];
 
     /**
@@ -28,7 +31,13 @@ class Media extends Model
      */
     public function getFullUrlAttribute()
     {
-        return asset('storage/' . $this->file_url);
+        if ($this->file_url) {
+            return asset('storage/' . $this->file_url);
+        }
+        if ($this->file_path) {
+            return asset('storage/' . $this->file_path);
+        }
+        return null;
     }
 
     /**
@@ -36,7 +45,14 @@ class Media extends Model
      */
     public function getIsImageAttribute()
     {
-        return in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+        if ($this->mime_type) {
+            return in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+        }
+        if ($this->file_name) {
+            $extension = pathinfo($this->file_name, PATHINFO_EXTENSION);
+            return in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+        }
+        return false;
     }
 
     /**
@@ -67,7 +83,16 @@ class Media extends Model
      */
     public function getDisplayNameAttribute()
     {
-        return $this->caption ?: basename($this->file_url);
+        if ($this->caption) {
+            return $this->caption;
+        }
+        if ($this->file_name) {
+            return $this->file_name;
+        }
+        if ($this->file_url) {
+            return basename($this->file_url);
+        }
+        return 'Unknown File';
     }
 
     /**
@@ -105,5 +130,46 @@ class Media extends Model
     public function scopePenyaluranBantuan($query, $penyaluranId = null)
     {
         return $this->scopeByReferensi($query, 'penyaluran_bantuan', $penyaluranId);
+    }
+
+    // Fungsi sederhana untuk mendapatkan URL file
+    public function getUrlFile()
+    {
+        if ($this->file_url) {
+            return asset('storage/' . $this->file_url);
+        }
+        if ($this->file_path) {
+            return asset('storage/' . $this->file_path);
+        }
+        return null;
+    }
+
+    // Fungsi untuk cek apakah file adalah gambar
+    public function isImage()
+    {
+        if ($this->mime_type) {
+            return in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+        }
+        if ($this->file_name) {
+            $extension = pathinfo($this->file_name, PATHINFO_EXTENSION);
+            return in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+        }
+        return false;
+    }
+
+    // COMMAND: Fungsi helper untuk mendapatkan media berdasarkan tabel dan ID
+    public static function getFotoByTable($tableName, $tableId)
+    {
+        return self::where('ref_table', $tableName)
+                   ->where('ref_id', $tableId)
+                   ->first();
+    }
+
+    // COMMAND: Fungsi untuk cek apakah ada foto
+    public static function hasFoto($tableName, $tableId)
+    {
+        return self::where('ref_table', $tableName)
+                   ->where('ref_id', $tableId)
+                   ->exists();
     }
 }

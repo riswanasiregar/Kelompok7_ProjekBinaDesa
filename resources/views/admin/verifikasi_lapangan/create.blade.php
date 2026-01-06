@@ -1,46 +1,38 @@
 @extends('layouts.admin.app')
-
 @section('title', 'Tambah Verifikasi Lapangan')
-
 @section('content')
 <div class="py-4">
-    <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
-        <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
-            <li class="breadcrumb-item">
-                <a href="#">
-                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                        </path>
-                    </svg>
-                </a>
-            </li>
-            <li class="breadcrumb-item"><a href="{{ route('verifikasi_lapangan.index') }}">Verifikasi Lapangan</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Tambah Verifikasi Lapangan</li>
-        </ol>
-    </nav>
 
-    <div class="d-flex justify-content-between w-100 flex-wrap">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Tambah Data Verifikasi Lapangan</h1>
-            <p class="mb-0">Form untuk menambahkan data verifikasi lapangan baru</p>
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center w-100 flex-wrap mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-2">Tambah Verifikasi Lapangan</h1>
         </div>
         <div>
-            <a href="{{ route('verifikasi_lapangan.index') }}"
-               class="btn btn-outline-secondary d-inline-flex align-items-center">
+            <a href="{{ route('admin.verifikasi_lapangan.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
         </div>
     </div>
-</div>
 
-{{-- Error --}}
+{{-- Success Message --}}
+@if (session('success'))
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Error Message --}}
 @if ($errors->any())
 <div class="row mb-4">
     <div class="col-12">
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <strong>Terjadi kesalahan input </strong><br><br>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Terjadi kesalahan:</strong>
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -52,33 +44,22 @@
 </div>
 @endif
 
-{{-- Success --}}
-@if (session('success'))
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="alert alert-primary alert-dismissible" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    </div>
-</div>
-@endif
-
 <div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow components-section">
+    <div class="col-12 mb-4">
+        <div class="card border-0 shadow mb-4">
             <div class="card-body">
-                <form action="{{ route('verifikasi_lapangan.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.verifikasi_lapangan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="row">
-                        {{-- KOLOM 1 --}}
-                        <div class="col-xl-6">
+                        <!-- KOLOM KIRI -->
+                        <div class="col-md-6">
                             <h5 class="fw-bold text-gray-800 mb-4">Data Verifikasi</h5>
 
-                            {{-- Pendaftar --}}
-                            <div class="form-floating form-floating-outline mb-4">
-                                <select class="form-control @error('pendaftar_id') is-invalid @enderror"
+                            <!-- Pendaftar -->
+                            <div class="mb-4">
+                                <label for="pendaftar_id" class="form-label fw-bold">Pendaftar Bantuan *</label>
+                                <select class="form-select @error('pendaftar_id') is-invalid @enderror"
                                         id="pendaftar_id"
                                         name="pendaftar_id"
                                         required>
@@ -90,14 +71,14 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <label for="pendaftar_id">Pendaftar Bantuan *</label>
                                 @error('pendaftar_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            {{-- Petugas --}}
-                            <div class="form-floating form-floating-outline mb-4">
+                            <!-- Petugas -->
+                            <div class="mb-4">
+                                <label for="petugas" class="form-label fw-bold">Nama Petugas *</label>
                                 <input type="text"
                                     class="form-control @error('petugas') is-invalid @enderror"
                                     id="petugas"
@@ -105,28 +86,28 @@
                                     placeholder="Masukkan nama petugas"
                                     value="{{ old('petugas') }}"
                                     required>
-                                <label for="petugas">Nama Petugas *</label>
                                 @error('petugas')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            {{-- Tanggal --}}
-                            <div class="form-floating form-floating-outline mb-4">
+                            <!-- Tanggal -->
+                            <div class="mb-4">
+                                <label for="tanggal" class="form-label fw-bold">Tanggal Verifikasi *</label>
                                 <input type="date"
                                     class="form-control @error('tanggal') is-invalid @enderror"
                                     id="tanggal"
                                     name="tanggal"
-                                    value="{{ old('tanggal') }}"
+                                    value="{{ old('tanggal', date('Y-m-d')) }}"
                                     required>
-                                <label for="tanggal">Tanggal Verifikasi *</label>
                                 @error('tanggal')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            {{-- Skor --}}
-                            <div class="form-floating form-floating-outline mb-4">
+                            <!-- Skor -->
+                            <div class="mb-4">
+                                <label for="skor" class="form-label fw-bold">Skor (0-100) *</label>
                                 <input type="number"
                                     class="form-control @error('skor') is-invalid @enderror"
                                     id="skor"
@@ -136,18 +117,28 @@
                                     min="0"
                                     max="100"
                                     required>
-                                <label for="skor">Skor (0-100) *</label>
                                 @error('skor')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <!-- Info Kategori Skor -->
+                            <div class="alert alert-info">
+                                <div class="small fw-medium mb-2"><i class="fas fa-info-circle me-2"></i>Kategori Skor:</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-success">85-100: Sangat Baik</span>
+                                    <span class="badge bg-info">70-84: Baik</span>
+                                    <span class="badge bg-warning">55-69: Cukup</span>
+                                    <span class="badge bg-danger">0-54: Kurang</span>
+                                </div>
+                            </div>
                         </div>
 
-                        {{-- KOLOM 2 --}}
-                        <div class="col-xl-6">
+                        <!-- KOLOM KANAN -->
+                        <div class="col-md-6">
                             <h5 class="fw-bold text-gray-800 mb-4">Detail & Media</h5>
 
-                            {{-- Catatan --}}
+                            <!-- Catatan -->
                             <div class="mb-4">
                                 <label for="catatan" class="form-label fw-bold">Catatan Verifikasi</label>
                                 <textarea
@@ -155,57 +146,60 @@
                                     id="catatan"
                                     name="catatan"
                                     rows="4"
-                                    placeholder="Masukkan catatan hasil verifikasi lapangan">{{ old('catatan') }}</textarea>
+                                    placeholder="Masukkan catatan hasil verifikasi lapangan...">{{ old('catatan') }}</textarea>
                                 @error('catatan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            {{-- File Media --}}
+                            <!-- File Media (Multiple Upload) -->
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Upload Bukti Verifikasi (Opsional)</label>
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-upload me-2"></i>Upload Bukti Verifikasi (Opsional)
+                                </label>
                                 <input type="file"
-                                    name="file_media"
-                                    class="form-control @error('file_media') is-invalid @enderror"
-                                    accept=".jpg,.jpeg,.png,.pdf">
-                                <div class="form-text">Format: JPG, PNG, PDF (Maks. 4MB)</div>
-                                @error('file_media')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                    name="media[]"
+                                    class="form-control @error('media.*') is-invalid @enderror"
+                                    accept=".jpg,.jpeg,.png,.pdf,.gif"
+                                    multiple
+                                    id="mediaInput">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Format: JPG, PNG, GIF, PDF (Maks. 5MB per file). Bisa upload beberapa file sekaligus.
+                                </div>
+                                @error('media.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            {{-- Caption Media --}}
-                            <div class="form-floating form-floating-outline mb-4">
+                            <!-- Preview File -->
+                            <div id="filePreview" class="mb-4" style="display: none;">
+                                <label class="form-label fw-bold">File yang dipilih:</label>
+                                <div id="fileList" class="border rounded p-2 bg-light"></div>
+                            </div>
+
+                            <!-- Caption Media -->
+                            <div class="mb-4">
+                                <label for="caption" class="form-label fw-bold">Keterangan File (Opsional)</label>
                                 <input type="text"
                                     class="form-control @error('caption') is-invalid @enderror"
                                     id="caption"
                                     name="caption"
                                     placeholder="Tulis caption untuk file bukti"
                                     value="{{ old('caption') }}">
-                                <label for="caption">Keterangan File</label>
                                 @error('caption')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
 
-                          {{-- Info Kategori Skor --}}
-        <div class="small fw-medium mb-1">Kategori Skor:</div>
-        <div class="demo-inline-spacing">
-            <span class="badge rounded-pill bg-label-success">85-100: Sangat Baik</span>
-            <span class="badge rounded-pill bg-label-info">70-84: Baik</span>
-            <span class="badge rounded-pill bg-label-warning">55-69: Cukup</span>
-            <span class="badge rounded-pill bg-label-danger">0-54: Kurang</span>
-        </div>
-
-
-
-
-                    {{-- Tombol --}}
+                    <!-- Tombol -->
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('verifikasi_lapangan.index') }}"
-                                   class="btn btn-outline-gray-600">
+                                <a href="{{ route('admin.verifikasi_lapangan.index') }}"
+                                   class="btn btn-outline-secondary">
                                     <i class="fas fa-times me-2"></i> Batal
                                 </a>
                                 <button type="submit" class="btn btn-primary">
@@ -222,15 +216,73 @@
     </div>
 </div>
 
+@endsection
+
+@push('scripts')
+<script>
+// Preview file yang dipilih
+document.getElementById('mediaInput').addEventListener('change', function(e) {
+    const filePreview = document.getElementById('filePreview');
+    const fileList = document.getElementById('fileList');
+    const files = e.target.files;
+
+    if (files.length > 0) {
+        filePreview.style.display = 'block';
+        fileList.innerHTML = '';
+
+        Array.from(files).forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item d-flex align-items-center gap-2 mb-2 p-2 bg-white border rounded';
+
+            // Icon berdasarkan tipe file
+            let icon = 'fa-file text-secondary';
+            let iconColor = 'text-secondary';
+            if (file.type.includes('image')) {
+                icon = 'fa-image text-primary';
+                iconColor = 'text-primary';
+            } else if (file.type.includes('pdf')) {
+                icon = 'fa-file-pdf text-danger';
+                iconColor = 'text-danger';
+            }
+
+            fileItem.innerHTML = `
+                <i class="fas ${icon} ${iconColor}"></i>
+                <span class="flex-grow-1 small">${file.name}</span>
+                <span class="badge bg-secondary">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+            `;
+
+            fileList.appendChild(fileItem);
+        });
+    } else {
+        filePreview.style.display = 'none';
+        fileList.innerHTML = '';
+    }
+});
+
+// Set tanggal default ke hari ini
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('tanggal').value) {
+        document.getElementById('tanggal').valueAsDate = new Date();
+    }
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
 <style>
-.form-floating.form-floating-outline .form-control {
-    border: 1px solid #d9dee3;
-    border-radius: 0.375rem;
+.file-item {
+    transition: all 0.3s ease;
 }
-.form-floating.form-floating-outline .form-control:focus {
-    border-color: #696cff;
-    box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2);
+.file-item:hover {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
 }
 </style>
-
-@endsection
+@endpush

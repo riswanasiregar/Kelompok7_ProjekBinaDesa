@@ -47,6 +47,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('riwayat_penyaluran_bantuan');
+        Schema::table('riwayat_penyaluran_bantuan', function (Blueprint $table) {
+        $table->dropColumn('caption');
+    });
     }
 };

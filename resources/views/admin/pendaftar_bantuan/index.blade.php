@@ -9,7 +9,7 @@
             <h1 class="h3 fw-bold mb-2">Data Pendaftar Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('pendaftar_bantuan.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.pendaftar_bantuan.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i> Tambah Pendaftar Bantuan
             </a>
         </div>
@@ -28,7 +28,7 @@
 @endif
 
 {{-- Filter Program & Status & Search --}}
-<form method="GET" action="{{ route('pendaftar_bantuan.index') }}" class="mb-3">
+<form method="GET" action="{{ route('admin.pendaftar_bantuan.index') }}" class="mb-3">
     <div class="row g-2">
         {{-- Filter Program --}}
         <div class="col-md-3">
@@ -174,7 +174,7 @@
 
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('pendaftar_bantuan.edit', $data->pendaftar_id) }}"
+                                            <a href="{{ route('admin.pendaftar_bantuan.edit', $data->pendaftar_id) }}"
                                                class="btn btn-info btn-sm d-flex align-items-center">
                                                 <svg class="icon icon-xs me-1" data-slot="icon" fill="none" stroke-width="1.5"
                                                      stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +185,7 @@
                                                 Edit
                                             </a>
 
-                                            <form action="{{ route('pendaftar_bantuan.destroy', $data->pendaftar_id) }}"
+                                            <form action="{{ route('admin.pendaftar_bantuan.destroy', $data->pendaftar_id) }}"
                                                   method="POST" style="display:inline"
                                                   onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                 @csrf

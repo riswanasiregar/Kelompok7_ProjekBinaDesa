@@ -11,7 +11,7 @@
             <h1 class="h3 fw-bold mb-2">Data Penerima Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('penerima_bantuan.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.penerima_bantuan.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i> Tambah Penerima Bantuan
             </a>
         </div>
@@ -43,7 +43,7 @@
 @endif
 
 {{-- Filter Program & Search --}}
-<form method="GET" action="{{ route('penerima_bantuan.index') }}" class="mb-3">
+<form method="GET" action="{{ route('admin.penerima_bantuan.index') }}" class="mb-3">
     <div class="row g-2">
         {{-- Filter Program --}}
         <div class="col-md-4">
@@ -81,7 +81,7 @@
                     </svg>
                 </button>
                 @if(request('search') || request('program_id') || request('warga_nama'))
-                    <a href="{{ route('penerima_bantuan.index') }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ route('admin.penerima_bantuan.index') }}" class="btn btn-outline-secondary ms-2">
                         Reset
                     </a>
                 @endif
@@ -142,7 +142,7 @@
                                         <div class="d-flex justify-content-center gap-2">
 
         {{-- Edit --}}
-        <a href="{{ route('penerima_bantuan.edit', $data->penerima_id) }}"
+        <a href="{{ route('admin.penerima_bantuan.edit', $data->penerima_id) }}"
            class="btn btn-info btn-sm d-flex align-items-center">
             <svg class="icon icon-xs me-1" data-slot="icon" fill="none" stroke-width="1.5"
                  stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +154,7 @@
         </a>
 
         {{-- Hapus --}}
-        <form action="{{ route('penerima_bantuan.destroy', $data->penerima_id) }}"
+        <form action="{{ route('admin.penerima_bantuan.destroy', $data->penerima_id) }}"
               method="POST"
               style="display:inline"
               onsubmit="return confirm('Apakah Anda yakin ingin menghapus penerima bantuan ini?\\n\\nCatatan: Penerima yang sudah memiliki riwayat penyaluran tidak dapat dihapus.');">

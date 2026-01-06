@@ -20,7 +20,7 @@ class ProgramBantuan extends Model
         'nama_program',
         'tahun',
         'deskripsi',
-        'anggaran'
+        'anggaran',
     ];
 
     protected $casts = [
@@ -35,8 +35,6 @@ class ProgramBantuan extends Model
 {
     return $this->hasMany(Media::class, 'ref_id')->where('ref_table', 'program_bantuan')->orderBy('sort_order', 'asc');
 }
-
-
 
     /**
      * Relationship dengan pendaftar
@@ -76,7 +74,8 @@ class ProgramBantuan extends Model
             'pendaftar_id' // Local key pada pendaftar_bantuan
         );
     }
-//filter
+
+    //filter
    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
 {
     foreach ($filterableColumns as $column) {
@@ -86,7 +85,8 @@ class ProgramBantuan extends Model
     }
     return $query;
 }
-public function scopeSearch($query, $request, array $columns)
+
+    public function scopeSearch($query, $request, array $columns)
 {
     if ($request->filled('search')) {
         $query->where(function($q) use ($request, $columns) {
@@ -96,14 +96,15 @@ public function scopeSearch($query, $request, array $columns)
         });
     }
 }
+
     public function getAnggaranFormattedAttribute()
     {
         return 'Rp ' . number_format($this->anggaran, 0, ',', '.');
     }
 
     /**
-     * Accessor untuk media utama
-     */
+    * Accessor untuk media utama
+    */
     public function getMediaUtamaAttribute()
     {
         return $this->media()->orderBy('sort_order')->first();
@@ -180,5 +181,24 @@ public function scopeSearch($query, $request, array $columns)
     public function scopeAnggaranMax($query, $maxAnggaran)
     {
         return $query->where('anggaran', '<=', $maxAnggaran);
+    }
+
+    // Fungsi untuk mendapatkan foto yang diupload
+    public function getFoto()
+    {
+        $foto = $this->media()->first();
+        return $foto ? $foto->getUrlFile() : null;
+    }
+
+    // Fungsi untuk cek apakah ada foto
+    public function adaFoto()
+    {
+        return $this->media()->count() > 0;
+    }
+
+    // Fungsi untuk format anggaran dengan rupiah
+    public function getAnggaranFormatAttribute()
+    {
+        return 'Rp ' . number_format($this->anggaran, 0, ',', '.');
     }
 }

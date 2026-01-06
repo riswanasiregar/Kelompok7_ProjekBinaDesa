@@ -16,7 +16,7 @@
                     </svg>
                 </a>
             </li>
-            <li class="breadcrumb-item"><a href="{{ route('penerima_bantuan.index') }}">Penerima Bantuan</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.penerima_bantuan.index') }}">Penerima Bantuan</a></li>
             <li class="breadcrumb-item active" aria-current="page">Tambah Penerima Bantuan</li>
         </ol>
     </nav>
@@ -27,7 +27,7 @@
             <p class="mb-0">Form untuk menambahkan data penerima bantuan baru</p>
         </div>
         <div>
-            <a href="{{ route('penerima_bantuan.index') }}"
+            <a href="{{ route('admin.penerima_bantuan.index') }}"
                class="btn btn-outline-secondary d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
@@ -80,7 +80,7 @@
     <div class="col-12">
         <div class="card border-0 shadow components-section">
             <div class="card-body">
-                <form action="{{ route('penerima_bantuan.store') }}" method="POST">
+                <form action="{{ route('admin.penerima_bantuan.store') }}" method="POST">
                     @csrf
 
                     <div class="row">
@@ -191,7 +191,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('penerima_bantuan.index') }}"
+                                <a href="{{ route('admin.penerima_bantuan.index') }}"
                                    class="btn btn-outline-gray-600">
                                     <i class="fas fa-times me-2"></i> Batal
                                 </a>

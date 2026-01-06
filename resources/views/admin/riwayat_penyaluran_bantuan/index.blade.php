@@ -11,7 +11,7 @@
             <h1 class="h3 fw-bold mb-2">Data Riwayat Penyaluran Bantuan</h1>
         </div>
         <div>
-            <a href="{{ route('riwayat_penyaluran_bantuan.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.riwayat_penyaluran_bantuan.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i> Tambah Riwayat Penyaluran Bantuan
             </a>
         </div>
@@ -43,7 +43,7 @@
 @endif
 
 {{-- Filter --}}
-<form method="GET" action="{{ route('riwayat_penyaluran_bantuan.index') }}" class="mb-3">
+<form method="GET" action="{{ route('admin.riwayat_penyaluran_bantuan.index') }}" class="mb-3">
     <div class="row g-2">
         {{-- Filter Program --}}
         <div class="col-md-3">
@@ -95,7 +95,7 @@
                     </svg>
                 </button>
                 @if(request('search') || request('program_id') || request('penerima_id') || request('tahun'))
-                    <a href="{{ route('riwayat_penyaluran_bantuan.index') }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ route('admin.riwayat_penyaluran_bantuan.index') }}" class="btn btn-outline-secondary ms-2">
                         Reset
                     </a>
                 @endif
@@ -239,7 +239,7 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
                                             {{-- Detail --}}
-                                            <a href="{{ route('riwayat_penyaluran_bantuan.show', $data->penyaluran_id) }}"
+                                            <a href="{{ route('admin.riwayat_penyaluran_bantuan.show', $data->penyaluran_id) }}"
                                                class="btn btn-info btn-sm d-flex align-items-center"
                                                title="Detail">
                                                 <svg class="icon icon-xs me-1" fill="none" stroke-width="1.5"
@@ -253,7 +253,7 @@
                                             </a>
 
                                             {{-- Edit --}}
-                                            <a href="{{ route('riwayat_penyaluran_bantuan.edit', $data->penyaluran_id) }}"
+                                            <a href="{{ route('admin.riwayat_penyaluran_bantuan.edit', $data->penyaluran_id) }}"
                                                class="btn btn-warning btn-sm d-flex align-items-center"
                                                title="Edit">
                                                 <svg class="icon icon-xs me-1" fill="none" stroke-width="1.5"
@@ -265,7 +265,7 @@
                                             </a>
 
                                             {{-- Hapus --}}
-                                            <form action="{{ route('riwayat_penyaluran_bantuan.destroy', $data->penyaluran_id) }}"
+                                            <form action="{{ route('admin.riwayat_penyaluran_bantuan.destroy', $data->penyaluran_id) }}"
                                                   method="POST"
                                                   style="display:inline"
                                                   onsubmit="return confirm('Apakah Anda yakin ingin menghapus data penyaluran ini?');">
