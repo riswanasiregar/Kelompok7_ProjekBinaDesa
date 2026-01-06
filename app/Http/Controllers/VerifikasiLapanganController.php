@@ -7,200 +7,168 @@ use App\Models\PendaftarBantuan;
 use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 class VerifikasiLapanganController extends Controller
 {
-    /**
-     * Tampilkan daftar verifikasi.
-     */
-    public function index(Request $request)
+    // Halaman utama - tampilkan semua verifikasi
+    public function index()
     {
-        $query = VerifikasiLapangan::with(['pendaftar', 'media'])
-            ->where('user_id', Auth::id());
-
-        if ($request->status_verifikasi) {
-            $query->byStatus($request->status_verifikasi);
-        }
-
-        if ($request->petugas) {
-            $query->byPetugas($request->petugas);
-        }
-
-        if ($request->start_date && $request->end_date) {
-            $query->periode($request->start_date, $request->end_date);
-        }
-
-        if ($request->skor_min) {
-            $query->skorMin($request->skor_min);
-        }
-
-        $verifikasi = $query->orderBy('tanggal', 'desc')->paginate(15);
+        // Ambil semua data verifikasi milik user yang login
+        $verifikasi = VerifikasiLapangan::with(['pendaftar.warga', 'pendaftar.program'])
+            ->where('user_id', Auth::id())
+            ->orderBy('tanggal', 'desc')
+            ->paginate(15);
 
         return view('verifikasi_lapangan.index', compact('verifikasi'));
     }
 
-    /**
-     * Form tambah verifikasi.
-     */
+    // Halaman form tambah verifikasi baru
     public function create()
     {
-        $pendaftar = PendaftarBantuan::all();
+        // Ambil semua pendaftar untuk dipilih
+        $pendaftar = PendaftarBantuan::with(['warga', 'program'])->get();
         return view('verifikasi_lapangan.create', compact('pendaftar'));
     }
 
-    /**
-     * Simpan verifikasi baru.
-     */
+    // Simpan verifikasi baru ke database
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'pendaftar_bantuan_id' => 'required|exists:pendaftar_bantuan,pendaftar_bantuan_id',
+        // Cek apakah semua input sudah diisi dengan benar
+        $request->validate([
+            'pendaftar_bantuan_id' => 'required',
             'petugas' => 'required|string|max:100',
             'tanggal' => 'required|date',
             'catatan' => 'nullable|string',
             'skor' => 'required|integer|min:0|max:100',
-            'status_verifikasi' => 'required|in:menunggu,diverifikasi,ditolak',
-            'file_media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096'
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240'
         ]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $pendaftar = PendaftarBantuan::findOrFail($request->pendaftar_bantuan_id);
-
-        // Simpan data
+        // Simpan data verifikasi ke database
         $verifikasi = VerifikasiLapangan::create([
-            'pendaftar_bantuan_id' => $pendaftar->pendaftar_bantuan_id,
+            'pendaftar_bantuan_id' => $request->pendaftar_bantuan_id,
             'petugas' => $request->petugas,
             'tanggal' => $request->tanggal,
             'catatan' => $request->catatan,
             'skor' => $request->skor,
-            'status_verifikasi' => $request->status_verifikasi,
             'user_id' => Auth::id(),
         ]);
 
-        // Upload media 
-        if ($request->hasFile('file_media')) {
-            $path = $request->file('file_media')->store('media/verifikasi', 'public');
-
+        // Jika ada foto yang diupload
+        if ($request->hasFile('media')) {
+            $file = $request->file('media');
+            
+            // Buat nama file yang unik
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            
+            // Pastikan folder ada
+            $folderPath = storage_path('app/public/verifikasi_lapangan');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+            
+            // Simpan file dengan cara yang lebih sederhana
+            $file->move($folderPath, $namaFile);
+            
+            // Simpan info foto ke database
             Media::create([
                 'ref_table' => 'verifikasi_lapangan',
                 'ref_id' => $verifikasi->verifikasi_id,
-                'file_path' => $path,
-                'file_name' => $request->file('file_media')->getClientOriginalName(),
+                'file_path' => 'verifikasi_lapangan/' . $namaFile,
+                'file_name' => $file->getClientOriginalName(),
                 'user_id' => Auth::id(),
             ]);
         }
 
         return redirect()->route('verifikasi.index')
-            ->with('success', 'Verifikasi berhasil ditambahkan.');
+            ->with('success', 'Verifikasi berhasil ditambahkan');
     }
 
-    /**
-     * Detail verifikasi.
-     */
-    public function show($id)
-    {
-        $data = VerifikasiLapangan::with(['pendaftar', 'media'])->findOrFail($id);
-        return view('verifikasi_lapangan.show', compact('data'));
-    }
-
-    /**
-     * Form edit.
-     */
+    // Halaman form edit verifikasi
     public function edit($id)
     {
-        $data = VerifikasiLapangan::with('media')->findOrFail($id);
-        $pendaftar = PendaftarBantuan::all();
+        // Cari data verifikasi yang akan diedit
+        $data = VerifikasiLapangan::where('user_id', Auth::id())->findOrFail($id);
+        $pendaftar = PendaftarBantuan::with(['warga', 'program'])->get();
 
         return view('verifikasi_lapangan.edit', compact('data', 'pendaftar'));
     }
 
-    /**
-     * Update verifikasi.
-     */
+    // Update data verifikasi
     public function update(Request $request, $id)
     {
-        $verifikasi = VerifikasiLapangan::findOrFail($id);
-        if ($verifikasi->user_id !== Auth::id()) {
-            abort(403);
-        }
+        // Cari data verifikasi
+        $verifikasi = VerifikasiLapangan::where('user_id', Auth::id())->findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-            'pendaftar_bantuan_id' => 'required|exists:pendaftar_bantuan,pendaftar_bantuan_id',
+        // Cek apakah semua input sudah diisi dengan benar
+        $request->validate([
+            'pendaftar_bantuan_id' => 'required',
             'petugas' => 'required|string|max:100',
             'tanggal' => 'required|date',
             'catatan' => 'nullable|string',
             'skor' => 'required|integer|min:0|max:100',
-            'status_verifikasi' => 'required|in:menunggu,diverifikasi,ditolak',
-            'file_media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096'
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240'
         ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        // Validasi kepemilikan pendaftar untuk guest
-        $pendaftar = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($request->pendaftar_bantuan_id);
 
         // Update data verifikasi
         $verifikasi->update([
-            'pendaftar_bantuan_id' => $pendaftar->pendaftar_bantuan_id,
+            'pendaftar_bantuan_id' => $request->pendaftar_bantuan_id,
             'petugas' => $request->petugas,
             'tanggal' => $request->tanggal,
             'catatan' => $request->catatan,
             'skor' => $request->skor,
-            'status_verifikasi' => $request->status_verifikasi,
         ]);
 
-        // Jika media baru diupload
-        if ($request->hasFile('file_media')) {
-            $mediaLama = Media::where('ref_table', 'verifikasi_lapangan')
+        // Jika ada foto baru yang diupload
+        if ($request->hasFile('media')) {
+            // Hapus foto lama jika ada
+            $fotoLama = Media::where('ref_table', 'verifikasi_lapangan')
                 ->where('ref_id', $verifikasi->verifikasi_id)
                 ->first();
-
-            if ($mediaLama) {
-                Storage::disk('public')->delete($mediaLama->file_path);
-                $mediaLama->delete();
+            
+            if ($fotoLama) {
+                Storage::disk('public')->delete($fotoLama->file_path);
+                $fotoLama->delete();
             }
 
-            $path = $request->file('file_media')->store('media/verifikasi', 'public');
-
+            // Simpan foto baru
+            $file = $request->file('media');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/verifikasi_lapangan', $namaFile);
+            
             Media::create([
                 'ref_table' => 'verifikasi_lapangan',
                 'ref_id' => $verifikasi->verifikasi_id,
-                'file_path' => $path,
-                'file_name' => $request->file('file_media')->getClientOriginalName(),
+                'file_path' => 'verifikasi_lapangan/' . $namaFile,
+                'file_name' => $file->getClientOriginalName(),
                 'user_id' => Auth::id(),
             ]);
         }
 
         return redirect()->route('verifikasi.index')
-            ->with('success', 'Data verifikasi berhasil diperbarui.');
+            ->with('success', 'Data verifikasi berhasil diupdate');
     }
 
-    /**
-     * Hapus verifikasi.
-     */
+    // Hapus data verifikasi
     public function destroy($id)
     {
+        // Cari data verifikasi yang akan dihapus
         $verifikasi = VerifikasiLapangan::where('user_id', Auth::id())->findOrFail($id);
 
-        $media = Media::where('ref_table', 'verifikasi_lapangan')
+        // Hapus semua foto yang terkait
+        $semuaFoto = Media::where('ref_table', 'verifikasi_lapangan')
             ->where('ref_id', $verifikasi->verifikasi_id)
             ->get();
 
-        foreach ($media as $m) {
-            Storage::disk('public')->delete($m->file_path);
-            $m->delete();
+        foreach ($semuaFoto as $foto) {
+            Storage::disk('public')->delete($foto->file_path);
+            $foto->delete();
         }
 
+        // Hapus data verifikasi
         $verifikasi->delete();
 
         return redirect()->route('verifikasi.index')
-            ->with('success', 'Data verifikasi berhasil dihapus.');
+            ->with('success', 'Data verifikasi berhasil dihapus');
     }
 }

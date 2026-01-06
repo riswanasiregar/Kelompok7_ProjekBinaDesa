@@ -24,13 +24,24 @@
                             <h6 class="card-subtitle mb-2 text-muted">{{ $item->program->nama_program ?? 'Program tidak ditemukan' }}</h6>
                             <p class="card-text">
                                 <strong>Tanggal:</strong> {{ $item->tanggal_daftar }}<br>
-                                <strong>Status:</strong> 
-                                <span class="badge bg-{{ $item->status == 'Diterima' ? 'success' : ($item->status == 'Ditolak' ? 'danger' : 'warning') }}">
-                                    {{ $item->status }}
-                                </span>
-                                <br>
                                 <small class="text-muted">{{ $item->keterangan }}</small>
                             </p>
+                            
+                            <!-- button lihat foto -->
+                            @php
+                                $foto = $item->media()->first(); // Ambil foto pertama
+                            @endphp
+                            @if($foto)
+                                <div class="mt-2">
+                                    <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
+                                        Lihat Foto
+                                    </a>
+                                </div>
+                            @else
+                                <div class="mt-2">
+                                    <small class="text-muted">Tidak ada foto</small>
+                                </div>
+                            @endif
                         </div>
                         <div class="card-footer bg-white d-flex justify-content-between">
                             <a href="{{ route('pendaftar-bantuan.edit', $item->pendaftar_bantuan_id) }}" class="btn btn-warning btn-sm">Edit</a>

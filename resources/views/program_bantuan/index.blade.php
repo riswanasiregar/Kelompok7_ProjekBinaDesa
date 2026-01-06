@@ -25,17 +25,6 @@
             @foreach($data as $item)
                 <div class="col-md-4 col-lg-4 col-sm-6">
                     <div class="card shadow-sm h-100" style="transition: 0.3s;">
-                        @if($item->media)
-                            <img src="{{ asset('storage/program_bantuan/' . $item->media) }}" 
-                                 class="card-img-top" 
-                                 alt="Program Image" 
-                                 style="height: 180px; object-fit: cover;">
-                        @else
-                            <img src="https://via.placeholder.com/400x250?text=Tidak+Ada+Gambar" 
-                                 class="card-img-top" 
-                                 alt="No Image">
-                        @endif
-
                         <div class="card-body d-flex flex-column">
                             <!-- Nama program  -->
                             <h5 class="card-title mb-2" style="white-space: normal; font-weight: 600;">
@@ -51,12 +40,29 @@
                                 {{ $item->deskripsi }}
                             </p>
 
-                            <!-- harga sejajar di bawah -->
+                            <!-- Anggaran program -->
                             <div class="">
-                                <p class="fw-bold text-success fs-5 mb-0">
+                                <p class="fw-bold text-success fs-5 mb-2">
                                     Rp {{ number_format($item->anggaran, 0, ',', '.') }}
                                 </p>
                             </div>
+
+                            <!-- button lihat foto -->
+                                @php
+                                    $foto = $item->media()->first(); // Cek apakah ada foto
+                                @endphp
+                                @if($foto)
+                            
+                                <div class="mb-2">
+                                    <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
+                                         Lihat Foto
+                                    </a>
+                                </div>
+                            @else
+                                <div class="mb-2">
+                                    <small class="text-muted">Tidak ada foto</small>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="card-footer bg-white border-0 d-flex justify-content-between">

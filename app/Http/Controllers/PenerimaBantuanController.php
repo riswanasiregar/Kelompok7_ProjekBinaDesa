@@ -27,15 +27,6 @@ class PenerimaBantuanController extends Controller
             }
         }
 
-        // Filter Status
-        if ($request->filled('status')) {
-            if ($request->status == 'sudah_menerima') {
-                $query->sudahMenerima();
-            } elseif ($request->status == 'belum_menerima') {
-                $query->belumMenerima();
-            }
-        }
-
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
@@ -83,8 +74,7 @@ class PenerimaBantuanController extends Controller
         $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuans,program_id',
             'warga_id' => 'required|exists:warga,warga_id',
-            'keterangan' => 'nullable|string',
-            'status' => 'required|in:Sudah Menerima,Belum Menerima'
+            'keterangan' => 'nullable|string'
         ]);
 
         // Cek apakah warga sudah terdaftar sebagai penerima dalam program yang sama
@@ -132,8 +122,7 @@ class PenerimaBantuanController extends Controller
         $validated = $request->validate([
             'program_id' => 'required|exists:program_bantuans,program_id',
             'warga_id' => 'required|exists:warga,warga_id',
-            'keterangan' => 'nullable|string',
-            'status' => 'required|in:Sudah Menerima,Belum Menerima'
+            'keterangan' => 'nullable|string'
         ]);
 
         // Cek duplikasi (kecuali jika data tidak berubah)

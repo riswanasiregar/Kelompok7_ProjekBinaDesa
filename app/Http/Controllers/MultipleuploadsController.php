@@ -32,25 +32,48 @@ class MultipleuploadsController extends Controller
      */
    public function store(Request $request)
     {
-        $request->validate([
-            'filename' => 'required|array',
-            'filename.*' => 'mimes:doc,docx,pdf,jpg,jpeg,png|max:2048'
-        ]);
-
-        if (!$request->hasFile('filename')) {
-            return back()->withErrors(['filename' => 'File tidak ditemukan.']);
-        }
-
-        foreach ($request->file('filename') as $file) {
-            $storedPath = $file->store('multiple-uploads', 'public');
-
-            Multipleuploads::create([
-                'filename' => $storedPath,
-                'user_id' => Auth::id(),
+        try {
+            $request->validate([
+                'filename' => 'required|array',
+                'filename.*' => 'required|file|mimes:doc,docx,pdf,jpg,jpeg,png,gif,bmp,webp|max:10240'
             ]);
-        }
 
-        return redirect()->route('uploads')->with('success', 'File berhasil diunggah.');
+            if (!$request->hasFile('filename')) {
+                return back()->withErrors(['filename' => 'File tidak ditemukan.']);
+            }
+
+            $uploadedFiles = [];
+            
+            foreach ($request->file('filename') as $file) {
+                if ($file->isValid()) {
+                    // Generate unique filename
+                    $originalName = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = time() . '_' . uniqid() . '.' . $extension;
+                    
+                    // Store file
+                    $storedPath = $file->storeAs('multiple-uploads', $filename, 'public');
+
+                    if ($storedPath) {
+                        $upload = Multipleuploads::create([
+                            'filename' => $storedPath,
+                            'user_id' => Auth::id(),
+                        ]);
+                        
+                        $uploadedFiles[] = $originalName;
+                    }
+                } else {
+                    return back()->withErrors(['filename' => 'File ' . $file->getClientOriginalName() . ' tidak valid.']);
+                }
+            }
+
+            $message = 'File berhasil diunggah: ' . implode(', ', $uploadedFiles);
+            return redirect()->route('uploads')->with('success', $message);
+            
+        } catch (\Exception $e) {
+            \Log::error('Upload error: ' . $e->getMessage());
+            return back()->withErrors(['filename' => 'Terjadi kesalahan saat upload: ' . $e->getMessage()]);
+        }
     }
 
     /**

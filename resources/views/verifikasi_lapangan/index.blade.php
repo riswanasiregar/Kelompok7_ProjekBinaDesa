@@ -18,16 +18,31 @@
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">{{ $item->pendaftar->warga->nama ?? '-' }}</h5>
-                        <p class="mb-1"><strong>Program:</strong> {{ $item->pendaftar->program->nama_program ?? '-' }}</p>
+                        <h5 class="card-title">{{ $item->pendaftar->warga->nama ?? 'Nama tidak ditemukan' }}</h5>
+                        <p class="mb-1"><strong>Program:</strong> {{ $item->pendaftar->program->nama_program ?? 'Program tidak ditemukan' }}</p>
                         <p class="mb-1"><strong>Petugas:</strong> {{ $item->petugas }}</p>
                         <p class="mb-1"><strong>Tanggal:</strong> {{ $item->tanggal->format('d-m-Y') }}</p>
                         <p class="mb-1"><strong>Skor:</strong> {{ $item->skor }} ({{ $item->kategori_skor }})</p>
-                        <span class="badge {{ $item->status_label['class'] }}">{{ $item->status_label['label'] }}</span>
+                        
+                        <!-- button lihat foto -->
+                        @php
+                            $foto = $item->media()->first(); // Ambil foto pertama
+                        @endphp
+                        @if($foto)
+                            <div class="mt-2">
+                                <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
+                                     Lihat Foto
+                                </a>
+                            </div>
+                        @else
+                            <div class="mt-2">
+                                <small class="text-muted">Tidak ada foto</small>
+                            </div>
+                        @endif
                     </div>
                     <div class="card-footer bg-white d-flex justify-content-between">
                         <a href="{{ route('verifikasi.edit', $item->verifikasi_id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('verifikasi.destroy', $item->verifikasi_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus?')">
+                        <form action="{{ route('verifikasi.destroy', $item->verifikasi_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin mau hapus data ini?')">>
                             @csrf 
                             @method('DELETE')
                             <button class="btn btn-sm btn-danger">Hapus</button>
@@ -37,7 +52,7 @@
             </div>
         @empty
             <div class="col-12">
-                <div class="alert alert-info text-center mb-0">Data tidak ditemukan</div>
+                <div class="alert alert-info text-center mb-0">Belum ada data verifikasi</div>
             </div>
         @endforelse
     </div>

@@ -5,115 +5,174 @@ namespace App\Http\Controllers;
 use App\Models\PendaftarBantuan;
 use App\Models\ProgramBantuan;
 use App\Models\Warga;
+use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PendaftarBantuanController extends Controller
 {
+    // Halaman utama - tampilkan semua pendaftar
     public function index(Request $request)
     {
-        $dataQuery = PendaftarBantuan::with(['warga', 'program'])
+        // Ambil semua data pendaftar milik user yang login
+        $data = PendaftarBantuan::with(['warga', 'program'])
             ->where('user_id', Auth::id())
-            ->latest('tanggal_daftar');
+            ->latest('tanggal_daftar')
+            ->paginate(9);
 
-        $data = $dataQuery->paginate(9)->appends($request->query());
-
-        $statsBase = PendaftarBantuan::query()
-            ->where('user_id', Auth::id());
-
-        $stats = [
-            'total' => $statsBase->count(),
-            'diproses' => (clone $statsBase)->where('status', 'Diproses')->count(),
-            'diterima' => (clone $statsBase)->where('status', 'Diterima')->count(),
-            'ditolak' => (clone $statsBase)->where('status', 'Ditolak')->count(),
-        ];
-
-        return view('pendaftaran_bantuan.index', compact('data', 'stats'));
+        return view('pendaftaran_bantuan.index', compact('data'));
     }
 
+    // Halaman form tambah pendaftar baru
     public function create()
     {
+        // Ambil data warga dan program untuk dipilih
         $warga = Warga::where('user_id', Auth::id())->get();
-
         $program = ProgramBantuan::where('user_id', Auth::id())->get();
         return view('pendaftaran_bantuan.create', compact('warga', 'program'));
     }
 
+    // Simpan data pendaftar baru
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'warga_id' => 'required|exists:warga,warga_id',
-            'program_id' => 'required|exists:program_bantuans,program_id',
+        // Cek input yang wajib diisi
+        $request->validate([
+            'warga_id' => 'required',
+            'program_id' => 'required',
             'tanggal_daftar' => 'required|date',
-            'status' => 'required|in:Diproses,Diterima,Ditolak',
             'keterangan' => 'nullable|string',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240'
         ]);
 
-        $validWarga = Warga::where('user_id', Auth::id())->where('warga_id', $validated['warga_id'])->exists();
-        $validProgram = ProgramBantuan::where('user_id', Auth::id())->where('program_id', $validated['program_id'])->exists();
+        // Simpan data pendaftar
+        $pendaftar = PendaftarBantuan::create([
+            'warga_id' => $request->warga_id,
+            'program_id' => $request->program_id,
+            'tanggal_daftar' => $request->tanggal_daftar,
+            'keterangan' => $request->keterangan,
+            'user_id' => Auth::id(),
+        ]);
 
-        if (!$validWarga || !$validProgram) {
-            abort(403, 'Data tidak valid untuk akun Anda.');
+        // Jika ada foto yang diupload
+        if ($request->hasFile('media')) {
+            $file = $request->file('media');
+            
+            // Buat nama file yang unik
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            
+            // Pastikan folder ada
+            $folderPath = storage_path('app/public/pendaftar_bantuan');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+            
+            // Simpan file dengan cara yang lebih sederhana
+            $file->move($folderPath, $namaFile);
+            
+            // Simpan info foto ke database
+            Media::create([
+                'ref_table' => 'pendaftar_bantuan',
+                'ref_id' => $pendaftar->pendaftar_bantuan_id,
+                'file_path' => 'pendaftar_bantuan/' . $namaFile,
+                'file_name' => $file->getClientOriginalName(),
+                'user_id' => Auth::id(),
+            ]);
         }
-
-        PendaftarBantuan::create(
-            collect($validated)->only([
-                'warga_id',
-                'program_id',
-                'tanggal_daftar',
-                'status',
-                'keterangan',
-            ])->merge(['user_id' => Auth::id()])->toArray()
-        );
 
         return redirect()->route('pendaftar-bantuan.index')
             ->with('success', 'Data berhasil ditambahkan');
     }
 
+    // Form edit pendaftar
     public function edit($id)
     {
         $data = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($id);
-
         $warga = Warga::where('user_id', Auth::id())->get();
-
         $program = ProgramBantuan::where('user_id', Auth::id())->get();
 
         return view('pendaftaran_bantuan.edit', compact('data', 'warga', 'program'));
     }
 
+    // Update data pendaftar
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'warga_id' => 'required|exists:warga,warga_id',
-            'program_id' => 'required|exists:program_bantuans,program_id',
+        // Cek input yang wajib diisi
+        $request->validate([
+            'warga_id' => 'required',
+            'program_id' => 'required',
             'tanggal_daftar' => 'required|date',
-            'status' => 'required|in:Diproses,Diterima,Ditolak',
             'keterangan' => 'nullable|string',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240'
         ]);
 
-        $validWarga = Warga::where('user_id', Auth::id())->where('warga_id', $validated['warga_id'])->exists();
-        $validProgram = ProgramBantuan::where('user_id', Auth::id())->where('program_id', $validated['program_id'])->exists();
-
-        if (!$validWarga || !$validProgram) {
-            abort(403, 'Data tidak valid untuk akun Anda.');
-        }
-
+        // Cari data yang akan diupdate
         $data = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($id);
-        $data->update(collect($validated)->only([
-            'warga_id',
-            'program_id',
-            'tanggal_daftar',
-            'status',
-            'keterangan',
-        ])->toArray());
+        
+        // Update data utama
+        $data->update([
+            'warga_id' => $request->warga_id,
+            'program_id' => $request->program_id,
+            'tanggal_daftar' => $request->tanggal_daftar,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        // Jika ada file baru yang diupload
+        if ($request->hasFile('media')) {
+            // Hapus file lama jika ada
+            $mediaLama = Media::where('ref_table', 'pendaftar_bantuan')
+                ->where('ref_id', $data->pendaftar_bantuan_id)
+                ->first();
+            
+            if ($mediaLama) {
+                // Hapus file fisik
+                $pathLama = storage_path('app/public/' . $mediaLama->file_path);
+                if (file_exists($pathLama)) {
+                    unlink($pathLama);
+                }
+                $mediaLama->delete();
+            }
+
+            // Simpan file baru
+            $file = $request->file('media');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            
+            // Pastikan folder ada
+            $folderPath = storage_path('app/public/pendaftar_bantuan');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+            
+            // Simpan file dengan cara yang lebih sederhana
+            $file->move($folderPath, $namaFile);
+            
+            Media::create([
+                'ref_table' => 'pendaftar_bantuan',
+                'ref_id' => $data->pendaftar_bantuan_id,
+                'file_path' => 'pendaftar_bantuan/' . $namaFile,
+                'file_name' => $file->getClientOriginalName(),
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return redirect()->route('pendaftar-bantuan.index')
             ->with('success', 'Data berhasil diupdate');
     }
 
+    // Hapus data pendaftar
     public function destroy($id)
     {
         $data = PendaftarBantuan::where('user_id', Auth::id())->findOrFail($id);
+
+        // Hapus file yang terkait
+        $media = Media::where('ref_table', 'pendaftar_bantuan')
+            ->where('ref_id', $data->pendaftar_bantuan_id)
+            ->get();
+
+        foreach ($media as $m) {
+            Storage::disk('public')->delete($m->file_path);
+            $m->delete();
+        }
 
         $data->delete();
 

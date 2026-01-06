@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedInteger('warga_id'); // FK 
             $table->unsignedBigInteger('program_id'); // FK 
             $table->date('tanggal_daftar');
-            $table->enum('status', ['Diproses', 'Diterima', 'Ditolak'])->default('Diproses');
+            $table->enum('status_seleksi', ['pending', 'diterima', 'ditolak'])->default('pending');
             $table->text('keterangan')->nullable();
             $table->timestamps();
 

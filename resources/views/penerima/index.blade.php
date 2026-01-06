@@ -39,7 +39,6 @@
                         <h5 class="card-title">{{ $item->program->nama_program ?? '-' }}</h5>
                         <p class="mb-1"><strong>Warga:</strong> {{ $item->warga->nama ?? '-' }}</p>
                         <p class="mb-1"><strong>Keterangan:</strong> {{ $item->keterangan ?? '-' }}</p>
-                        <span class="badge {{ $item->status_label['class'] }}">{{ $item->status_label['label'] }}</span>
                     </div>
                     <div class="card-footer bg-white d-flex justify-content-between">
                         <a href="{{ route('penerima.edit',$item->penerima_id) }}" class="btn btn-sm btn-warning">Edit</a>

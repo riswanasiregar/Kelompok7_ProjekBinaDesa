@@ -54,6 +54,22 @@
                         <p class="mb-1"><strong>Tanggal:</strong> {{ $item->tanggal->format('d-m-Y') }}</p>
                         <p class="mb-1"><strong>Tahap:</strong> {{ $item->tahap_ke }}</p>
                         <p class="mb-1"><strong>Nilai:</strong> Rp {{ number_format($item->nilai, 0, ',', '.') }}</p>
+                        
+                        <!-- button lihat foto -->
+                        @php
+                            $foto = $item->media()->first(); // Ambil foto pertama
+                        @endphp
+                        @if($foto)
+                            <div class="mt-2">
+                                <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
+                                     Lihat Foto
+                                </a>
+                            </div>
+                        @else
+                            <div class="mt-2">
+                                <small class="text-muted">Tidak ada foto</small>
+                            </div>
+                        @endif
                     </div>
                     
                     <div class="card-footer bg-white d-flex justify-content-between">

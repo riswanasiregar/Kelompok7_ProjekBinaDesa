@@ -17,7 +17,6 @@ class PendaftarBantuan extends Model
         'warga_id',
         'program_id',
         'tanggal_daftar',
-        'status',
         'keterangan',
         'user_id',
     ];
@@ -30,6 +29,25 @@ class PendaftarBantuan extends Model
     public function program()
     {
         return $this->belongsTo(ProgramBantuan::class, 'program_id', 'program_id');
+    }
+
+    // Hubungan dengan media (file)
+    public function media()
+    {
+        return $this->hasMany(Media::class, 'ref_id')->where('ref_table', 'pendaftar_bantuan');
+    }
+
+    // Fungsi untuk mendapatkan file yang diupload
+    public function getFile()
+    {
+        $media = $this->media()->first();
+        return $media ? $media->getUrlFile() : null;
+    }
+
+    // Fungsi untuk cek apakah ada file
+    public function hasFile()
+    {
+        return $this->media()->count() > 0;
     }
 }
 

@@ -3,96 +3,183 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProgramBantuan;
+use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProgramBantuanController extends Controller
 {
+    // Halaman utama - tampilkan semua program bantuan
     public function index()
     {
-        $query = ProgramBantuan::orderByDesc('created_at')
-            ->where('user_id', Auth::id());
-
-        $data = $query->paginate(2);
+        // Ambil semua program bantuan milik user yang login
+        $data = ProgramBantuan::orderByDesc('created_at')
+            ->where('user_id', Auth::id())
+            ->paginate(6);
+            
         return view('program_bantuan.index', compact('data'));
     }
 
+    // Halaman form tambah program bantuan baru
     public function create()
     {
         return view('program_bantuan.create');
     }
 
+    // Simpan program bantuan baru ke database
     public function store(Request $request)
     {
+        // Cek apakah semua input sudah diisi dengan benar
         $request->validate([
             'kode' => 'required|unique:program_bantuans',
             'nama_program' => 'required',
             'tahun' => 'required|digits:4',
             'anggaran' => 'required|numeric',
-            'media' => 'nullable|file|mimes:jpg,png,pdf|max:2048'
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240'
         ]);
 
-        $input = $request->all();
+        // Simpan data program bantuan ke database
+        $program = ProgramBantuan::create([
+            'kode' => $request->kode,
+            'nama_program' => $request->nama_program,
+            'tahun' => $request->tahun,
+            'anggaran' => $request->anggaran,
+            'user_id' => Auth::id(),
+        ]);
 
+        // Jika ada foto yang diupload
         if ($request->hasFile('media')) {
-            $fileName = time() . '_' . $request->file('media')->getClientOriginalName();
-            $request->file('media')->storeAs('public/program_bantuan', $fileName);
-            $input['media'] = $fileName;
+            $file = $request->file('media');
+            
+            // Buat nama file yang unik
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            
+            // Pastikan folder ada
+            $folderPath = storage_path('app/public/program_bantuan');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+            
+            // Simpan file dengan cara yang sederhana
+            $file->move($folderPath, $namaFile);
+            
+            // Simpan info foto ke database
+            Media::create([
+                'ref_table' => 'program_bantuan',
+                'ref_id' => $program->program_id,
+                'file_path' => 'program_bantuan/' . $namaFile,
+                'file_name' => $file->getClientOriginalName(),
+                'user_id' => Auth::id(),
+            ]);
         }
 
-        $input['user_id'] = Auth::id();
-
-        ProgramBantuan::create($input);
-
-        return redirect()->route('program_bantuan.index')->with('success', 'Program bantuan berhasil ditambahkan.');
+        return redirect()->route('program_bantuan.index')
+            ->with('success', 'Program bantuan berhasil ditambahkan');
     }
 
+    // Halaman form edit program bantuan
     public function edit($id)
     {
-        $data = ProgramBantuan::where('user_id', Auth::id())
-            ->findOrFail($id);
+        // Cari data program bantuan yang akan diedit
+        $data = ProgramBantuan::where('user_id', Auth::id())->findOrFail($id);
         return view('program_bantuan.edit', compact('data'));
     }
 
+    // Update data program bantuan
     public function update(Request $request, $id)
     {
-        $data = ProgramBantuan::where('user_id', Auth::id())
-            ->findOrFail($id);
+        // Cari data program bantuan
+        $program = ProgramBantuan::where('user_id', Auth::id())->findOrFail($id);
 
+        // Cek apakah semua input sudah diisi dengan benar
         $request->validate([
             'kode' => 'required|unique:program_bantuans,kode,' . $id . ',program_id',
             'nama_program' => 'required',
             'tahun' => 'required|digits:4',
             'anggaran' => 'required|numeric',
-            'media' => 'nullable|file|mimes:jpg,png,pdf|max:2048'
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240'
         ]);
 
-        $input = $request->all();
+        // Update data program bantuan
+        $program->update([
+            'kode' => $request->kode,
+            'nama_program' => $request->nama_program,
+            'tahun' => $request->tahun,
+            'anggaran' => $request->anggaran,
+        ]);
 
+        // Jika ada foto baru yang diupload
         if ($request->hasFile('media')) {
-            $fileName = time() . '_' . $request->file('media')->getClientOriginalName();
-            $request->file('media')->storeAs('public/program_bantuan', $fileName);
-            $input['media'] = $fileName;
+            // Hapus foto lama jika ada
+            $fotoLama = Media::where('ref_table', 'program_bantuan')
+                ->where('ref_id', $program->program_id)
+                ->first();
+            
+            if ($fotoLama) {
+                // Hapus file fisik
+                $pathLama = storage_path('app/public/' . $fotoLama->file_path);
+                if (file_exists($pathLama)) {
+                    unlink($pathLama);
+                }
+                $fotoLama->delete();
+            }
+
+            // Simpan foto baru
+            $file = $request->file('media');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            
+            // Pastikan folder ada
+            $folderPath = storage_path('app/public/program_bantuan');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+            
+            // Simpan file dengan cara yang sederhana
+            $file->move($folderPath, $namaFile);
+            
+            Media::create([
+                'ref_table' => 'program_bantuan',
+                'ref_id' => $program->program_id,
+                'file_path' => 'program_bantuan/' . $namaFile,
+                'file_name' => $file->getClientOriginalName(),
+                'user_id' => Auth::id(),
+            ]);
         }
 
-        $data->update($input);
-
-        return redirect()->route('program_bantuan.index')->with('success', 'Data berhasil diperbarui.');
+        return redirect()->route('program_bantuan.index')
+            ->with('success', 'Data program bantuan berhasil diupdate');
     }
 
+    // Hapus data program bantuan
     public function destroy($id)
     {
-        $data = ProgramBantuan::where('user_id', Auth::id())
-            ->findOrFail($id);
-        $data->delete();
+        // Cari data program bantuan yang akan dihapus
+        $program = ProgramBantuan::where('user_id', Auth::id())->findOrFail($id);
 
-        return redirect()->route('program_bantuan.index')->with('success', 'Data berhasil dihapus.');
+        // Hapus semua foto yang terkait
+        $semuaFoto = Media::where('ref_table', 'program_bantuan')
+            ->where('ref_id', $program->program_id)
+            ->get();
+
+        foreach ($semuaFoto as $foto) {
+            // Hapus file fisik
+            $pathFile = storage_path('app/public/' . $foto->file_path);
+            if (file_exists($pathFile)) {
+                unlink($pathFile);
+            }
+            
+            // Hapus dari database
+            $foto->delete();
+        }
+
+        // Hapus data program bantuan
+        $program->delete();
+
+        return redirect()->route('program_bantuan.index')
+            ->with('success', 'Data program bantuan berhasil dihapus');
     }
 
-    /**
-     * Tampilkan detail program bantuan.
-     * Saat ini belum ada halaman detail, jadi arahkan ke index agar tidak error.
-     */
+    // Halaman detail program bantuan
     public function show($id)
     {
         return redirect()->route('program_bantuan.index');

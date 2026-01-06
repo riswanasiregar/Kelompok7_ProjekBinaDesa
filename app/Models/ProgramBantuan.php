@@ -17,8 +17,32 @@ class ProgramBantuan extends Model
         'tahun',
         'deskripsi',
         'anggaran',
-        'media',
         'user_id',
     ];
+
+    // Hubungan dengan media (foto)
+    public function media()
+    {
+        return $this->hasMany(Media::class, 'ref_id')->where('ref_table', 'program_bantuan');
+    }
+
+    // Fungsi untuk mendapatkan foto yang diupload
+    public function getFoto()
+    {
+        $foto = $this->media()->first();
+        return $foto ? $foto->getUrlFile() : null;
+    }
+
+    // Fungsi untuk cek apakah ada foto
+    public function adaFoto()
+    {
+        return $this->media()->count() > 0;
+    }
+
+    // Fungsi untuk format anggaran dengan rupiah
+    public function getAnggaranFormatAttribute()
+    {
+        return 'Rp ' . number_format($this->anggaran, 0, ',', '.');
+    }
 }
 

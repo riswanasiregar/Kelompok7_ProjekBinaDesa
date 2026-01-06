@@ -20,7 +20,6 @@ class VerifikasiLapangan extends Model
         'tanggal',
         'catatan',
         'skor',
-        'status_verifikasi',
         'user_id',
     ];
 
@@ -29,7 +28,7 @@ class VerifikasiLapangan extends Model
     ];
 
     /**
-     * Relationship dengan pendaftar
+     * Hubungan dengan pendaftar bantuan
      */
     public function pendaftar()
     {
@@ -37,29 +36,28 @@ class VerifikasiLapangan extends Model
     }
 
     /**
-     * Relationship dengan media
+     * Hubungan dengan media (foto)
      */
     public function media()
     {
         return $this->hasMany(Media::class, 'ref_id')->where('ref_table', 'verifikasi_lapangan');
     }
 
-    /**
-     * Accessor untuk status verifikasi lengkap
-     */
-    public function getStatusLabelAttribute()
+    // Fungsi untuk mendapatkan foto yang diupload
+    public function getFoto()
     {
-        $status = [
-            'menunggu' => ['class' => 'bg-warning', 'label' => 'Menunggu'],
-            'diverifikasi' => ['class' => 'bg-success', 'label' => 'Terverifikasi'],
-            'ditolak' => ['class' => 'bg-danger', 'label' => 'Ditolak']
-        ];
+        $foto = $this->media()->first();
+        return $foto ? $foto->getUrlFile() : null;
+    }
 
-        return $status[$this->status_verifikasi] ?? ['class' => 'bg-secondary', 'label' => 'Tidak Diketahui'];
+    // Fungsi untuk cek apakah ada foto
+    public function adaFoto()
+    {
+        return $this->media()->count() > 0;
     }
 
     /**
-     * Accessor untuk kategori skor
+     * Fungsi untuk menentukan kategori skor
      */
     public function getKategoriSkorAttribute()
     {
@@ -67,14 +65,6 @@ class VerifikasiLapangan extends Model
         if ($this->skor >= 70) return 'Baik';
         if ($this->skor >= 55) return 'Cukup';
         return 'Kurang';
-    }
-
-    /**
-     * Scope untuk filter status verifikasi
-     */
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status_verifikasi', $status);
     }
 
     /**

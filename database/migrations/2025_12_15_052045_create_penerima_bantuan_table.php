@@ -20,7 +20,6 @@ return new class extends Migration
             $table->unsignedBigInteger('program_id');
             $table->unsignedInteger('warga_id');
             $table->text('keterangan')->nullable();
-            $table->enum('status', ['Sudah Menerima', 'Belum Menerima'])->default('Belum Menerima');
             $table->timestamps();
 
             // Foreign key constraints

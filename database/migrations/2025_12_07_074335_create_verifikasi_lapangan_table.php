@@ -12,22 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('verifikasi_lapangan', function (Blueprint $table) {
-            $table->increments('verifikasi_id'); // Primary key, UNSIGNED INTEGER
-            // Foreign key ke tabel pendaftar_bantuan.
-            // Tipe data harus sama dengan primary key di tabel pendaftar_bantuan (yang dibuat dengan increments()).
-            $table->unsignedInteger('pendaftar_bantuan_id');
-            $table->foreign('pendaftar_bantuan_id')->references('pendaftar_bantuan_id')->on('pendaftar_bantuan')->onDelete('cascade');
-
- 
+            $table->increments('verifikasi_id');
+            $table->unsignedInteger('pendaftar_id');
             $table->string('petugas', 100);
             $table->date('tanggal');
             $table->text('catatan')->nullable();
-            $table->integer('skor')->default(0);
-            $table->enum('status_verifikasi', ['menunggu', 'diverifikasi', 'ditolak'])->default('menunggu');
+            $table->integer('skor');
             $table->timestamps();
- 
+
+            // Foreign key constraint
+            $table->foreign('pendaftar_id')
+                  ->references('pendaftar_id')
+                  ->on('pendaftar_bantuan')
+                  ->onDelete('cascade');
+
+            // Indexes
+            $table->index('pendaftar_id');
             $table->index('tanggal');
-            $table->index('status_verifikasi');
             $table->index('petugas');
         });
     }
