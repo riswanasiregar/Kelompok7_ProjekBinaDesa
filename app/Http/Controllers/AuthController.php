@@ -12,7 +12,7 @@ class AuthController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         return view('auth.login');
@@ -34,7 +34,7 @@ class AuthController extends Controller
             session(['last_login' => now()]);
 
 
-            return redirect()->route('dashboard')->with('success', 'Login berhasil!'); // FIX
+            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!'); // FIX
         }
 
         return back()->withErrors(['email' => 'Email atau password salah'])->withInput();

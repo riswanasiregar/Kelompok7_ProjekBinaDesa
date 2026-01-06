@@ -21,7 +21,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 text-end">
-                            <form method="GET" action="{{ route('dashboard') }}">
+                            <form method="GET" action="{{ route('admin.dashboard') }}">
                                 <div class="input-group shadow-sm" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
                                     <label class="input-group-text bg-transparent border-0 text-white" for="filterTahun">
                                         <i class="ri-calendar-line ri-20px"></i>

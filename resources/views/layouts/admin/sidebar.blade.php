@@ -2,7 +2,7 @@
   <!-- LOGO -->
   <div class="app-brand demo pt-4 pb-3">
     <div class="app-brand-container d-flex flex-column align-items-center">
-      <a href="{{ route('dashboard') }}" class="app-brand-link mb-2">
+      <a href="{{ route('admin.dashboard') }}" class="app-brand-link mb-2">
         <div class="app-brand-logo d-flex justify-content-center align-items-center">
           <img
             src="{{ asset('assets-admin/img/logo/bansos.png') }}"
@@ -26,7 +26,7 @@
 
     <!-- Dashboards -->
     <li class="menu-item">
-      <a href="{{ route('dashboard') }}" class="menu-link">
+      <a href="{{ route('admin.dashboard') }}" class="menu-link">
         <i class="menu-icon icon-base ri ri-home-smile-line"></i>
         <div data-i18n="Dashboards">Dashboards</div>
       </a>

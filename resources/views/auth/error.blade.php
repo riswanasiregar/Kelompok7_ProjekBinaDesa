@@ -66,7 +66,7 @@
             class="misc-model img-fluid z-1"
             width="780" />
           <div>
-            <a href="{{ route('dashboard') }}" class="btn btn-primary text-center my-6">Back to Dashboard</a>
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-primary text-center my-6">Back to Dashboard</a>
           </div>
         </div>
       </div>

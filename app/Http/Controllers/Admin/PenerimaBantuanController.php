@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\PenerimaBantuan;
 use App\Models\ProgramBantuan;
 use App\Models\Warga;
