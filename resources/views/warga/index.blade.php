@@ -21,11 +21,6 @@
             <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary" id="clear-search">Clear</a>
         @endif
     </form>
-    <div class="d-flex gap-2">
-        <a href="{{ route('warga.create') }}" class="btn btn-primary">
-            <i class="ti ti-plus me-1"></i> Tambah data
-        </a>
-    </div>
 </div>
     <!-- filter -->
     <div class="table-responsive">
@@ -92,10 +87,6 @@
             {{ $wargas->links('pagination::bootstrap-5') }}
         </div>
     @else
-        <div class="alert alert-info text-center mt-4">
-            Belum ada data warga. <br>
-            <a href="{{ route('warga.create') }}" class="btn btn-primary mt-2">Tambah Sekarang</a>
-        </div>
     @endif
 </div>
 </div>

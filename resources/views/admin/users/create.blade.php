@@ -13,7 +13,7 @@
                     </svg>
                 </a>
             </li>
-            <li class="breadcrumb-item"><a href="{{ route('users.index') }}">User</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">User</a></li>
             <li class="breadcrumb-item active" aria-current="page">Tambah User</li>
         </ol>
     </nav>
@@ -23,7 +23,7 @@
             <p class="mb-0">Form untuk menambahkan data user baru</p>
         </div>
         <div>
-            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center">
+            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
         </div>
@@ -62,7 +62,7 @@
     <div class="col-12">
         <div class="card border-0 shadow components-section">
             <div class="card-body">
-                <form action="{{ route('users.store') }}" method="POST" id="createUserForm">
+                <form action="{{ route('admin.users.store') }}" method="POST" id="createUserForm">
                     @csrf
 
                     <div class="row">
@@ -169,7 +169,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('users.index') }}" class="btn btn-outline-gray-600">
+                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-gray-600">
                                     <i class="fas fa-times me-2"></i> Batal
                                 </a>
                                 <button type="submit" class="btn btn-primary" id="submitBtn">

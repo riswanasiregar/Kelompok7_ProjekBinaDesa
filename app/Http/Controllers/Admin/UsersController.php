@@ -38,7 +38,7 @@ class UsersController extends Controller
 
         User::create($data);
 
-        return redirect()->route('users.index')->with('success', 'Penambahan Data Berhasil!');
+        return redirect()->route('admin.users.index')->with('success', 'Penambahan Data Berhasil!');
     }
 
     /**
@@ -73,7 +73,7 @@ class UsersController extends Controller
 
         $users->save();
 
-        return redirect()->route('users.index') ->with('success', 'Perubahan Data Berhasil!');
+        return redirect()->route('admin.users.index') ->with('success', 'Perubahan Data Berhasil!');
     }
 
     /**
@@ -84,6 +84,6 @@ class UsersController extends Controller
         $users = User::findOrFail($id);
 
         $users->delete();
-        return redirect()->route('users.index')->with('success', 'Data berhasil dihapus');
+        return redirect()->route('admin.users.index')->with('success', 'Data berhasil dihapus');
     }
 }
