@@ -42,7 +42,9 @@
           <a
             class="nav-link dropdown-toggle hide-arrow p-0"
             href="javascript:void(0);"
-            data-bs-toggle="dropdown">
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            role="button">
             <div class="avatar avatar-online">
               <img src="{{ asset('assets-admin/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" />
             </div>
@@ -56,10 +58,10 @@
                       <img src="{{ asset('assets-admin/img/avatars/1.png') }}" alt="Avatar" class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </div>
-                <div class="flex-grow-1">
-    <h6 class="mb-0">{{ Auth::user()->name ?? 'User' }}</h6>
-    <small class="text-body-secondary">{{ Auth::user()->role ?? 'Admin' }}</small>
-</div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-0">{{ Auth::user()->name ?? 'User' }}</h6>
+                    <small class="text-body-secondary">{{ Auth::user()->role ?? 'Admin' }}</small>
+                  </div>
                 </div>
               </a>
             </li>
@@ -75,11 +77,13 @@
             <li>
               <a class="dropdown-item" href="#">
                 <i class="icon-base ri ri-time-line icon-md me-3"></i>
-                @if(session('last_login'))
-                  {{ session('last_login')->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }}
-                @else
-                  First time login
-                @endif
+                <span>
+                  @if(session('last_login'))
+                    {{ \Carbon\Carbon::parse(session('last_login'))->timezone('Asia/Jakarta')->format('d M Y, H:i') }}
+                  @else
+                    First time login
+                  @endif
+                </span>
               </a>
             </li>
             <li>
@@ -120,3 +124,50 @@
     </ul>
   </div>
 </nav>
+
+<!-- Script untuk memastikan dropdown berfungsi -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Pastikan Bootstrap Dropdown diinisialisasi
+  var dropdownElementList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+
+  if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+    // Jika Bootstrap sudah dimuat, inisialisasi dropdown
+    var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+      return new bootstrap.Dropdown(dropdownToggleEl);
+    });
+    console.log('Bootstrap Dropdown initialized:', dropdownList.length);
+  } else {
+    // Fallback: Manual toggle jika Bootstrap belum dimuat
+    console.warn('Bootstrap JS tidak ditemukan, menggunakan fallback manual');
+
+    dropdownElementList.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var dropdown = this.nextElementSibling;
+
+        // Tutup semua dropdown lain
+        document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+          if (menu !== dropdown) {
+            menu.classList.remove('show');
+          }
+        });
+
+        // Toggle dropdown saat ini
+        dropdown.classList.toggle('show');
+      });
+    });
+
+    // Tutup dropdown saat klik di luar
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+          menu.classList.remove('show');
+        });
+      }
+    });
+  }
+});
+</script>

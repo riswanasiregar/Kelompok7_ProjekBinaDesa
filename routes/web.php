@@ -39,6 +39,7 @@ Route::group(['middleware' => ['checkislogin']], function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
 
     // Resource routes
     Route::resource('warga', WargaController::class);
