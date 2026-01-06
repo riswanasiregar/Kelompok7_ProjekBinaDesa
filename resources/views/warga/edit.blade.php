@@ -4,7 +4,7 @@
 <div class="container">
     <h4 class="fw-semibold mb-4">Edit Data Warga</h4>
 
-    <form action="{{ route('warga.update', $warga->warga_id) }}" method="POST" class="card p-4 shadow-sm border-0" enctype="multipart/form-data">
+    <form action="{{ route('admin.warga.update', $warga->warga_id) }}" method="POST" class="card p-4 shadow-sm border-0" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -52,7 +52,7 @@
         </div>
 
         <div class="d-flex justify-content-between">
-            <a href="{{ route('warga.index') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route('admin.warga.index') }}" class="btn btn-secondary">Kembali</a>
             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
         </div>
     </form>
