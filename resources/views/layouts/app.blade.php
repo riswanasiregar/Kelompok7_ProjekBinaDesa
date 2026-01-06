@@ -73,13 +73,7 @@
                             <span>Riwayat Penyaluran</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('uploads') ? 'active' : '' }}" href="{{ route('uploads') }}">
-                            <i class=""></i>
-                            <span>Multi Upload</span>
-                        </a>
-                    </li>
-                    
+                
                     <li class="sidebar-item">
                         <a class="sidebar-link d-flex align-items-center px-3 py-2 {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                             <i class=""></i>
@@ -130,13 +124,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Footer (opsional) -->
-        <!-- <footer class="py-3 border-top bg-white">
-            <div class="container-fluid">
-                <span class="text-muted">© {{ date('Y') }} Projek Bina Desa</span>
-            </div>
-        </footer> -->
+        
     </div>
 
     <!-- Core JS -->

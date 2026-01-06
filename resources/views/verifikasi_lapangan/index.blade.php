@@ -43,7 +43,7 @@
                         @if($foto)
                             <div class="mt-2">
                                 <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
-                                    📷 Lihat Foto
+                                    Lihat Foto
                                 </a>
                             </div>
                         @else

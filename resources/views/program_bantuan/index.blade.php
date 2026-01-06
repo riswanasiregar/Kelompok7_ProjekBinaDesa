@@ -55,14 +55,14 @@
                                 </p>
                             </div>
 
-                            {{-- Button lihat foto - harus klik untuk melihat --}}
+                            <!-- botton lihat foto -->
                             @php
                                 $foto = $item->media()->first(); // Cek apakah ada foto
                             @endphp
                             @if($foto)
                                 <div class="mb-2">
                                     <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="btn btn-info btn-sm">
-                                        📷 Lihat Foto
+                                        Lihat Foto
                                     </a>
                                 </div>
                             @else
